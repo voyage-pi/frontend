@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  frontend:
+    build: ./ui
+    container_name: ${CONTAINER_NAME}
+    volumes:
+      - .:/ui
+      - /ui/node_modules
+    environment:
+      - ENV_VAR=example
+    command: npm run dev
