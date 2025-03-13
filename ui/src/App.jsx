@@ -4,6 +4,8 @@ import './App.css'
 function App() {
   return (
     <>
+      <div class="btn btn-primary">Rui
+      </div>
     </>
   )
 }
