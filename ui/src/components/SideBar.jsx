@@ -73,7 +73,7 @@ function SideBar({ onToggle }) {
                 {/* Profile section */}
                 <div className={`flex flex-col ${isExpanded ? "px-10 items-start" : "px-0 items-center"} mt-6`}>
                     <div className="avatar">
-                        <div className={`${isExpanded ? "w-36" : "w-11"} rounded-full transition-all duration-300`}>
+                        <div className={`${isExpanded ? "w-36" : "w-11 mt-30"} rounded-full transition-all duration-300`}>
                             <img src={RuiImage} alt="Rui Machado" />
                         </div>
                     </div>
@@ -99,7 +99,7 @@ function SideBar({ onToggle }) {
                             </button>
                         </div>
                     ) : (
-                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-4 w-12 h-12 flex items-center justify-center p-0">
+                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-62 w-9 h-9 flex items-center justify-center p-0">
                             <span className="text-primary-content text-3xl font-light">+</span>
                         </button>
                     )}
@@ -119,7 +119,7 @@ function SideBar({ onToggle }) {
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center"}`}>
+                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center mt-9"}`}>
                                                     <Icon className={isActive ? "text-primary" : "text-secondary"} size={28} />
                                                 </div>
 
@@ -140,11 +140,11 @@ function SideBar({ onToggle }) {
             </div>
 
             {/* Bottom section */}
-            <div className="mb-8 mx-12 text-xl text-secondary">
+            <div className={`mb-8 ${isExpanded ? "mx-12" : "mx-auto"} text-xl text-secondary`}>
                 <ul className="p-0">
                     <li>
                         <a className="flex items-center gap-4 py-2 cursor-pointer hover:opacity-95">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full -ml-2">
+                            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : ""}`}>
                                 <FaShareNodes className={`${isExpanded ? "" : "mx-auto"}`} size={28} />
                             </div>
                             {isExpanded && <span>Share profile</span>}
@@ -152,7 +152,7 @@ function SideBar({ onToggle }) {
                     </li>
                     <li>
                         <a className="flex items-center gap-4 py-2 cursor-pointer hover:opacity-95">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full -ml-2">
+                            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : ""}`}>
                                 <FaGear className={`${isExpanded ? "" : "mx-auto"}`} size={28} />
                             </div>
                             {isExpanded && <span>Settings</span>}
