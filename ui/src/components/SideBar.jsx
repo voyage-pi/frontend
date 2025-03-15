@@ -49,7 +49,10 @@ function SideBar({ onToggle }) {
                                 <div className="flex items-center -ml-12">
                                     <img src={VoyageCompleteLogo} alt="Voyage Logo" />
                                 </div>
-                                <button onClick={toggleSidebar} className=" p-0 text-primary">
+                                <button 
+                                    onClick={toggleSidebar} 
+                                    className="p-0 text-primary hover:scale-105 transition-transform duration-100 ease-in-out"
+                                >
                                     <FaChevronLeft size={18} />
                                 </button>
                             </div>
