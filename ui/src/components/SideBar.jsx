@@ -73,7 +73,7 @@ function SideBar({ onToggle }) {
                 {/* Profile section */}
                 <div className={`flex flex-col ${isExpanded ? "px-10 items-start" : "px-0 items-center"} mt-6`}>
                     <div className="avatar">
-                        <div className={`${isExpanded ? "w-36" : "w-11 mt-30"} rounded-full transition-all duration-300`}>
+                        <div className={`${isExpanded ? "w-36" : "w-11 mt-30"} rounded-full transition-all duration-300 border-3 border-white`}>
                             <img src={userData.image} alt={userData.name} />
                         </div>
                     </div>
