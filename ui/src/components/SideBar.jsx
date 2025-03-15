@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import {
   FaHeart,
   FaUsers,
@@ -29,9 +30,9 @@ function SideBar({ onToggle }) {
   ]
 
   const menuItems = [
-    { icon: FaEarthAmericas, label: "Trips", count: 5 },
-    { icon: FaHeart, label: "Saved", count: 4, extraClass: "text-primary" },
-    { icon: FaUsers, label: "Friends", count: 5 },
+    { icon: FaEarthAmericas, label: "Trips", count: 5, path: "/" },
+    { icon: FaHeart, label: "Saved", count: 4, extraClass: "text-primary", path: "/saved" },
+    { icon: FaUsers, label: "Friends", count: 5, path: "/friends" },
   ]
 
   return (
@@ -102,9 +103,9 @@ function SideBar({ onToggle }) {
         {/* Navigation */}
         <nav className="m-10">
           <ul className="p-0">
-            {menuItems.map(({ icon: Icon, label, count, extraClass = "" }, index) => (
+            {menuItems.map(({ icon: Icon, label, count, extraClass = "", path }, index) => (
               <li key={index}>
-                <a className="flex items-start gap-4 py-4">
+                <Link to={path} className="flex items-start gap-4 py-4 hover:opacity-80 transition-opacity">
                   <Icon className={`${extraClass} ${isExpanded ? "" : "mx-auto"}`} size={28} />
                   {isExpanded && (
                     <div className="flex justify-between w-full items-center">
@@ -112,7 +113,7 @@ function SideBar({ onToggle }) {
                       <span className="opacity-70">{count}</span>
                     </div>
                   )}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -150,6 +151,4 @@ function SideBar({ onToggle }) {
 }
 
 export default SideBar
-
-
 
