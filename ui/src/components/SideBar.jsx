@@ -8,7 +8,6 @@ import {
     FaGear,
     FaChevronLeft,
     FaChevronRight,
-    FaPlus,
 } from "react-icons/fa6"
 import VoyageCompleteLogo from "../assets/voyage-complete-logo-navy.png"
 import VoyageIconLogo from "../assets/voyage-logo.png"
@@ -58,28 +57,28 @@ function SideBar({ onToggle }) {
                             </div>
                         </>
                     ) : (
-                        <div className="group relative w-full flex justify-center cursor-pointer" onClick={toggleSidebar}>
+                        <div className="group relative w-full flex justify-center cursor-pointer pt-3" onClick={toggleSidebar}>
                             <img
                                 src={VoyageIconLogo}
                                 alt="Voyage Logo"
                                 className="group-hover:opacity-0 transition-opacity duration-300"
                             />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-primary">
-                                <FaChevronRight size={16} />
+                                <FaChevronRight size={18} />
                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Profile section */}
-                <div className="flex flex-col items-start mt-0 mb-6 m-10">
+                <div className={`flex flex-col ${isExpanded ? "px-10 items-start" : "px-0 items-center"} mt-6`}>
                     <div className="avatar">
-                        <div className={`${isExpanded ? "w-36" : "w-10 h-10"} rounded-full transition-all duration-300`}>
+                        <div className={`${isExpanded ? "w-36" : "w-11"} rounded-full transition-all duration-300`}>
                             <img src={RuiImage} alt="Rui Machado" />
                         </div>
                     </div>
 
-                    {isExpanded && (
+                    {isExpanded ? (
                         <div className="text-start mt-5 w-full text-secondary">
                             <div className="font-bold text-3xl">Rui Machado</div>
                             <p className="text-lg opacity-70">@ruimachado</p>
@@ -99,6 +98,10 @@ function SideBar({ onToggle }) {
                                 <span className="text-primary-content text-xl font-bold">Create</span>
                             </button>
                         </div>
+                    ) : (
+                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-4 w-12 h-12 flex items-center justify-center p-0">
+                            <span className="text-primary-content text-3xl font-light">+</span>
+                        </button>
                     )}
 
 
@@ -110,13 +113,13 @@ function SideBar({ onToggle }) {
                                     <NavLink
                                         to={path}
                                         className={({ isActive }) =>
-                                            `flex w-full items-center gap-4 py-2 px-4 rounded-full transition-transform mb-5 h-12 ${isActive ? "bg-primary/10 text-primary font-bold" : "hover:opacity-80"
+                                            `flex w-full items-center gap-4 py-2 rounded-full transition-transform mb-5 h-12 px-4 ${isActive && isExpanded ? "bg-primary/10 text-primary font-bold" : "px-0 hover:opacity-80 items-center justify-center"
                                             }`
                                         }
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <div className="flex items-center justify-center w-10 h-10 rounded-full -ml-2">
+                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center"}`}>
                                                     <Icon className={isActive ? "text-primary" : "text-secondary"} size={28} />
                                                 </div>
 
@@ -163,4 +166,3 @@ function SideBar({ onToggle }) {
 }
 
 export default SideBar
-
