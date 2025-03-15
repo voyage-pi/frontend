@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet';
-import Home from './routes/Home';
+import Trips from './routes/Trips';
 
 export const routesList = [
     {
@@ -7,9 +7,9 @@ export const routesList = [
         element: (
           <>
             <Helmet>
-              <title>Voyage - Home</title>
+              <title>Voyage - Trips</title>
             </Helmet>
-            <Home />
+            <Trips />
           </>
         ),
     },   
