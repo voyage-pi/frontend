@@ -45,11 +45,11 @@ function SideBar({ onToggle }) {
                 <div className="flex items-center justify-between">
                     {isExpanded ? (
                         <>
-                            <div className="m-10 flex flex-row">
+                            <div className="m-10 mt-2 flex flex-row">
                                 <div className="flex items-center -ml-12">
                                     <img src={VoyageCompleteLogo} alt="Voyage Logo" />
                                 </div>
-                                <button onClick={toggleSidebar} className="btn btn-ghost btn-xs p-0 text-primary">
+                                <button onClick={toggleSidebar} className=" p-0 text-primary">
                                     <FaChevronLeft size={18} />
                                 </button>
                             </div>
@@ -131,35 +131,30 @@ function SideBar({ onToggle }) {
                         </ul>
                     </nav>
                 </div>
-
             </div>
 
             {/* Bottom section */}
-            <div className="mb-8 pl-10 text-2xl">
+            <div className="mb-8 mx-12 text-xl text-secondary">
                 <ul className="p-0">
                     <li>
-                        <a className="flex items-center gap-4 py-2">
-                            <FaShareNodes className={`${isExpanded ? "" : "mx-auto"}`} size={28} />
+                        <a className="flex items-center gap-4 py-2 cursor-pointer hover:opacity-95">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full -ml-2">
+                                <FaShareNodes className={`${isExpanded ? "" : "mx-auto"}`} size={28} />
+                            </div>
                             {isExpanded && <span>Share profile</span>}
                         </a>
                     </li>
                     <li>
-                        <a className="flex items-center gap-4 py-2">
-                            <FaGear className={`${isExpanded ? "" : "mx-auto"}`} size={28} />
+                        <a className="flex items-center gap-4 py-2 cursor-pointer hover:opacity-95">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full -ml-2">
+                                <FaGear className={`${isExpanded ? "" : "mx-auto"}`} size={28} />
+                            </div>
                             {isExpanded && <span>Settings</span>}
                         </a>
                     </li>
                 </ul>
             </div>
 
-            {/* Mobile create button (only visible when collapsed) */}
-            {!isExpanded && (
-                <div className="absolute bottom-20 left-0 right-0 flex justify-center">
-                    <button className="btn bg-primary hover:bg-[#f42753] border-none btn-circle btn-sm">
-                        <FaPlus size={14} className="text-white" />
-                    </button>
-                </div>
-            )}
         </div>
     )
 }
