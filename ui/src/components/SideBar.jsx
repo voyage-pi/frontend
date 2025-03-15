@@ -47,7 +47,7 @@ function SideBar({ onToggle }) {
             <>
               <div className="m-10 flex flex-row">
                 <div className="flex items-center -ml-12">
-                  <img src={VoyageCompleteLogo || "/placeholder.svg"} alt="Voyage Logo" />
+                  <img src={VoyageCompleteLogo} alt="Voyage Logo" />
                 </div>
                 <button onClick={toggleSidebar} className="btn btn-ghost btn-xs p-0 text-primary">
                   <FaChevronLeft size={18} />
@@ -57,7 +57,7 @@ function SideBar({ onToggle }) {
           ) : (
             <div className="group relative w-full flex justify-center cursor-pointer" onClick={toggleSidebar}>
               <img
-                src={VoyageIconLogo || "/placeholder.svg"}
+                src={VoyageIconLogo}
                 alt="Voyage Logo"
                 className="group-hover:opacity-0 transition-opacity duration-300"
               />
@@ -72,7 +72,7 @@ function SideBar({ onToggle }) {
         <div className="flex flex-col items-start mt-0 mb-6 m-10">
           <div className="avatar">
             <div className={`${isExpanded ? "w-36" : "w-10 h-10"} rounded-full transition-all duration-300`}>
-              <img src={RuiImage || "/placeholder.svg"} alt="Rui Machado" />
+              <img src={RuiImage} alt="Rui Machado" />
             </div>
           </div>
 
@@ -89,11 +89,11 @@ function SideBar({ onToggle }) {
                   </div>
                 ))}
               </div>
-              <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start pl-4 gap-3 h-12">
-                <div className="bg-white rounded-full p-2 h-8 w-8 flex items-center justify-center">
-                  <span className="text-primary text-xl font-bold">+</span>
+              <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-12">
+                <div className="bg-white rounded-full w-9 h-9 flex items-center justify-center -ml-2">
+                  <span className="text-primary text-3xl font-light">+</span>
                 </div>
-                <span className="text-primary-content text-lg font-bold">Create</span>
+                <span className="text-primary-content text-xl font-bold">Create</span>
               </button>
             </div>
           )}
