@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa6"
 import VoyageCompleteLogo from "../assets/voyage-complete-logo-navy.png"
 import VoyageIconLogo from "../assets/voyage-logo.png"
-import RuiImage from "../assets/rui.jpg"
+import userData from "../../public/user.json"
 
 function SideBar({ onToggle }) {
     const [isExpanded, setIsExpanded] = useState(true)
@@ -23,15 +23,15 @@ function SideBar({ onToggle }) {
     }
 
     const userStats = [
-        { label: "Trips", count: 5 },
-        { label: "Friends", count: 5 },
-        { label: "Countries", count: 4 },
+        { label: "Trips", count: userData.stats.trips },
+        { label: "Friends", count: userData.stats.friends },
+        { label: "Countries", count: userData.stats.countries },
     ]
 
     const menuItems = [
-        { icon: FaEarthAmericas, label: "Trips", count: 5, path: "/" },
-        { icon: FaHeart, label: "Saved", count: 4, path: "/saved" },
-        { icon: FaUsers, label: "Friends", count: 5, path: "/friends" },
+        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/" },
+        { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved" },
+        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends" },
     ]
 
     return (
@@ -74,14 +74,14 @@ function SideBar({ onToggle }) {
                 <div className={`flex flex-col ${isExpanded ? "px-10 items-start" : "px-0 items-center"} mt-6`}>
                     <div className="avatar">
                         <div className={`${isExpanded ? "w-36" : "w-11 mt-30"} rounded-full transition-all duration-300`}>
-                            <img src={RuiImage} alt="Rui Machado" />
+                            <img src={userData.image} alt={userData.name} />
                         </div>
                     </div>
 
                     {isExpanded ? (
                         <div className="text-start mt-5 w-full text-secondary">
-                            <div className="font-bold text-3xl">Rui Machado</div>
-                            <p className="text-lg opacity-70">@ruimachado</p>
+                            <div className="font-bold text-3xl">{userData.name}</div>
+                            <p className="text-lg opacity-70">{userData.tag}</p>
 
                             <div className="flex justify-between mt-5 text-lg">
                                 {userStats.map(({ label, count }, index) => (
@@ -99,7 +99,7 @@ function SideBar({ onToggle }) {
                             </button>
                         </div>
                     ) : (
-                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-62 w-9 h-9 flex items-center justify-center p-0">
+                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-65 w-9 h-9 flex items-center justify-center p-0">
                             <span className="text-primary-content text-3xl font-light">+</span>
                         </button>
                     )}
@@ -119,7 +119,7 @@ function SideBar({ onToggle }) {
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center mt-9"}`}>
+                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center mt-4"}`}>
                                                     <Icon className={isActive ? "text-primary" : "text-secondary"} size={28} />
                                                 </div>
 

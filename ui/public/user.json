@@ -1,0 +1,12 @@
+{
+    "name": "Rui Machado",
+    "tag": "@ruimachado",
+    "image": "../src/assets/rui.jpg",
+    "stats": {
+      "trips": 5,
+      "friends": 5,
+      "saved": 4,
+      "countries": 4
+    }
+  }
+  
