@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { NavLink } from "react-router-dom"
 import {
     FaHeart,
@@ -14,13 +14,26 @@ import VoyageIconLogo from "../assets/voyage-logo.png"
 import userData from "../../public/user.json"
 
 function SideBar({ onToggle }) {
-    const [isExpanded, setIsExpanded] = useState(true)
+    const [isExpanded, setIsExpanded] = useState(() => {
+        return JSON.parse(localStorage.getItem("sidebarState")) ?? true;
+    });
+
+    useEffect(() => {
+        const storedState = JSON.parse(localStorage.getItem("sidebarState"));
+        if (storedState !== null) {
+            setIsExpanded(storedState);
+            onToggle(storedState); 
+        }
+    }, []);
 
     const toggleSidebar = () => {
-        const newState = !isExpanded
-        setIsExpanded(newState)
-        if (onToggle) onToggle(newState)
-    }
+        setIsExpanded((prev) => {
+            const newState = !prev;
+            localStorage.setItem("sidebarState", JSON.stringify(newState));
+            onToggle(newState);
+            return newState;
+        });
+    };
 
     const userStats = [
         { label: "Trips", count: userData.stats.trips },
@@ -35,17 +48,17 @@ function SideBar({ onToggle }) {
     ]
 
     return (
-        <div className={`bg-base-300 min-h-screen fixed top-0 left-0 overflow-y-auto transition-[width,margin,padding] duration-500 ease-in-out flex flex-col justify-between ${isExpanded ? "w-85" : "w-20"}`}>
+        <div className={`bg-base-300 min-h-screen fixed top-0 left-0 overflow-y-auto transition-[width,margin,padding] duration-300 ease-in-out flex flex-col justify-between ${isExpanded ? "w-85" : "w-20"}`}>
             {/* Top section */}
             <div className="flex flex-col">
                 <div className="flex items-center justify-between">
                     {isExpanded ? (
                         <div
-                            className="m-10 mt-2 flex flex-row transition-[margin] duration-500 ease-in-out"
+                            className="m-10 mt-2 flex flex-row transition-[margin] duration-300 ease-in-out"
                         >
                             <div
                                 className="-ml-12 flex items-center
-                                           transition-[margin] duration-500 ease-in-out"
+                                           transition-[margin] duration-300 ease-in-out"
                             >
                                 <img src={VoyageCompleteLogo} alt="Voyage Logo" />
                             </div>
@@ -75,11 +88,11 @@ function SideBar({ onToggle }) {
 
                 {/* Profile section */}
                 <div
-                    className={`flex flex-col ${isExpanded ? "px-10 items-start" : "px-0 items-center"} mt-6 transition-[padding] duration-500 ease-in-out`}
+                    className={`flex flex-col ${isExpanded ? "px-10 items-start" : "px-0 items-center"} mt-6 transition-[padding] duration-300 ease-in-out`}
                 >
                     <div className="avatar">
                         <div
-                            className={`rounded-full border-3 border-white transition-[width,height] duration-500 ease-in-out ${isExpanded ? "w-36" : "w-11 mt-30"}`}>
+                            className={`rounded-full border-3 border-white transition-[width,height] duration-300 ease-in-out ${isExpanded ? "w-36" : "w-11 mt-30"}`}>
                             <img src={userData.image} alt={userData.name} />
                         </div>
                     </div>
@@ -121,7 +134,7 @@ function SideBar({ onToggle }) {
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center mt-4"} transition-[margin] duration-500 ease-in-out`}>
+                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : "items-center mt-4"} transition-[margin] duration-300 ease-in-out`}>
                                                     <Icon className={isActive ? "text-primary" : "text-secondary"} size={28}/>
                                                 </div>
                                                 {isExpanded && (
@@ -141,11 +154,11 @@ function SideBar({ onToggle }) {
             </div>
 
             {/* Bottom section */}
-            <div className={`mb-8 text-xl text-secondary ${isExpanded ? "mx-12" : "mx-auto"} transition-[margin] duration-500 ease-in-out`}>
+            <div className={`mb-8 text-xl text-secondary ${isExpanded ? "mx-12" : "mx-auto"} transition-[margin] duration-300 ease-in-out`}>
                 <ul className="p-0">
                     <li>
                         <a className="flex items-center gap-4 py-2 cursor-pointer hover:opacity-95">
-                            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : ""} transition-[margin] duration-500 ease-in-out`}>
+                            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : ""} transition-[margin] duration-300 ease-in-out`}>
                                 <FaShareNodes size={28} />
                             </div>
                             {isExpanded && <span>Share</span>}
@@ -153,7 +166,7 @@ function SideBar({ onToggle }) {
                     </li>
                     <li>
                         <a className="flex items-center gap-4 py-2 cursor-pointer hover:opacity-95">
-                            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : ""} transition-[margin] duration-500 ease-in-out`}>
+                            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isExpanded ? "-ml-2" : ""} transition-[margin] duration-300 ease-in-out`}>
                                 <FaGear size={28}/>
                             </div>
                             {isExpanded && <span>Settings</span>}
