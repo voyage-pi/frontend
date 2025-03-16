@@ -2,7 +2,7 @@ import { useState } from "react";
 import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import userData from "../../public/user.json";
-import { FaSearchengin, FaPlus } from "react-icons/fa6";
+import { FaSistrix } from "react-icons/fa6";
 
 function Trips() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,12 +19,12 @@ function Trips() {
 
         <div className="relative w-full max-w- mr-2">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <FaSearchengin className="z-50 opacity-50 text-xl"/>
+            <FaSistrix className="z-50 opacity-50 text-2xl"/>
           </div>
           <input
             type="text"
             placeholder="Search..."
-            className="input bg-white w-full pl-10 pr-4 rounded-full text-lg shadow-sm focus:border-transparent"
+            className="input bg-white w-full pl-11 pr-4 rounded-full text-lg shadow-sm focus:border-transparent"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
