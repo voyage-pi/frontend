@@ -37,7 +37,7 @@ function TripCard({ image, days, people, destinations, name, date }) {
         </div>
         
         <div className="mt-auto text-secondary">
-          <h2 className="text-4xl font-bold mb-1">{name}</h2>
+          <h2 className="text-3xl font-bold mb-1">{name}</h2>
           <p className="text-secondary/70">{date}</p>
         </div>
       </div>
