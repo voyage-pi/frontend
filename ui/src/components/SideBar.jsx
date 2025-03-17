@@ -110,7 +110,7 @@ function SideBar({ onToggle }) {
                                     </div>
                                 ))}
                             </div>
-                            <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-4 h-12">
+                            <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-4 h-12 shadow-sm">
                                 <div className="bg-white rounded-full w-9 h-9 flex items-center justify-center -ml-2">
                                     <span className="text-primary text-3xl font-light">+</span>
                                 </div>

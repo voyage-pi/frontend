@@ -1,12 +1,75 @@
-import PageTemplate from "../components/PageTemplate"
+import { useState } from "react";
+import PageTemplate from "../components/PageTemplate";
+import TripCard from "../components/TripCard";
+import SearchHeader from "../components/SearchBar";
+import TabBar from "../components/TabBar";
+import userData from "../../public/user.json";
 
 function Trips() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+
+  const handleCreateTrip = () => {
+    console.log("Create new trip");
+  };
+
+  const tabs = [
+    { value: "all", label: "All trips" },
+    { value: "drafted", label: "Drafted" },
+    { value: "incoming", label: "Incoming" },
+    { value: "completed", label: "Completed" },
+  ];
+
+  const searchFiltered = userData.trips.filter(trip =>
+    trip.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    trip.date.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredTrips = searchFiltered.filter(trip => {
+    if (activeTab === "all") return true;
+    if (activeTab === "drafted") return trip.status === "drafted";
+    if (activeTab === "incoming") return trip.status === "incoming";
+    if (activeTab === "completed") return trip.status === "completed";
+    return true;
+  });
+
   return (
     <PageTemplate>
-      <h1 className="text-3xl font-bold mb-4">My Trips</h1>
+      <TabBar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        tabs={tabs} 
+      />
+
+      <SearchHeader 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onCreateNew={handleCreateTrip}
+        createButtonText="New Trip"
+        placeholder="Search..."
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+        {filteredTrips.map((trip) => (
+          <TripCard
+            key={trip.id}
+            image={trip.image}
+            days={trip.days}
+            people={trip.people}
+            destinations={trip.destinations}
+            name={trip.name}
+            date={trip.date}
+          />
+        ))}
+      </div>
+
+      {filteredTrips.length === 0 && (
+        <div className="text-center py-10">
+          <p className="text-gray-500">No trips found matching your search.</p>
+        </div>
+      )}
     </PageTemplate>
-  )
+  );
 }
 
-export default Trips
-
+export default Trips;
