@@ -2,22 +2,45 @@ import { useState } from "react";
 import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
+import TabBar from "../components/TabBar";
 import userData from "../../public/user.json";
 
 function Trips() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredTrips = userData.trips.filter(trip =>
-    trip.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trip.date.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [activeTab, setActiveTab] = useState("all");
 
   const handleCreateTrip = () => {
     console.log("Create new trip");
   };
 
+  const tabs = [
+    { value: "all", label: "All trips" },
+    { value: "drafted", label: "Drafted" },
+    { value: "incoming", label: "Incoming" },
+    { value: "completed", label: "Completed" },
+  ];
+
+  const searchFiltered = userData.trips.filter(trip =>
+    trip.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    trip.date.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredTrips = searchFiltered.filter(trip => {
+    if (activeTab === "all") return true;
+    if (activeTab === "drafted") return trip.status === "drafted";
+    if (activeTab === "incoming") return trip.status === "incoming";
+    if (activeTab === "completed") return trip.status === "completed";
+    return true;
+  });
+
   return (
     <PageTemplate>
+      <TabBar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        tabs={tabs} 
+      />
+
       <SearchHeader 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -26,7 +49,7 @@ function Trips() {
         placeholder="Search..."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
         {filteredTrips.map((trip) => (
           <TripCard
             key={trip.id}
