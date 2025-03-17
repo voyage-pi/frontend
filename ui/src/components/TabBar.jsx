@@ -2,24 +2,24 @@ import React from "react";
 
 function TabBar({ activeTab, setActiveTab, tabs }) {
   const getTabStyle = (tabName) => {
-    return activeTab === tabName 
-      ? "py-1 px-4 rounded-full bg-primary text-white font-bold cursor-pointer text-lg" 
-      : "py-1 px-5 text-gray-700 cursor-pointer text-lg";
+    const baseStyle = "py-1 px-4 text-lg cursor-pointer flex items-center justify-center";
+    const activeStyle = activeTab === tabName ? "rounded-full bg-primary text-white font-bold" : "text-gray-700";
+    return `${baseStyle} ${activeStyle}`;
   };
 
-  return (
-    <div className="flex space-x-4 mb-6">
-      {tabs.map((tab) => (
-        <div 
-          key={tab.value}
-          className={getTabStyle(tab.value)} 
-          onClick={() => setActiveTab(tab.value)}
-        >
-          {tab.label}
-        </div>
-      ))}
+return (
+    <div className="flex mb-6">
+        {tabs.map((tab) => (
+            <div 
+                key={tab.value}
+                className={`${getTabStyle(tab.value)} ${tab.label === "All trips" ? "w-25" : "w-27"} mx-2`}
+                onClick={() => setActiveTab(tab.value)}
+            >
+                {tab.label}
+            </div>
+        ))}
     </div>
-  );
+);
 }
 
 export default TabBar;
