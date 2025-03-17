@@ -16,7 +16,8 @@
       "people": 2,
       "destinations": 3,
       "name": "Trip to Bali",
-      "date": "18 May 2025 - 23 May 2025"
+      "date": "18 May 2025 - 23 May 2025",
+      "status": "drafted"
     },
     {
       "id": 2,
@@ -25,7 +26,8 @@
       "people": 4,
       "destinations": 5,
       "name": "Trip to Cyprus",
-      "date": "10 Aug 2025 - 14 Aug 2025"
+      "date": "10 Aug 2025 - 14 Aug 2025", 
+      "status": "incoming"
     },
     {
       "id": 3,
@@ -34,7 +36,8 @@
       "people": 6,
       "destinations": 7,
       "name": "Trip to Barcelona",
-      "date": "18 Oct 2025 - 28 Oct 2025"
+      "date": "18 Oct 2025 - 28 Oct 2025",
+      "status": "incoming"
     },
     {
       "id": 4,
@@ -43,7 +46,8 @@
       "people": 2,
       "destinations": 4,
       "name": "Trip to Azores",
-      "date": "5 Jun 2025 - 10 Jun 2025"
+      "date": "5 Jun 2025 - 10 Jun 2025",
+      "status": "completed"
     },
     {
       "id": 5,
@@ -52,7 +56,8 @@
       "people": 3,
       "destinations": 2,
       "name": "Trip to Oporto",
-      "date": "13 Jul 2025 - 16 Jul 2025"
+      "date": "13 Jul 2025 - 16 Jul 2025",
+      "status": "completed"
     }
   ]
 }
