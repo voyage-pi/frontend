@@ -11,7 +11,7 @@ function PageTemplate({ children }) {
   return (
     <div className="flex">
       <SideBar onToggle={handleSidebarToggle} />
-      <main className={`p-13 transition-all duration-300 bg-base-100 ${sidebarExpanded ? "ml-[340px]" : "ml-20"}`}>{children}</main>
+      <main className={`p-8 transition-all duration-300 bg-base-100 ${sidebarExpanded ? "ml-[270px]" : "ml-17"}`}>{children}</main>
     </div>
   )
 }
