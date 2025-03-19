@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { NavLink } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 import {
     FaHeart,
     FaUsers,
@@ -14,18 +14,29 @@ import VoyageIconLogo from "../assets/voyage-logo.png"
 import userData from "../../public/user.json"
 
 function SideBar({ onToggle }) {
+    const location = useLocation();
+    const isFormsPath = location.pathname === "/forms";
+    
     const [isExpanded, setIsExpanded] = useState(() => {
-        return JSON.parse(localStorage.getItem("sidebarState")) ?? true;
+        const storedState = JSON.parse(localStorage.getItem("sidebarState"));
+        if (isFormsPath) {
+            return false;
+        }
+        return storedState !== null ? storedState : true;
     });
     
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     useEffect(() => {
-        const storedState = JSON.parse(localStorage.getItem("sidebarState"));
-        if (storedState !== null) {
-            setIsExpanded(storedState);
-            onToggle(storedState); 
+        if (isFormsPath && isExpanded) {
+            setIsExpanded(false);
+            localStorage.setItem("sidebarState", JSON.stringify(false));
+            onToggle(false);
         }
+    }, [location.pathname, isFormsPath]);
+
+    useEffect(() => {
+        onToggle(isExpanded);
     }, []);
 
     const toggleSidebar = () => {
