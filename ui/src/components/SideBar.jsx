@@ -120,12 +120,14 @@ function SideBar({ onToggle }) {
                                 </div>
                             ))}
                         </div>
-                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
-                            <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-2">
-                                <span className="text-primary text-2xl font-light">+</span>
-                            </div>
-                            <span className="text-primary-content text-lg font-bold">Create</span>
-                        </button>
+                        <NavLink to="/forms">
+                            <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
+                                <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-2">
+                                    <span className="text-primary text-2xl font-light">+</span>
+                                </div>
+                                <span className="text-primary-content text-lg font-bold">Create</span>
+                            </button>
+                        </NavLink>
                     </div>
 
                     {!isExpanded && (

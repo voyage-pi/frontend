@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet';
 import Trips from './routes/Trips';
 import Saved from './routes/Saved';
 import Friends from './routes/Friends';
+import Forms from './routes/Forms';
 
 export const routesList = [
     {
@@ -36,6 +37,18 @@ export const routesList = [
             <title>Voyage - Friends</title>
           </Helmet>
           <Friends />
+        </>
+      ),
+    },
+
+    {
+      path: "/forms",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - Forms</title>
+          </Helmet>
+          <Forms />
         </>
       ),
     }

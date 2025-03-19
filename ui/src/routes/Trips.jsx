@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";  
 import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
@@ -9,8 +10,10 @@ function Trips() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
+  const to = useNavigate();
+
   const handleCreateTrip = () => {
-    console.log("Create new trip");
+    to("/forms");
   };
 
   const tabs = [
