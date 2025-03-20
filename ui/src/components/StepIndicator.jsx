@@ -41,7 +41,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
   }, [currentStep, initialRender]);
 
   return (
-    <div className="flex items-center justify-center w-full my-4">
+    <div className="flex items-center justify-center w-full">
       {Array.from({ length: totalSteps }).map((_, index) => {
         const stepNumber = index + 1;
         

@@ -27,12 +27,12 @@ function Forms() {
       <div className="flex justify-center w-full">
         <div className="flex justify-center items-center flex-col w-full px-4">
           <div className="mb-4">
-            <img src={VoyageLogo} alt="Voyage Logo" className="h-24" />
+            <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
           </div>
 
-          <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+          <StepIndicator currentStep={currentStep} totalSteps={totalSteps}/>
 
-          <div className="bg-white rounded-md shadow-primary shadow-[0px_0px_20px_-13px] p-6 w-7xl mx-auto my-4 mt-40">
+          <div className="bg-white rounded-md shadow-primary shadow-[0px_0px_20px_-13px] p-6 w-7xl mx-auto my-4 mt-20">
             <StepContent currentStep={currentStep} />
 
             {/* Navigation Buttons */}
