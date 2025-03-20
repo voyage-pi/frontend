@@ -37,41 +37,43 @@ function Trips() {
   });
 
   return (
-    <PageTemplate>
-      <TabBar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        tabs={tabs} 
-      />
+    <div className="flex">
+      <PageTemplate>
+        <TabBar 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          tabs={tabs} 
+        />
 
-      <SearchHeader 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        onCreateNew={handleCreateTrip}
-        createButtonText="New Trip"
-        placeholder="Search..."
-      />
+        <SearchHeader 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          onCreateNew={handleCreateTrip}
+          createButtonText="New Trip"
+          placeholder="Search..."
+        />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
-        {filteredTrips.map((trip) => (
-          <TripCard
-            key={trip.id}
-            image={trip.image}
-            days={trip.days}
-            people={trip.people}
-            destinations={trip.destinations}
-            name={trip.name}
-            date={trip.date}
-          />
-        ))}
-      </div>
-
-      {filteredTrips.length === 0 && (
-        <div className="text-center py-10">
-          <p className="text-gray-500">No trips found matching your search.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+          {filteredTrips.map((trip) => (
+            <TripCard
+              key={trip.id}
+              image={trip.image}
+              days={trip.days}
+              people={trip.people}
+              destinations={trip.destinations}
+              name={trip.name}
+              date={trip.date}
+            />
+          ))}
         </div>
-      )}
-    </PageTemplate>
+
+        {filteredTrips.length === 0 && (
+          <div className="text-center py-10">
+            <p className="text-gray-500">No trips found matching your search.</p>
+          </div>
+        )}
+      </PageTemplate>
+    </div>
   );
 }
 
