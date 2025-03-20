@@ -26,7 +26,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
       
       const circleTimer = setTimeout(() => {
         setCircleActive(true);
-      }, 500);
+      }, 300);
       
       return () => {
         clearTimeout(lineTimer);
@@ -55,7 +55,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
           <React.Fragment key={index}>
             {/* Step Circle */}
             <div 
-              className={`relative flex items-center justify-center w-12 h-12 rounded-full border-1 transition-all duration-300 ease-in-out
+              className={`relative flex items-center justify-center w-12 h-12 rounded-full border-1 transition-all duration-100 ease-in-out
                 ${(isCompleted || (isCurrent && (circleActive || initialRender)))
                   ? 'bg-primary text-white border-primary' 
                   : 'bg-white text-rose-200 border-rose-400'}`}
@@ -78,7 +78,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
                 <div className="absolute top-0 left-0 w-full h-full bg-rose-100"></div>
                 
                 <div 
-                  className="absolute top-0 left-0 h-full bg-primary transition-all duration-700 ease-in-out"
+                  className="absolute top-0 left-0 h-full bg-primary transition-all duration-400 ease-in-out"
                   style={{ 
                     width: isCompleted 
                       ? '100%' 

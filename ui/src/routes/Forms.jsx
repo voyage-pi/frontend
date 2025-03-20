@@ -32,7 +32,7 @@ function Forms() {
 
           <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
 
-          <div className="bg-white rounded-lg shadow-xs shadow-primary p-6 w-full mx-auto my-4 mt-40">
+          <div className="bg-white rounded-lg shadow-xs shadow-primary p-6 w-7xl mx-auto my-4 mt-40">
             <StepContent currentStep={currentStep} />
 
             {/* Navigation Buttons */}
