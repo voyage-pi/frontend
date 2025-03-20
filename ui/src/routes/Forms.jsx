@@ -3,18 +3,16 @@ import PageTemplate from "../components/PageTemplate";
 import StepIndicator from "../components/StepIndicator";
 import StepContent from "../components/forms/StepContent";
 
-function Saved() {
+function Forms() {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
 
-  // Function to handle next button click
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  // Function to handle back button click
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -24,9 +22,9 @@ function Saved() {
   return (
     <PageTemplate>
       {/* Logo */}
-      <div className="flex justify-center mb-4">
+      {/* <div className="flex justify-center mb-4">
         <img src="/path-to-your-logo.png" alt="Voyage Logo" className="h-8" />
-      </div>
+      </div> */}
       
       {/* Step Indicator */}
       <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
@@ -65,4 +63,4 @@ function Saved() {
   );
 }
 
-export default Saved;
+export default Forms;
