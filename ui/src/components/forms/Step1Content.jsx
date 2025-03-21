@@ -8,7 +8,7 @@ import {
 const Step1Content = () => (
   <div className="text-center p-6 -mb-10">
 
-    <div className="flex justify-center space-x-40">
+    <div className="flex justify-center space-x-40 pt-9">
       {/* Individual Trip Card */}
       <div className="card bg-white rounded-lg p-6 w-80 h-100 items-center justify-center shadow-[0px_0px_1px_0px] transform transition-transform duration-200 hover:scale-105">
         <div className="absolute top-5 right-5 text-primary/90">
