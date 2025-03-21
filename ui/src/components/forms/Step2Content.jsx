@@ -1,9 +1,9 @@
 import React from 'react';
 import { 
   FaCircleInfo,     
-  FaRoad,
-  FaMapMarkerAlt,
+  FaRoad
 } from "react-icons/fa6";
+import {  FaMapMarkerAlt } from "react-icons/fa";
 import { PiMapPinAreaFill } from "react-icons/pi";
 
 const Step2Content = () => (
