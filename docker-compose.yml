@@ -9,4 +9,3 @@ services:
       - /ui/node_modules
     environment:
       - ENV_VAR=example
-    command: npm run dev
