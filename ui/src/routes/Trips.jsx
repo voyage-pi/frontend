@@ -11,13 +11,12 @@ function Trips() {
   const [userTrips, setUserTrips] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch user trips on component mount
   useEffect(() => {
     const fetchTrips = async () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get("/trips/@ruimachado");
-        setUserTrips(response.data.trips); // Store trips in state
+        setUserTrips(response.data.trips); 
       } catch (error) {
         console.error("Error fetching trips:", error);
       } finally {
@@ -25,7 +24,7 @@ function Trips() {
       }
     };
     fetchTrips();
-  }, []); // Empty dependency array ensures it runs only once
+  }, []); 
 
   const handleCreateTrip = () => {
     console.log("Create new trip");
