@@ -16,7 +16,7 @@ function Trips() {
       try {
         setLoading(true);
         const response = await axiosInstance.get("/trips/@ruimachado");
-        setUserTrips(response.data.trips); 
+        setUserTrips(response.data.trips); // Store trips in state
       } catch (error) {
         console.error("Error fetching trips:", error);
       } finally {
@@ -24,8 +24,8 @@ function Trips() {
       }
     };
     fetchTrips();
-  }, []); 
-
+  }, []);   
+  
   const handleCreateTrip = () => {
     console.log("Create new trip");
   };
