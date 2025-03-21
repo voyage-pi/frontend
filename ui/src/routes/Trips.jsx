@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axiosInstance from "../utils/axiosInstance"; 
 import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
-import userData from "../../public/user.json";
 
 function Trips() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [userTrips, setUserTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch user trips on component mount
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/trips/@ruimachado");
+        setUserTrips(response.data.trips); // Store trips in state
+      } catch (error) {
+        console.error("Error fetching trips:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTrips();
+  }, []); // Empty dependency array ensures it runs only once
 
   const handleCreateTrip = () => {
     console.log("Create new trip");
@@ -20,12 +38,12 @@ function Trips() {
     { value: "completed", label: "Completed" },
   ];
 
-  const searchFiltered = userData.trips.filter(trip =>
+  const searchFiltered = userTrips.filter((trip) =>
     trip.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     trip.date.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredTrips = searchFiltered.filter(trip => {
+  const filteredTrips = searchFiltered.filter((trip) => {
     if (activeTab === "all") return true;
     if (activeTab === "drafted") return trip.status === "drafted";
     if (activeTab === "incoming") return trip.status === "incoming";
@@ -50,24 +68,26 @@ function Trips() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
-        {filteredTrips.map((trip) => (
-          <TripCard
-            key={trip.id}
-            image={trip.image}
-            days={trip.days}
-            people={trip.people}
-            destinations={trip.destinations}
-            name={trip.name}
-            date={trip.date}
-          />
-        ))}
+        {loading ? (
+          <div>Loading...</div>
+        ) : filteredTrips.length > 0 ? (
+          filteredTrips.map((trip) => (
+            <TripCard
+              key={trip.id}
+              image={trip.image}
+              days={trip.days}
+              people={trip.people}
+              destinations={trip.destinations}
+              name={trip.name}
+              date={trip.date}
+            />
+          ))
+        ) : (
+          <div className="text-center py-10">
+            <p className="text-gray-500">No trips found matching your search.</p>
+          </div>
+        )}
       </div>
-
-      {filteredTrips.length === 0 && (
-        <div className="text-center py-10">
-          <p className="text-gray-500">No trips found matching your search.</p>
-        </div>
-      )}
     </PageTemplate>
   );
 }
