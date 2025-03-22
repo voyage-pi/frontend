@@ -1,25 +1,38 @@
-import React from 'react';
-import Step1Content from './Step1Content';
-import Step2Content from './Step2Content';
-import Step3Content from './Step3Content';
-import Step4Content from './Step4Content';
-import Step5Content from './Step5Content';
+import React from "react"
+import Step1 from "./Step1Content"
+import Step2 from "./Step2Content"
+import Step3 from "./Step3Content"
+import Step4 from "./Step4Content"
+import Step5Content from "./Step5Content"
 
-const StepContent = ({ currentStep }) => {
+const StepContent = ({
+  currentStep,
+  subQuestionIndex,
+  totalSubQuestions,
+  answers,
+  onRatingSelect
+}) => {
   switch (currentStep) {
     case 1:
-      return <Step1Content />;
+      return <Step1 />
     case 2:
-      return <Step2Content />;
+      return <Step2 />
     case 3:
-      return <Step3Content />;
+      return <Step3 />
     case 4:
-      return <Step4Content />;
+      return <Step4 />
     case 5:
-      return <Step5Content />;
+      return (
+        <Step5Content
+          subQuestionIndex={subQuestionIndex}
+          totalSubQuestions={totalSubQuestions}
+          answers={answers}
+          onRatingSelect={onRatingSelect}
+        />
+      )
     default:
-      return <Step1Content />;
+      return <div>Invalid step</div>
   }
-};
+}
 
-export default StepContent;
+export default StepContent
