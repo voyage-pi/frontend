@@ -3,8 +3,9 @@ import "cally";
 import VoyageIcon from "../../assets/voyage-logo.png";
 
 const Step4Content = () => {
-  const [startDate, setStartDate] = useState("2025-03-25");
-  const [endDate, setEndDate] = useState("2025-03-26");
+  const today = new Date().toISOString().split('T')[0];
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   const [budget, setBudget] = useState(332);
 
   const startPopoverRef = useRef(null);
