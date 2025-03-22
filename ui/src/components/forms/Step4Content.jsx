@@ -109,7 +109,7 @@ const Step4Content = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-13">
+    <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-11">
       {/* Left Column - Dates */}
       <div className="flex-1 border-r border-primary/30 pr-24 ">
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
