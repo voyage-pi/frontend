@@ -25,9 +25,9 @@ const Step5ContentPP = ({
             <button
               onClick={() => onRatingSelect(rating)}
               className={`
-                rounded-full border-2 border-red-400 
+                rounded-full border-2 border-primary/70
                 flex items-center justify-center
-                transition-all duration-200 hover:bg-red-100
+                transition-all duration-200 hover:bg-primary/20
                 ${
                   rating === 1
                     ? 'w-16 h-16'
@@ -45,7 +45,7 @@ const Step5ContentPP = ({
                 }
                 ${
                   currentQuestion.answer === rating
-                    ? 'bg-red-500 border-red-500'
+                    ? 'bg-primary border-primary'
                     : 'bg-white'
                 }
               `}
