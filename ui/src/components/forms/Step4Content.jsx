@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "cally";
 import VoyageIcon from "../../assets/voyage-logo.png";
 
-const TravelPlanner = () => {
+const Step4Content = () => {
   const [startDate, setStartDate] = useState("2025-03-25");
   const [endDate, setEndDate] = useState("2025-03-26");
   const [budget, setBudget] = useState(332);
@@ -261,4 +261,4 @@ const TravelPlanner = () => {
   );
 };
 
-export default TravelPlanner;
+export default Step4Content;
