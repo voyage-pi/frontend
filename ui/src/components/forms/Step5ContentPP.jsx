@@ -2,8 +2,6 @@ import React from "react"
 
 const Step5ContentPP = ({
     currentQuestion,
-    subQuestionIndex,
-    totalSubQuestions,
     onRatingSelect
 }) => {
     if (!currentQuestion) return null
