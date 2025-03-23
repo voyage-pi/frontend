@@ -1,0 +1,35 @@
+{
+    "Day 1": [
+      {
+        "place": "La Sagrada Família",
+        "time": "9:00 AM - 12:00 AM",
+        "transport": null
+      },
+      {
+        "place": "Gothic Quarter",
+        "time": "2:00 PM - 3:30 PM",
+        "transport": {
+          "type": "bus",
+          "duration": "20 min"
+        }
+      },
+      {
+        "place": "Casa Batlló",
+        "time": "3:45 PM - 6:00 PM",
+        "transport": {
+          "type": "walk",
+          "duration": "15 min"
+        }
+      },
+      {
+        "place": "Las Ramblas",
+        "time": "6:25 PM - 7:00 PM",
+        "transport": {
+          "type": "walk",
+          "duration": "25 min"
+        }
+      }
+    ],
+    "Day 2": []
+  }
+  
