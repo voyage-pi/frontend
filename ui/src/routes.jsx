@@ -3,6 +3,7 @@ import Trips from './routes/Trips';
 import Saved from './routes/Saved';
 import Friends from './routes/Friends';
 import Forms from './routes/Forms';
+import Itinerary from './routes/Itinerary';
 
 export const routesList = [
     {
@@ -49,6 +50,18 @@ export const routesList = [
             <title>Voyage - Forms</title>
           </Helmet>
           <Forms />
+        </>
+      ),
+    },
+
+    {
+      path:"/itinerary",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - Itinerary</title>
+          </Helmet>
+          <Itinerary />
         </>
       ),
     }
