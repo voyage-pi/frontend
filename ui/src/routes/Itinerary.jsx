@@ -1,5 +1,51 @@
 import React, { useState, useEffect } from "react";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import PageTemplate from "../components/PageTemplate";
+
+const SortableItem = ({ id, place, time, transport }) => {
+  const { attributes, listeners, setNodeRef, transform } = useSortable({ id });
+
+  const style = {
+    transform: transform ? CSS.Transform.toString(transform) : undefined,
+    transition: "none",
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="border rounded-lg p-3 mb-4 cursor-grab bg-white shadow-md"
+    >
+      <div className="flex items-start">
+        <img
+          src="/api/placeholder/80/80"
+          alt={place}
+          className="w-20 h-20 object-cover rounded mr-4"
+        />
+        <div className="flex-1">
+          <h3 className="font-semibold">{place}</h3>
+          <p className="text-sm text-gray-500">{time}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
@@ -15,44 +61,69 @@ function Itinerary() {
       .catch((error) => console.error("Error loading itinerary:", error));
   }, []);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleDragEnd = (event, day) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setItinerary((prevItinerary) => {
+      const items = prevItinerary[day];
+      const oldIndex = items.findIndex((item) => item.place === active.id);
+      const newIndex = items.findIndex((item) => item.place === over.id);
+      const newOrder = arrayMove(items, oldIndex, newIndex);
+
+      return {
+        ...prevItinerary,
+        [day]: newOrder,
+      };
+    });
+  };
+
   return (
     <PageTemplate>
-      <div className="flex flex-col md:flex-row p-4 h-screen">
-        {/* Left side - Itinerary details */}
-        <div className="w-full md:w-1/2 pr-4 overflow-y-auto">
+      <div className="flex flex-col md:flex-row h-screen">
+        {/* Left Side */}
+        <div className="w-full md:w-1/2 pr-4 overflow-y-auto h-screen p-4">
           <h1 className="text-2xl font-bold mb-4">Barcelona</h1>
 
           {loading ? (
             <p>Loading itinerary...</p>
           ) : (
             Object.keys(itinerary).map((day, index) => (
-              <div key={index} className="collapse collapse-arrow bg-base-100 border border-base-300 mb-2">
-                <input type="radio" name="itinerary-accordion" defaultChecked={index === 0} />
+              <div
+                key={index}
+                className="collapse collapse-arrow bg-base-100 mb-2"
+              >
+                <input
+                  type="radio"
+                  name="itinerary-accordion"
+                  defaultChecked={index === 0}
+                />
                 <div className="collapse-title font-semibold">{day}</div>
                 <div className="collapse-content">
                   {itinerary[day].length > 0 ? (
-                    itinerary[day].map((item, idx) => (
-                      <div key={idx} className="border rounded-lg p-2 mb-4">
-                        <div className="flex items-start">
-                          <img
-                            src="/api/placeholder/80/80"
-                            alt={item.place}
-                            className="w-20 h-20 object-cover rounded mr-4"
-                          />
-                          <div className="flex-1">
-                            <h3 className="font-semibold">{item.place}</h3>
-                            <p className="text-sm text-gray-500">{item.time}</p>
-                            {item.transport && (
-                              <p className="text-xs text-gray-400">
-                                {item.transport.type} - {item.transport.duration}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={(event) => handleDragEnd(event, day)}
+                    >
+                      <SortableContext
+                        items={itinerary[day].map((item) => item.place)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {itinerary[day].map((item, idx) => (
+                          <SortableItem key={idx} id={item.place} {...item} />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
                   ) : (
-                    <p className="text-gray-500 italic p-4 text-center">No itinerary items for this day</p>
+                    <p className="text-gray-500 italic p-4 text-center">
+                      No itinerary items for this day
+                    </p>
                   )}
                 </div>
               </div>
@@ -60,13 +131,15 @@ function Itinerary() {
           )}
         </div>
 
-        {/* Right side - Map */}
-        <div className="w-full md:w-1/2 h-96 md:h-full bg-blue-100 rounded-lg">
-          <img
-            src="/api/placeholder/800/600"
-            alt="Barcelona Map"
-            className="w-full h-full object-cover rounded-lg"
-          />
+        {/* Right Side */}
+        <div className="w-full md:w-1/2 h-screen bg-blue-100 flex items-center justify-center overflow-hidden">
+          <div className="w-full h-full">
+            <img
+              src="/api/placeholder/800/600"
+              alt="Barcelona Map"
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </div>
         </div>
       </div>
     </PageTemplate>
