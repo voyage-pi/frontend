@@ -16,7 +16,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import PageTemplate from "../components/PageTemplate";
 
-const SortableItem = ({ id, place, time, transport }) => {
+const SortableItem = ({ id, place, time, transport, image }) => {
   const { attributes, listeners, setNodeRef, transform } = useSortable({ id });
 
   const style = {
@@ -34,13 +34,18 @@ const SortableItem = ({ id, place, time, transport }) => {
     >
       <div className="flex items-start">
         <img
-          src="/api/placeholder/80/80"
+          src={image}
           alt={place}
-          className="w-20 h-20 object-cover rounded mr-4"
+          className="w-24 h-24 object-cover rounded mr-4"
         />
         <div className="flex-1">
           <h3 className="font-semibold">{place}</h3>
           <p className="text-sm text-gray-500">{time}</p>
+          {transport && (
+            <p className="text-xs text-gray-400">
+              {transport.type} - {transport.duration}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -86,7 +91,7 @@ function Itinerary() {
   return (
     <PageTemplate>
       <div className="flex flex-col md:flex-row h-screen">
-        {/* Left Side */}
+        {/* Left Side - Itinerary Details */}
         <div className="w-full md:w-1/2 pr-4 overflow-y-auto h-screen p-4">
           <h1 className="text-2xl font-bold mb-4">Barcelona</h1>
 
@@ -116,7 +121,14 @@ function Itinerary() {
                         strategy={verticalListSortingStrategy}
                       >
                         {itinerary[day].map((item, idx) => (
-                          <SortableItem key={idx} id={item.place} {...item} />
+                          <SortableItem
+                            key={idx}
+                            id={item.place}
+                            place={item.place}
+                            time={item.time}
+                            transport={item.transport}
+                            image={item.image} 
+                          />
                         ))}
                       </SortableContext>
                     </DndContext>
@@ -131,7 +143,7 @@ function Itinerary() {
           )}
         </div>
 
-        {/* Right Side */}
+        {/* Right Side - Full Screen Map (No Scroll) */}
         <div className="w-full md:w-1/2 h-screen bg-blue-100 flex items-center justify-center overflow-hidden">
           <div className="w-full h-full">
             <img
