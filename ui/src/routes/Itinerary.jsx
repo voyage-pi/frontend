@@ -30,7 +30,7 @@ const SortableItem = ({ id, place, time, transport, image }) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="border rounded-lg p-3 mb-4 cursor-grab bg-white shadow-md"
+      className="shadow-primary/20 rounded-lg p-3 mb-4 cursor-grab bg-white shadow-md"
     >
       <div className="flex items-start">
         <img
