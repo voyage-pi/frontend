@@ -74,15 +74,15 @@ function Itinerary() {
                 <div className="w-full md:w-1/2 pr-4 overflow-hidden">
                     <div className="flex flex-row  mb-4 items-center gap-5">
                         <h1 className="text-3xl font-bold">{itinerary.title}</h1>
-                        <div className="btn btn-md btn-primary rounded-full btn-circle shadow-md">
+                        <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
                             <CiSaveDown1 className="text-white text-2xl" />
                         </div>
-                        <div className="btn btn-md btn-white rounded-full btn-circle shadow-md">
+                        <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
                             <TfiReload className="text-primary text-xl" />
                         </div>
                     </div>
 
-                    <div className="flex flex-row gap-x-5">
+                    <div className="flex flex-row gap-x-5 pb-5">
                         <div className="rounded-full border-1 border-secondary/10">
                             <div className="flex flex-row items-center gap-x-3 m-1">
                                 <GoClock className="text-primary ml-1" />
@@ -126,14 +126,14 @@ function Itinerary() {
                         Object.keys(itinerary.calendar).map((day, index) => (
                             <div
                                 key={index}
-                                className="collapse collapse-arrow bg-base-100 mb-2"
+                                className="collapse collapse-arrow bg-base-100 mb-2 -ml-4"
                             >
                                 <input
                                     type="radio"
                                     name="itinerary-accordion"
                                     defaultChecked={index === 0}
                                 />
-                                <div className="collapse-title font-semibold">{day}</div>
+                                <div className="collapse-title font-semibold text-xl">{day}</div>
                                 <div className="collapse-content">
                                     {itinerary.calendar[day].length > 0 ? (
                                         <DndContext
