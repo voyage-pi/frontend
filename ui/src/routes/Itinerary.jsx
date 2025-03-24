@@ -69,7 +69,7 @@ function Itinerary() {
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row h-screen p-10 -mt-10">
+            <div className="flex flex-col md:flex-row h-min-screen p-10 -mt-10">
                 {/* Left Side */}
                 <div className="w-full md:w-1/2 pr-4 overflow-hidden">
                     <div className="flex flex-row  mb-4 items-center gap-5">
@@ -126,7 +126,7 @@ function Itinerary() {
                         Object.keys(itinerary.calendar).map((day, index) => (
                             <div
                                 key={index}
-                                className="collapse collapse-arrow bg-base-100 mb-2 -ml-4"
+                                className="collapse collapse-arrow bg-base-100 mb-6 -ml-4"
                             >
                                 <input
                                     type="radio"
@@ -169,14 +169,8 @@ function Itinerary() {
                 </div>
 
                 {/* Right Side */}
-                <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden">
-                    <div className="w-full h-full">
-                        <img
-                            src="/api/placeholder/800/600"
-                            alt="Barcelona Map"
-                            className="w-full h-full object-cover rounded-lg"
-                        />
-                    </div>
+                <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
+                    [Map Placeholder]
                 </div>
             </div>
         </PageTemplate>
