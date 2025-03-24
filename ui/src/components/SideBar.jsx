@@ -15,7 +15,7 @@ import userData from "../../public/user.json"
 
 function SideBar({ onToggle }) {
     const location = useLocation();
-    const isFormsPath = location.pathname === "/forms";
+    const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     
     const [isExpanded, setIsExpanded] = useState(() => {
         const storedState = JSON.parse(localStorage.getItem("sidebarState"));

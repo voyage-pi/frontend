@@ -1,8 +1,14 @@
 {
+  "title": "Barcelona",
+  "totalDays": 2,
+  "totalPeople": 1,
+  "budget": 321,
+  "location": "Barcelona",
+  "calendar": {
     "Day 1": [
       {
         "place": "La Sagrada Família",
-        "time": "9:00 AM - 12:00 AM",
+        "time": "9:00 AM - 12:00 PM",
         "image": "https://i.pinimg.com/736x/af/47/b9/af47b93ad5bd3ecced23e617c55135aa.jpg",
         "transport": null
       },
@@ -36,4 +42,4 @@
     ],
     "Day 2": []
   }
-  
+}

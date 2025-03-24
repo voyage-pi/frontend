@@ -1,124 +1,177 @@
 import React, { useState, useEffect } from "react";
 import {
-  DndContext,
-  closestCenter,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  KeyboardSensor,
+    DndContext,
+    closestCenter,
+    useSensor,
+    useSensors,
+    PointerSensor,
+    KeyboardSensor,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import PageTemplate from "../components/PageTemplate";
-import SortableItem from "../components/SortableItem"; 
+import SortableItem from "../components/SortableItem";
+import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
+import { GoPeople, GoClock } from "react-icons/go";
+import { TbPigMoney } from "react-icons/tb";
+import { TbMoneybag } from "react-icons/tb";
+import { IoLocationOutline } from "react-icons/io5";
+
 
 function Itinerary() {
-  const [itinerary, setItinerary] = useState({});
-  const [loading, setLoading] = useState(true);
+    const [itinerary, setItinerary] = useState({});
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("/itinerary.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setItinerary(data);
-        setLoading(false);
-      })
-      .catch((error) => console.error("Error loading itinerary:", error));
-  }, []);
+    useEffect(() => {
+        fetch("/itinerary.json")
+            .then((response) => response.json())
+            .then((data) => {
+                setItinerary(data);
+                setLoading(false);
+            })
+            .catch((error) => console.error("Error loading itinerary:", error));
+    }, []);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
-  );
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor)
+    );
 
-  const handleDragEnd = (event, day) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    const handleDragEnd = (event, day) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
 
-    setItinerary((prevItinerary) => {
-      const items = prevItinerary[day];
-      const oldIndex = items.findIndex((item) => item.place === active.id);
-      const newIndex = items.findIndex((item) => item.place === over.id);
-      const newOrder = arrayMove(items, oldIndex, newIndex);
+        setItinerary((prevItinerary) => {
+            const items = prevItinerary.calendar[day];
+            const oldIndex = items.findIndex((item) => item.place === active.id);
+            const newIndex = items.findIndex((item) => item.place === over.id);
+            const newOrder = arrayMove(items, oldIndex, newIndex);
 
-      return {
-        ...prevItinerary,
-        [day]: newOrder,
-      };
-    });
-  };
+            return {
+                ...prevItinerary,
+                calendar: {
+                    ...prevItinerary.calendar,
+                    [day]: newOrder,
+                },
+            };
+        });
+    };
 
-  return (
-    <PageTemplate>
-      <div className="flex flex-col md:flex-row h-screen">
-        {/* Left Side - Itinerary Details */}
-        <div className="w-full md:w-1/2 pr-4 overflow-y-auto h-screen p-4">
-          <h1 className="text-2xl font-bold mb-4">Barcelona</h1>
-
-          {loading ? (
-            <p>Loading itinerary...</p>
-          ) : (
-            Object.keys(itinerary).map((day, index) => (
-              <div
-                key={index}
-                className="collapse collapse-arrow bg-base-100 mb-2"
-              >
-                <input
-                  type="radio"
-                  name="itinerary-accordion"
-                  defaultChecked={index === 0}
-                />
-                <div className="collapse-title font-semibold">{day}</div>
-                <div className="collapse-content">
-                  {itinerary[day].length > 0 ? (
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={(event) => handleDragEnd(event, day)}
-                    >
-                      <SortableContext
-                        items={itinerary[day].map((item) => item.place)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        {itinerary[day].map((item, idx) => (
-                          <SortableItem
-                            key={idx}
-                            id={item.place}
-                            place={item.place}
-                            time={item.time}
-                            transport={item.transport}
-                            image={item.image} 
-                          />
-                        ))}
-                      </SortableContext>
-                    </DndContext>
-                  ) : (
-                    <p className="text-gray-500 italic p-4 text-center">
-                      No itinerary items for this day
-                    </p>
-                  )}
+    return (
+        <PageTemplate>
+            <div className="flex justify-center items-center flex-col w-full px-4 -mt-5">
+                <div className="mb-4">
+                    <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+            </div>
 
-        {/* Right Side - Full Screen Map (No Scroll) */}
-        <div className="w-full md:w-1/2 h-screen bg-blue-100 flex items-center justify-center overflow-hidden">
-          <div className="w-full h-full">
-            <img
-              src="/api/placeholder/800/600"
-              alt="Barcelona Map"
-              className="w-full h-full object-cover rounded-lg"
-            />
-          </div>
-        </div>
-      </div>
-    </PageTemplate>
-  );
+            <div className="flex flex-col md:flex-row h-screen p-10 -mt-10">
+                {/* Left Side */}
+                <div className="w-full md:w-1/2 pr-4 overflow-hidden">
+                    <h1 className="text-2xl font-bold mb-4">{itinerary.title}</h1>
+
+                    <div className="flex flex-row gap-x-5">
+                        <div className="rounded-full border-1 border-secondary/10">
+                            <div className="flex flex-row items-center gap-x-3 m-1">
+                                <GoClock className="text-primary ml-1" />
+                                <div className="mr-2">
+                                    <span className="font-bold"> {itinerary.totalDays} </span>
+                                    {itinerary.totalDays === 1 ? 'day' : 'days'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-full border-1 border-secondary/10">
+                            <div className="flex flex-row items-center gap-x-3 m-1">
+                                <GoPeople className="text-primary ml-1" />
+                                <div className="mr-2">
+                                    <span className="font-bold"> {itinerary.totalPeople} </span>
+                                    {itinerary.totalPeople === 1 ? 'person' : 'people'}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="rounded-full border-1 border-secondary/10">
+                            <div className="flex flex-row items-center gap-x-3 m-1">
+                                <TbMoneybag className="text-primary ml-1" />
+                                <div className="mr-2">
+                                    <span className="font-bold"> {itinerary.budget} </span> €
+                                </div>
+                            </div>
+                        </div>
+                        <div className="rounded-full border-1 border-secondary/10">
+                            <div className="flex flex-row items-center gap-x-3 m-1">
+                                <IoLocationOutline className="text-primary ml-1" />
+                                <div className="mr-2">
+                                    <span > {itinerary.location} </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {loading ? (
+                        <p>Loading itinerary...</p>
+                    ) : (
+                        Object.keys(itinerary.calendar).map((day, index) => (
+                            <div
+                                key={index}
+                                className="collapse collapse-arrow bg-base-100 mb-2"
+                            >
+                                <input
+                                    type="radio"
+                                    name="itinerary-accordion"
+                                    defaultChecked={index === 0}
+                                />
+                                <div className="collapse-title font-semibold">{day}</div>
+                                <div className="collapse-content">
+                                    {itinerary.calendar[day].length > 0 ? (
+                                        <DndContext
+                                            sensors={sensors}
+                                            collisionDetection={closestCenter}
+                                            onDragEnd={(event) => handleDragEnd(event, day)}
+                                        >
+                                            <SortableContext
+                                                items={itinerary.calendar[day].map((item) => item.place)}
+                                                strategy={verticalListSortingStrategy}
+                                            >
+                                                {itinerary.calendar[day].map((item, idx) => (
+                                                    <SortableItem
+                                                        key={idx}
+                                                        id={item.place}
+                                                        place={item.place}
+                                                        time={item.time}
+                                                        transport={item.transport}
+                                                        image={item.image}
+                                                    />
+                                                ))}
+                                            </SortableContext>
+                                        </DndContext>
+                                    ) : (
+                                        <p className="text-gray-500 italic p-4 text-center">
+                                            No itinerary items for this day
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Right Side */}
+                <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden">
+                    <div className="w-full h-full">
+                        <img
+                            src="/api/placeholder/800/600"
+                            alt="Barcelona Map"
+                            className="w-full h-full object-cover rounded-lg"
+                        />
+                    </div>
+                </div>
+            </div>
+        </PageTemplate>
+    );
 }
 
 export default Itinerary;
