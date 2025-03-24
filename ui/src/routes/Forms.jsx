@@ -5,6 +5,7 @@ import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json" 
+import { NavLink } from "react-router-dom"
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -95,7 +96,9 @@ function Forms() {
                   Next →
                 </button>
               ) : (
-                <div />
+                <NavLink className="btn btn-primary" to="/itinerary"> 
+                  Finish
+                </NavLink>
               )}
             </div>
           </div>
