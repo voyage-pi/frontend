@@ -16,9 +16,10 @@ import PageTemplate from "../components/PageTemplate";
 import SortableItem from "../components/SortableItem";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { GoPeople, GoClock } from "react-icons/go";
-import { TbPigMoney } from "react-icons/tb";
 import { TbMoneybag } from "react-icons/tb";
 import { IoLocationOutline } from "react-icons/io5";
+import { CiSaveDown1 } from "react-icons/ci";
+import { TfiReload } from "react-icons/tfi";
 
 
 function Itinerary() {
@@ -71,7 +72,15 @@ function Itinerary() {
             <div className="flex flex-col md:flex-row h-screen p-10 -mt-10">
                 {/* Left Side */}
                 <div className="w-full md:w-1/2 pr-4 overflow-hidden">
-                    <h1 className="text-2xl font-bold mb-4">{itinerary.title}</h1>
+                    <div className="flex flex-row  mb-4 items-center gap-5">
+                        <h1 className="text-3xl font-bold">{itinerary.title}</h1>
+                        <div className="btn btn-md btn-primary rounded-full btn-circle shadow-md">
+                            <CiSaveDown1 className="text-white text-2xl" />
+                        </div>
+                        <div className="btn btn-md btn-white rounded-full btn-circle shadow-md">
+                            <TfiReload className="text-primary text-xl" />
+                        </div>
+                    </div>
 
                     <div className="flex flex-row gap-x-5">
                         <div className="rounded-full border-1 border-secondary/10">
