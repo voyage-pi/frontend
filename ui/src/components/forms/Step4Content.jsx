@@ -59,6 +59,7 @@ const Step4Content = () => {
     if (startCalendarRef.current) {
       startCalendarRef.current.addEventListener('change', (e) => {
         setStartDate(e.target.value);
+        localStorage.setItem('Start Date', e.target.value);
         if (startPopoverRef.current) {
           startPopoverRef.current.hidePopover();
         }
@@ -68,6 +69,7 @@ const Step4Content = () => {
     if (endCalendarRef.current) {
       endCalendarRef.current.addEventListener('change', (e) => {
         setEndDate(e.target.value);
+        localStorage.setItem('End Date', e.target.value);
         if (endPopoverRef.current) {
           endPopoverRef.current.hidePopover();
         }
@@ -247,7 +249,10 @@ const Step4Content = () => {
               min="0"
               max="2500"
               value={budget}
-              onChange={(e) => setBudget(parseInt(e.target.value))}
+              onChange={(e) => {
+                setBudget(parseInt(e.target.value));
+                localStorage.setItem('Budget', e.target.value);
+              }}
               className="range range-error range-sm"
             />
 

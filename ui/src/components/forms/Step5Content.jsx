@@ -1,68 +1,81 @@
-import { useState } from "react"
-import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6"
-import Step5ContentPP from "./Step5ContentPP"
+import { useState, useEffect } from "react";
+import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6";
+import Step5ContentPP from "./Step5ContentPP";
+import FormCard from "./FormCard";
 
-function Step5Content({
-  subQuestionIndex,
-  totalSubQuestions,
-  answers,
-  onRatingSelect
-}) {
-  const [showNewPreferences, setShowNewPreferences] = useState(false)
+function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect,}) {
+  const [showNewPreferences, setShowNewPreferences] = useState(false);
+
+  useEffect(() => {
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings"));
+    if (savedRatings) {
+      const currentRating = savedRatings[subQuestionIndex];
+      if (currentRating) {
+        setShowNewPreferences(true);
+      }
+    }
+  }, []);
 
   const handleNewPreferencesClick = () => {
-    setShowNewPreferences(true)
-  }
+    setShowNewPreferences(true);
+    localStorage.setItem("Preferences Profile", "New");
+  };
+
+  const handleRatingSelect = (rating) => {
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    savedRatings[subQuestionIndex] = rating; // Set the rating for the current question
+    localStorage.setItem("userRatings", JSON.stringify(savedRatings)); // Save the updated array
+
+    if (onRatingSelect) {
+      onRatingSelect(rating); 
+    }
+  };
 
   if (showNewPreferences) {
-    const currentQuestion = answers[subQuestionIndex]
+    const currentQuestion = answers[subQuestionIndex];
     return (
       <div className="p-6">
         <Step5ContentPP
           currentQuestion={currentQuestion}
           subQuestionIndex={subQuestionIndex}
           totalSubQuestions={totalSubQuestions}
-          onRatingSelect={onRatingSelect}
+          onRatingSelect={handleRatingSelect} // Pass the new handler
         />
       </div>
-    )
+    );
   }
+
+  const cardData = [
+    {
+      id: 'reuse',
+      icon: FaRecycle,
+      title: 'Reuse Preferences Profile',
+    },
+    {
+      id: 'new',
+      icon: FaFileCirclePlus,
+      title: 'New Preferences Profile',
+      onClick: handleNewPreferencesClick,
+    },
+  ];
 
   return (
     <div className="text-center p-6 -mb-10">
       <div className="flex justify-center space-x-40 pt-9">
-
-        {/* Reuse Preferences Card */}
-        <div className="card bg-white rounded-lg p-6 w-80 h-100 items-center justify-center shadow-[0px_0px_1px_0px] transform transition-transform duration-200 hover:scale-105">
-          <div className="absolute top-5 right-5 text-primary/90">
-            <FaCircleInfo size={25} />
-          </div>
-          <div className="flex justify-center mb-4">
-            <FaRecycle size={100} className="text-primary" />
-          </div>
-          <h3 className="text-2xl font-semibold text-primary">
-            Reuse Preferences <br /> Profile
-          </h3>
-        </div>
-
-        {/* New Preferences Card */}
-        <div
-          className="card bg-white rounded-lg p-6 w-80 items-center justify-center shadow-[0px_0px_1px_0px] transform transition-transform duration-200 hover:scale-105 cursor-pointer"
-          onClick={handleNewPreferencesClick}
-        >
-          <div className="absolute top-5 right-5 text-primary/90">
-            <FaCircleInfo size={25} />
-          </div>
-          <div className="flex justify-center mb-4">
-            <FaFileCirclePlus size={100} className="text-primary" />
-          </div>
-          <h3 className="text-2xl font-semibold text-primary">
-            New Preferences <br /> Profile
-          </h3>
-        </div>
+        {cardData.map((card) => (
+          <FormCard
+            key={card.id}
+            icon={card.icon}
+            title={card.title}
+            selected={false} // No selection needed here
+            onClick={card.onClick || (() => { })} // Handle click if needed
+            iconSize={100}
+            infoSize={25}
+          />
+        ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default Step5Content
+export default Step5Content;
