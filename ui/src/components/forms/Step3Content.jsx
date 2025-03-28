@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaSistrix } from 'react-icons/fa6';
 
 const Step3Content = () => {
   const [selectedLocation, setSelectedLocation] = useState('Barcelona');
+
+  const handleSelectLocation = (location) => {
+    setSelectedLocation(location);
+    localStorage.setItem('Location', location);
+  };
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('Location');
+    if (savedLocation) {
+      setSelectedLocation(savedLocation); 
+    }
+  }, []);
 
   const locations = [
     { id: 1, name: 'Barcelona' },
@@ -38,7 +50,7 @@ const Step3Content = () => {
                 key={location.id}
                 className={`flex items-center p-3 rounded-lg text-lg cursor-pointer ${location.name === selectedLocation ? 'bg-primary text-white' : 'bg-gray-50'
                   }`}
-                onClick={() => setSelectedLocation(location.name)}
+                onClick={() => handleSelectLocation(location.name)}
               >
                 <FaMapMarkerAlt className={`mr-3 ${location.name === selectedLocation ? 'text-white' : 'text-primary'}`} />
                 <span>{location.name}</span>
