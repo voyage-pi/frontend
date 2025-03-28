@@ -39,7 +39,7 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
           currentQuestion={currentQuestion}
           subQuestionIndex={subQuestionIndex}
           totalSubQuestions={totalSubQuestions}
-          onRatingSelect={handleRatingSelect} // Pass the new handler
+          onRatingSelect={handleRatingSelect} 
         />
       </div>
     );

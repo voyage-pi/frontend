@@ -17,19 +17,19 @@ const Step2Content = () => {
       id: 'place',
       icon: FaMapMarkerAlt,
       title: 'Visit Place',
-      iconInBox: true,  // Specify that the icon should be inside a box
+      iconInBox: true,  
     },
     {
       id: 'road',
       icon: FaRoad,
       title: 'Road Trip',
-      iconInBox: true,  // Specify that the icon should be inside a box
+      iconInBox: true,  
     },
     {
       id: 'zone',
       icon: PiMapPinAreaFill,
       title: 'Zone Trip',
-      iconInBox: true,  // Specify that the icon should be inside a box
+      iconInBox: true,
     },
   ];
 
@@ -46,7 +46,7 @@ const Step2Content = () => {
             onClick={() => handleCardClick(card.id)}
             infoSize={20}
             iconSize={32}
-            iconInBox={card.iconInBox}  // Pass iconInBox prop
+            iconInBox={card.iconInBox}  
           />
         ))}
       </div>
