@@ -32,7 +32,7 @@ const Step2Content = () => {
       icon: PiMapPinAreaFill,
       title: 'Zone Trip',
       iconInBox: true,
-      text: "Ideal for exploring everything within a specific radius of your current location. Perfect for layovers, short stops, or when you have limited time in an area. Simply set your current position and specify how far you're willing to travel, and discover all the attractions and experiences available nearby. Great for making the most of unexpected free time or exploring your immediate surroundings.",
+      text: "Ideal for exploring everything within a specific radius of your current location. Simply set your current position and specify how far you're willing to travel, and discover all the attractions and experiences available nearby. Great for making the most of unexpected free time or exploring your immediate surroundings.",
     },
   ];
 
