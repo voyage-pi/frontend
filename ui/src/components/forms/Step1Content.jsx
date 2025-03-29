@@ -15,11 +15,13 @@ const Step1Content = () => {
       id: 'individual',
       icon: FaUser,
       title: 'Individual Trip',
+      text: "blablabla1",
     },
     {
       id: 'group',
       icon: FaUserGroup,
       title: 'Group Trip',
+      text: "blablabla2",
     },
   ];
 
@@ -33,6 +35,8 @@ const Step1Content = () => {
             title={card.title}
             selected={selectedCard === card.id}
             onClick={() => handleCardClick(card.id)}
+            text={card.text}
+            id={card.id}
           />
         ))}
       </div>
