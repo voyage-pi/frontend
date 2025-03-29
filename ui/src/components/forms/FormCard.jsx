@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaCircleInfo } from 'react-icons/fa6';
+import InformationalModal from '../InformationalModal';
 
 const Card = ({ 
   icon: Icon, 
@@ -8,16 +9,16 @@ const Card = ({
   onClick, 
   infoSize = 20, 
   iconSize = 100, 
-  iconInBox = false 
+  iconInBox = false,
+  text,
+  id
 }) => {
   return (
     <div
       className={`card bg-white rounded-lg p-6 w-80 h-100 items-center justify-center shadow-[0px_0px_1px_0px] transform transition-transform duration-200 hover:scale-105 ${selected ? 'border-1 border-primary' : ''}`}
       onClick={onClick}
     >
-      <div className="absolute top-5 right-5 text-primary/90">
-        <FaCircleInfo size={infoSize} />
-      </div>
+      <InformationalModal infoSize={infoSize} title={title} text={text} id={id} />
       <div className="flex justify-center mb-4">
         {/* Conditionally render icon in box or not */}
         {iconInBox ? (
