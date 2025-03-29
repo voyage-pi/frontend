@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "cally";
 import VoyageIcon from "../../assets/voyage-logo.png";
+import RangeSlider from "../RangeSlider";
 
 const Step4Content = () => {
   const today = new Date().toISOString().split('T')[0];
@@ -110,6 +111,12 @@ const Step4Content = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Handler for budget changes
+  const handleBudgetChange = (newBudget) => {
+    setBudget(newBudget);
+    localStorage.setItem('Budget', newBudget);
+  };
 
   return (
     <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
@@ -241,26 +248,16 @@ const Step4Content = () => {
             that you would like to spend
           </p>
 
-          <div className="text-center">
-            <p className="text-error text-5xl font-bold mb-6">{budget}€</p>
-
-            <input
-              type="range"
-              min="0"
-              max="2500"
-              value={budget}
-              onChange={(e) => {
-                setBudget(parseInt(e.target.value));
-                localStorage.setItem('Budget', e.target.value);
-              }}
-              className="range range-error range-sm"
-            />
-
-            <div className="flex justify-between px-2 text-sm">
-              <span>0</span>
-              <span>2500+</span>
-            </div>
-          </div>
+          <RangeSlider 
+            value={budget}
+            onChange={handleBudgetChange}
+            min={0}
+            max={2500}
+            step={1}
+            currency="€"
+            rangeClassName="range range-error range-sm"
+            valueClassName="text-error text-5xl font-bold mb-6"
+          />
         </div>
       </div>
     </div>
