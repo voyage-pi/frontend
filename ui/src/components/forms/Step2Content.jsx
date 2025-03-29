@@ -17,19 +17,22 @@ const Step2Content = () => {
       id: 'place',
       icon: FaMapMarkerAlt,
       title: 'Visit Place',
-      iconInBox: true,  
+      iconInBox: true,
+      text: "Perfect when you want to explore a specific city or destination. Ideal for travelers who want to immerse themselves in one destination, whether it's a weekend city break or a longer stay to truly get to know a place.",
     },
     {
       id: 'road',
       icon: FaRoad,
       title: 'Road Trip',
-      iconInBox: true,  
+      iconInBox: true,
+      text: "An adventure that takes you from one destination to another, with the journey being just as important as the destinations. Perfect for travelers who enjoy the freedom of the open road and the excitement of unexpected discoveries along your route.",
     },
     {
       id: 'zone',
       icon: PiMapPinAreaFill,
       title: 'Zone Trip',
       iconInBox: true,
+      text: "Ideal for exploring everything within a specific radius of your current location. Perfect for layovers, short stops, or when you have limited time in an area. Simply set your current position and specify how far you're willing to travel, and discover all the attractions and experiences available nearby. Great for making the most of unexpected free time or exploring your immediate surroundings.",
     },
   ];
 
@@ -46,7 +49,9 @@ const Step2Content = () => {
             onClick={() => handleCardClick(card.id)}
             infoSize={20}
             iconSize={32}
-            iconInBox={card.iconInBox}  
+            iconInBox={card.iconInBox}
+            text={card.text}
+            id={card.id}
           />
         ))}
       </div>

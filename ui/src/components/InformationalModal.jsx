@@ -7,7 +7,7 @@ function InformationalModal({ infoSize, title, text, id }) {
     return (
         <div>
             <div 
-                className="p-2 absolute top-3 right-3 text-primary/90 btn btn-ghost hover:bg-transparent hover:border-0 hover:scale-110 hover:shadow-none transition-transform duration-200" 
+                className="p-2 absolute top-3 right-3 text-primary/90 btn btn-ghost hover:bg-transparent hover:border-0 hover:scale-120 hover:shadow-none transition-transform duration-200" 
                 onClick={(e) => {
                     e.stopPropagation(); 
                     document.getElementById(modalId).showModal();
