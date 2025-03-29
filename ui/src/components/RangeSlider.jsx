@@ -3,14 +3,14 @@ import React from "react";
 const RangeSlider = ({
   value,
   onChange,
-  min = 0,
-  max = 2500,
-  step = 1,
-  currency = "€",
-  rangeClassName = "range range-error range-sm",
-  valueClassName = "text-error text-5xl font-bold mb-6",
+  min, 
+  max,
+  step,
+  currency,
+  rangeClassName,
+  valueClassName ,
   showLabels = true,
-  labelClassName = "text-sm",
+  labelClassName ,
   onChangeComplete = null,
   variant = "default", 
 }) => {
@@ -26,11 +26,11 @@ const RangeSlider = ({
   if (variant === "compact") {
     return (
       <div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Radius (m):</span>
-          <span className="text-pink-500 font-medium">{value}</span>
+        <div className="flex items-center gap-2 -mb-1">
+          <span className="text-md font-medium">Radius (m):</span>
+          <span className="text-primary font-medium">{value}</span>
         </div>
-        <div className="mt-1">
+        <div className="mb-3">
           <input
             type="range"
             min={min}
@@ -38,7 +38,7 @@ const RangeSlider = ({
             step={step}
             value={value}
             onChange={handleChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-500"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
             style={{
               background: `linear-gradient(to right, #ff4081 0%, #ff4081 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
             }}

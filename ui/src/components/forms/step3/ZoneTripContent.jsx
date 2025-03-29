@@ -37,7 +37,7 @@ const ZoneTripContent = () => {
                 {/* Left Side - Location Selection */}
                 <div className="flex-1">
                     <h2 className="text-3xl mb-10 text-center">
-                        Choose a <span className="text-primary">location</span> to go to!
+                        Choose an <span className="text-primary">area</span> to go to!
                     </h2>
                     {/* Search Box */}
                     <div className="relative mb-4">
@@ -58,8 +58,8 @@ const ZoneTripContent = () => {
                         max={2500}
                         step={1}
                         currency="€"
-                        rangeClassName="range range-error range-sm"
-                        valueClassName="text-error text-5xl font-bold mb-6"
+                        rangeClassName="range range-primary range-sm"
+                        valueClassName="text-primary text-5xl font-bold mb-6"
                         variant='compact'
                     />
 
