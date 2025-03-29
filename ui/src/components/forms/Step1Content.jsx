@@ -15,13 +15,13 @@ const Step1Content = () => {
       id: 'individual',
       icon: FaUser,
       title: 'Individual Trip',
-      text: "blablabla1",
+      text: "Are you a solo traveler looking for a personal experiences? This option allows you to customize your itinerary based on your specific preferences, schedule, and interests without needing to coordinate with others. Perfect for self-discovery, personal adventures, or business travelers seeking convenience.",
     },
     {
       id: 'group',
       icon: FaUserGroup,
       title: 'Group Trip',
-      text: "blablabla2",
+      text: "Ideal for traveling with friends, family, or colleagues. You'll be able to customize your itinerary to accommodate everyone's interests and needs, creating a collaborative travel experience that strengthens bonds and creates lasting memories together.",
     },
   ];
 
