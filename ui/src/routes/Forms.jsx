@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react"
 import PageTemplate from "../components/PageTemplate"
 import StepIndicator from "../components/StepIndicator"
@@ -15,6 +16,11 @@ function Forms() {
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
   const navigate = useNavigate()
+  
+  // Calculate progress percentage for progress bar
+  const progressPercentage = currentStep === 5 
+    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100) 
+    : 0;
 
   const handleNext = () => {
     if (currentStep < 5) {
@@ -112,7 +118,7 @@ function Forms() {
 
           <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
 
-          <div className="bg-white rounded-md shadow-primary shadow-[0px_0px_20px_-13px] p-6 w-7xl mx-auto my-4 mt-15">
+          <div className="relative bg-white rounded-md shadow-primary shadow-[0px_0px_20px_-13px] p-6 w-7xl mx-auto my-4 mt-15 overflow-hidden">
             <StepContent
               currentStep={currentStep}
               subQuestionIndex={subQuestionIndex}
@@ -145,6 +151,15 @@ function Forms() {
                 </button>
               )}
             </div>
+            
+            {currentStep === 5 && (
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-200">
+                <div 
+                  className="bg-primary h-full transition-all duration-300 ease-in-out" 
+                  style={{ width: `${progressPercentage}%` }}
+                ></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
