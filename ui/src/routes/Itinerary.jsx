@@ -61,32 +61,39 @@ function Itinerary() {
         });
     };
 
-    const myCenter = { lat: 40.4168, lng: -3.7038 };
+    const myCenter = { lat: 40.639183, lng: -8.654419 };
 
   const myPolylines = [
     {
-      path: [
-        { lat: 40.4168, lng: -3.7038 },
-        { lat: 40.4153, lng: -3.6844 },
+      polylines: [
+        {
+            polylineEncoded: "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC`Cj@dAVl@C~@UhI_D^MPMfB]r@?r@NxFvCjAf@~HzCzAx@n@d@V`@Xt@|@dDp@fFPhAnBfIn@fCBb@CTFPJDV`@\\fAn@fA~A`B|AvAOb@ILBRmAz@",
+            duration: 583,
+            distance: 4956
+        },
+        {
+            polylineEncoded: "aqyvFdo{s@lA{@JJLEBQTa@kDaDu@w@i@_A]gACo@@SIQKEUc@uCeLYcBk@sE[wAs@cCMWWa@w@k@sAs@qIaDcAg@oFqCs@Os@?cCb@_Bf@cGbCYLGHm@JY?{A]aDy@uJeCUM]WEWMKSDi@OgEwDgAy@{PmNKOkD_DIQCWOKQ@[IoC}Ba@u@ES@k@H]@KTYXKH?VNT\\Jh@?h@Id@{BvFMJs@|Ae@n@s@p@_@TYT_Bd@wFpA}@\\uMtGSBSCOJGVe@\\qNfHsB~@s@\\c@A]M{B{BI]QQa@CUFORCFo@t@AHwGhJaA|AGDe@dAA@MQGGkBcD",
+            duration: 551,
+            distance: 5180
+        },
       ],
       options: {
         strokeColor: "#FF0000",
         strokeOpacity: 0.8,
         strokeWeight: 4,
       },
-      duration: "10 minutes",
     },
   ];
 
   const myMarkers = [
     {
-      position: { lat: 40.4168, lng: -3.7038 },
+        position: { lat: 40.4168, lng: -3.7038 },
       title: "Marker 1",
     },
     {
       position: { lat: 40.4153, lng: -3.6844 },
       title: "Marker 2",
-    },
+    }
   ];
 
     return (
