@@ -24,7 +24,7 @@ const Step5ContentPP = ({
         {[1, 2, 3, 4, 5, 6, 7].map((rating) => (
           <div key={rating} className="flex flex-col items-center mx-5">
             <button
-              onClick={() => onRatingSelect(rating)} // Trigger the rating selection
+              onClick={() => onRatingSelect(rating)}
               className={`rounded-full border-2 border-primary/70 flex items-center justify-center transition-all duration-200 hover:bg-primary/20
                           ${rating === 1
                               ? "w-18 h-18"
