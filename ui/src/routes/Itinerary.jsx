@@ -20,7 +20,7 @@ import { TbMoneybag } from "react-icons/tb";
 import { IoLocationOutline } from "react-icons/io5";
 import { CiSaveDown1 } from "react-icons/ci";
 import { TfiReload } from "react-icons/tfi";
-
+import Map from "../components/Map"; 
 
 function Itinerary() {
     const [itinerary, setItinerary] = useState({});
@@ -170,7 +170,10 @@ function Itinerary() {
 
                 {/* Right Side */}
                 <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
-                    [Map Placeholder]
+                <Map
+                    containerElement={<div style={{ height: `400px` }} />}
+                    mapElement={<div style={{ height: `100%` }} />}
+                />
                 </div>
             </div>
         </PageTemplate>
