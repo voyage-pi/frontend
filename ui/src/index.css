@@ -1,28 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-@media (max-width: 640px) {
-  .sidebar-container {
-    width: 3.5rem !important;
-  }
-  
-  .sidebar-expanded {
-    width: 16rem !important;
-  }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
-  .sidebar-expanded {
-    width: 16rem !important;
-  }
-}
-
-@media (min-width: 1025px) {
-  .sidebar-expanded {
-    width: 16rem !important;
-  }
-}
-
 @plugin "daisyui/theme" {
 
   name: "main-theme";

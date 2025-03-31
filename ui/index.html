@@ -7,6 +7,29 @@
     <title>Vite + React</title>
     <link rel="stylesheet" href="/src/index.css" />
   </head>
+  <style>
+    #root {
+      transform-origin: top left;
+    }
+    
+    @media (min-width: 1601px) {
+      #root {
+        transform: scale(1);
+      }
+    }
+    
+    @media (min-width: 1201px) and (max-width: 1600px) {
+      #root {
+        transform: scale(0.9);
+      }
+    }
+    
+    @media (min-width: 801px) and (max-width: 1200px) {
+      #root {
+        transform: scale(0.8);
+      }
+    }
+  </style>
   <body data-theme="main-theme">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
