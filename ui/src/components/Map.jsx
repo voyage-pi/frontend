@@ -4,6 +4,7 @@ import {
   useJsApiLoader,
   Polyline,
   InfoWindow,
+  Marker,
 } from "@react-google-maps/api";
 
 const containerStyle = {
@@ -11,11 +12,11 @@ const containerStyle = {
   height: "500px",
 };
 
-
-const center = { lat: 40.4168, lng: -3.7038 }; // Madrid
-
-const MapWithRoutesApi = () => {
-  const [path, setPath] = useState(null);
+const MapWithRoutesApi = ({
+  center = { lat: 40.4168, lng: -3.7038 }, // default center if not passed
+  polylines = [],                        // expected to be an array of { path, options, ... }
+  markers = [],                          // expected to be an array of { position, title, icon, ... }
+}) => {
   const [infoWindowPosition, setInfoWindowPosition] = useState(null);
   const [duration, setDuration] = useState("");
   const mapRef = useRef(null);
@@ -27,99 +28,60 @@ const MapWithRoutesApi = () => {
     libraries: ["places", "geometry"],
   });
 
-  const fetchRoute = async () => {
-    const response = await fetch(
-      `https://routes.googleapis.com/directions/v2:computeRoutes`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": key,
-          "X-Goog-FieldMask":
-            "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs",
-        },
-        body: JSON.stringify({
-          origin: {
-            location: {
-              latLng: {
-                latitude: 40.4168,
-                longitude: -3.7038,
-              },
-            },
-          },
-          destination: {
-            location: {
-              latLng: {
-                latitude: 40.4153,
-                longitude: -3.6844,
-              },
-            },
-          },
-          travelMode: "DRIVE",
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    const encoded = data.routes?.[0]?.polyline?.encodedPolyline;
-    const durationSec = data.routes?.[0]?.duration;
-
-    if (encoded && window.google?.maps?.geometry?.encoding) {
-      const decodedPath = window.google.maps.geometry.encoding.decodePath(
-        encoded
-      );
-
-      setPath(decodedPath);
-
-      const durationInMin = durationSec
-        ? `${Math.round(parseInt(durationSec.replace("s", "")) / 60)} min`
-        : "";
-      setDuration(durationInMin);
-    }
-  };
-
-  const handlePolylineMouseOver = (e) => {
+  // Example mouse event handlers for polylines
+  const handlePolylineMouseOver = (e, polyline) => {
+    // e.latLng holds the coordinate where the mouse is over
     setInfoWindowPosition({
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     });
+
+    // If each polyline has some “duration” info in it, you could do:
+    // setDuration(polyline.duration);
   };
 
   const handlePolylineMouseOut = () => {
     setInfoWindowPosition(null);
+    setDuration("");
   };
 
   return isLoaded ? (
-    <>
-      <button onClick={fetchRoute}>Obter rota</button>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={14}
-        onLoad={(map) => (mapRef.current = map)}
-      >
-        {path && (
-          <Polyline
-            path={path}
-            options={{
-              strokeColor: "#FF0000",
-              strokeOpacity: 0.8,
-              strokeWeight: 4,
-            }}
-            onMouseOver={handlePolylineMouseOver}
-            onMouseOut={handlePolylineMouseOut}
-          />
-        )}
-        {infoWindowPosition && (
-          <InfoWindow position={infoWindowPosition}>
-            <div>
-              <strong>Duração:</strong> {duration}
-            </div>
-          </InfoWindow>
-        )}
-      </GoogleMap>
-    </>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={14}
+      onLoad={(map) => (mapRef.current = map)}
+    >
+      {/* Render all polylines passed in as props */}
+      {polylines.map((polyline, index) => (
+        <Polyline
+          key={index}
+          path={polyline.path}
+          options={polyline.options}
+          onMouseOver={(e) => handlePolylineMouseOver(e, polyline)}
+          onMouseOut={handlePolylineMouseOut}
+        />
+      ))}
+
+      {/* Render all markers passed in as props */}
+      {markers.map((marker, index) => (
+        <Marker
+          key={index}
+          position={marker.position}
+          title={marker.title}
+          icon={marker.icon}
+        />
+      ))}
+
+      {/* InfoWindow can show any polyline/marker info on hover or click */}
+      {infoWindowPosition && (
+        <InfoWindow position={infoWindowPosition} onCloseClick={handlePolylineMouseOut}>
+          <div>
+            <strong>Duração:</strong> {duration || "—"}
+          </div>
+        </InfoWindow>
+      )}
+    </GoogleMap>
   ) : (
     <p>Loading map...</p>
   );

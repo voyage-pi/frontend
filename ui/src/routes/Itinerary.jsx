@@ -61,6 +61,34 @@ function Itinerary() {
         });
     };
 
+    const myCenter = { lat: 40.4168, lng: -3.7038 };
+
+  const myPolylines = [
+    {
+      path: [
+        { lat: 40.4168, lng: -3.7038 },
+        { lat: 40.4153, lng: -3.6844 },
+      ],
+      options: {
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 4,
+      },
+      duration: "10 minutes",
+    },
+  ];
+
+  const myMarkers = [
+    {
+      position: { lat: 40.4168, lng: -3.7038 },
+      title: "Marker 1",
+    },
+    {
+      position: { lat: 40.4153, lng: -3.6844 },
+      title: "Marker 2",
+    },
+  ];
+
     return (
         <PageTemplate>
             <div className="flex justify-center items-center flex-col w-full px-4 -mt-5">
@@ -171,8 +199,9 @@ function Itinerary() {
                 {/* Right Side */}
                 <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
                 <Map
-                    containerElement={<div style={{ height: `400px` }} />}
-                    mapElement={<div style={{ height: `100%` }} />}
+                    center={myCenter}
+                    polylines={myPolylines}
+                    markers={myMarkers}
                 />
                 </div>
             </div>
