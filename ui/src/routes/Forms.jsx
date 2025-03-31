@@ -5,7 +5,8 @@ import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json" 
-import { NavLink } from "react-router-dom"
+import { Navigate, NavLink, useNavigate } from "react-router-dom"
+import axios from "axios"
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -13,6 +14,7 @@ function Forms() {
   const [answers, setAnswers] = useState([...questions]) 
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
+  const navigate = useNavigate()
 
   const handleNext = () => {
     if (currentStep < 5) {
@@ -58,6 +60,37 @@ function Forms() {
     })
   }
 
+  const handleFinish = async () => {
+    const formData = {
+      budget: localStorage.getItem("Budget"),
+      end_date: localStorage.getItem("End Date"),
+      start_date: localStorage.getItem("Start Date"),
+      location: localStorage.getItem("Location"),
+      PreferencesProfile: localStorage.getItem("Preferences Profile"),
+      TripDimension: localStorage.getItem("Trip Dimension"),
+      TripType: localStorage.getItem("Trip Type"),
+      user_tag: localStorage.getItem("user_tag") || "user1",
+      user_questions: localStorage.getItem("userRatings").reduce((acc, answer, index) => {
+        acc[`question${index + 1}`] = [{
+          id: `question${index + 1}`,
+          value: answer.answer,
+          typeQuestion: 'rating',
+        }];
+        return acc;
+      }, {}),
+
+    };
+
+    console.log(formData)
+    try {
+      const response = await axios.post("http://trip-management:8080/api/v1/submit_form/", formData)
+      console.log(response);
+      navigate("/itinerary")
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    }
+  };
+
   return (
     <PageTemplate>
       <div className="flex justify-center w-full">
@@ -96,9 +129,9 @@ function Forms() {
                   Next →
                 </button>
               ) : (
-                <NavLink className="btn btn-primary" to="/itinerary"> 
+                <button className="btn btn-primary" onClick={handleFinish}> 
                   Finish
-                </NavLink>
+                </button>
               )}
             </div>
           </div>
