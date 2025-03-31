@@ -5,8 +5,8 @@ import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json" 
-import { Navigate, NavLink, useNavigate } from "react-router-dom"
-import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import axiosInstance from "../utils/axiosInstance"
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -61,33 +61,44 @@ function Forms() {
   }
 
   const handleFinish = async () => {
-    const formData = {
-      budget: localStorage.getItem("Budget"),
-      end_date: localStorage.getItem("End Date"),
-      start_date: localStorage.getItem("Start Date"),
-      location: localStorage.getItem("Location"),
-      PreferencesProfile: localStorage.getItem("Preferences Profile"),
-      TripDimension: localStorage.getItem("Trip Dimension"),
-      TripType: localStorage.getItem("Trip Type"),
-      user_tag: localStorage.getItem("user_tag") || "user1",
-      user_questions: localStorage.getItem("userRatings").reduce((acc, answer, index) => {
-        acc[`question${index + 1}`] = [{
-          id: `question${index + 1}`,
-          value: answer.answer,
-          typeQuestion: 'rating',
-        }];
-        return acc;
-      }, {}),
+    const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
 
+    // Formatação da data para ISO string
+    const startDate = new Date(localStorage.getItem("Start Date"));
+    const formattedDate = startDate.toISOString();
+
+    const formData = {
+      budget: parseFloat(localStorage.getItem("Budget")) || 0,
+      dateStart: formattedDate, // Formato correto: "2025-04-15T09:00:00Z"
+      duration: parseInt(localStorage.getItem("Duration")) || 0,
+      tripType: localStorage.getItem("Trip Type") || "place",
+      users: ["user123"],
+      place: {
+        coordinates: {
+          latitude: 40.6399647406503,
+          longitude: -8.65505658124174
+        }
+      },
+      questions: {
+        "user123": userRatings.map((answer, index) => ({
+          question_id: index,
+          value: parseInt(answer.answer) || 0, // Garantindo que o valor seja número
+          type: "scale"
+        }))
+      }
     };
 
-    console.log(formData)
+    console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
+
     try {
-      const response = await axios.post("http://trip-management:8080/api/v1/submit_form/", formData)
-      console.log(response);
-      navigate("/itinerary")
+      const response = await axiosInstance.post("/trips", formData);
+      console.log("Response:", response.data);
+      navigate("/itinerary");
     } catch (error) {
-      console.error("Error submitting form:", error)
+      if (error.response?.data) {
+        console.error("Validation errors:", error.response.data);
+      }
+      console.error("Error submitting form:", error);
     }
   };
 

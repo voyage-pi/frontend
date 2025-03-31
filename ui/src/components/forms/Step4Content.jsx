@@ -23,6 +23,7 @@ const Step4Content = () => {
   };
 
   const days = calculateDays();
+  localStorage.setItem("Duration", days);
 
   const positionPopover = (buttonRef, popoverRef) => {
     if (buttonRef.current && popoverRef.current) {
