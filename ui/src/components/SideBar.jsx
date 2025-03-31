@@ -66,29 +66,29 @@ function SideBar({ onToggle }) {
     ]
 
     return (
-        <div className={`bg-base-300 min-h-screen fixed top-0 left-0 overflow-hidden transition-all duration-400 ease-in-out flex flex-col justify-between ${isExpanded ? "w-64" : "w-16"}`}>
+        <div className={`bg-base-300 min-h-screen fixed top-0 left-0 overflow-hidden transition-all duration-400 ease-in-out flex flex-col justify-between sidebar-container ${isExpanded ? "sidebar-expanded w-64" : "w-14"}`}>
             {/* Top section */}
             <div className="flex flex-col">
                 <div className="flex items-center justify-between">
                     {isExpanded ? (
                         <div
-                            className="m-8 mt-2 flex flex-row transition-all duration-400 ease-in-out"
+                            className="mx-[5%] my-[2%] flex flex-row transition-all duration-400 ease-in-out"
                         >
                             <div
-                                className="-ml-10 flex items-center transition-all duration-400 ease-in-out"
+                                className="-ml-[2.5rem] flex items-center transition-all duration-400 ease-in-out"
                             >
                                 <img 
                                     src={VoyageCompleteLogo} 
                                     alt="Voyage Logo" 
-                                    className="max-w-48 transition-all duration-400 ease-in-out" 
+                                    className="max-w-full w-48 transition-all duration-400 ease-in-out" 
                                 />
                             </div>
                             <button
                                 onClick={toggleSidebar}
-                                className="pl-7 text-primary hover:scale-105 transition-transform duration-200 ease-in-out"
+                                className="pl-[1.75rem] text-primary hover:scale-105 transition-transform duration-200 ease-in-out"
                                 disabled={isTransitioning}
                             >
-                                <FaChevronLeft size={16} />
+                                <FaChevronLeft size="1.4em" />
                             </button>
                         </div>
                     ) : (
@@ -99,10 +99,10 @@ function SideBar({ onToggle }) {
                             <img
                                 src={VoyageIconLogo}
                                 alt="Voyage Logo"
-                                className="group-hover:opacity-0 transition-opacity duration-300 max-w-14"
+                                className="group-hover:opacity-0 transition-opacity duration-300 w-full max-w-[3.5rem]"
                             />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-primary pt-3">
-                                <FaChevronRight size={17} />
+                                <FaChevronRight size="1.4em" />
                             </div>
                         </div>
                     )}
@@ -110,11 +110,11 @@ function SideBar({ onToggle }) {
 
                 {/* Profile section */}
                 <div
-                    className={`flex flex-col ${isExpanded ? "px-8 items-start" : "px-0 items-center"} mt-5 transition-all duration-400 ease-in-out`}
+                    className={`flex flex-col ${isExpanded ? "px-[7%] items-start" : "px-0 items-center"} mt-5 transition-all duration-400 ease-in-out`}
                 >
                     <div className="avatar">
                         <div
-                            className={`rounded-full border-2 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
+                            className={`rounded-full border-2 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-[7rem]" : "w-9 mt-5"}`}>
                             <img src={userData.image} alt={userData.name} />
                         </div>
                     </div>
@@ -132,8 +132,8 @@ function SideBar({ onToggle }) {
                             ))}
                         </div>
                         <NavLink to="/forms">
-                            <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
-                                <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-2">
+                            <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-[2.5rem] w-full flex items-center justify-start gap-[0.75rem] h-[2.5rem] shadow-sm transition-all duration-400 ease-in-out">
+                                <div className="bg-white rounded-full w-[1.75rem] h-[1.75rem] flex items-center justify-center -ml-[0.5rem]">
                                     <span className="text-primary text-2xl font-light">+</span>
                                 </div>
                                 <span className="text-primary-content text-lg font-bold">Create</span>
@@ -142,24 +142,24 @@ function SideBar({ onToggle }) {
                     </div>
 
                     {!isExpanded && (
-                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-51 w-7 h-7 flex items-center justify-center p-0 transition-all duration-400 ease-in-out">
+                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-[12.75rem] w-7 h-7 flex items-center justify-center p-0 transition-all duration-400 ease-in-out">
                             <span className="text-primary-content text-2xl font-light">+</span>
                         </button>
                     )}
 
                     {/* Navigation */}
-                    <nav className="w-full mt-10 transition-all duration-400 ease-in-out">
+                    <nav className="w-full mt-[2.5rem] transition-all duration-400 ease-in-out">
                         <ul className="w-full">
                             {menuItems.map(({ icon: Icon, label, count, path }, index) => (
                                 <li key={index} className="w-full">
                                     <NavLink
                                         to={path}
-                                        className={({ isActive }) =>`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}
+                                        className={({ isActive }) =>`flex w-full items-center gap-[0.75rem] py-2 rounded-full mb-5 h-[2.5rem] px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
-                                                    <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
+                                                <div className={`flex items-center justify-center w-[2rem] h-[2rem] rounded-full ${isExpanded ? "-ml-[0.25rem]" : "ml-[0.75rem] mt-[0.75rem]"} transition-all duration-400 ease-in-out`}>
+                                                    <Icon className={isActive ? "text-primary" : "text-secondary"} size="1.4em"/>
                                                 </div>
                                                 <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
                                                     <span className="text-lg whitespace-nowrap">{label}</span>
@@ -176,20 +176,20 @@ function SideBar({ onToggle }) {
             </div>
 
             {/* Bottom section */}
-            <div className={`mb-4 text-lg text-secondary ${isExpanded ? "mx-10" : "ml-3"} transition-all duration-400 ease-in-out`}>
+            <div className={`mb-4 text-lg text-secondary ${isExpanded ? "mx-[10%]" : "ml-[0.75rem]"} transition-all duration-400 ease-in-out`}>
                 <ul className="p-0">
                     <li>
-                        <a className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95">
-                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
-                                <FaShareNodes size={22} />
+                        <a className="flex items-center gap-[0.75rem] py-2 cursor-pointer hover:opacity-95">
+                            <div className={`flex items-center justify-center w-[2rem] h-[2rem] rounded-full ${isExpanded ? "-ml-[0.25rem]" : ""} transition-all duration-400 ease-in-out`}>
+                                <FaShareNodes size="1.4em" />
                             </div>
                             <span className={`transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>Share</span>
                         </a>
                     </li>
                     <li>
-                        <a className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95">
-                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
-                                <FaGear size={22}/>
+                        <a className="flex items-center gap-[0.75rem] py-2 cursor-pointer hover:opacity-95">
+                            <div className={`flex items-center justify-center w-[2rem] h-[2rem] rounded-full ${isExpanded ? "-ml-[0.25rem]" : ""} transition-all duration-400 ease-in-out`}>
+                                <FaGear size="1.4em"/>
                             </div>
                             <span className={`transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>Settings</span>
                         </a>
