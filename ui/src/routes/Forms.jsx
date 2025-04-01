@@ -6,7 +6,8 @@ import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json" 
-import { NavLink } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import axiosInstance from "../utils/axiosInstance"
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -14,6 +15,7 @@ function Forms() {
   const [answers, setAnswers] = useState([...questions]) 
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
+  const navigate = useNavigate()
   
   // Calculate progress percentage for progress bar
   const progressPercentage = currentStep === 5 
@@ -64,6 +66,48 @@ function Forms() {
     })
   }
 
+  const handleFinish = async () => {
+    const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+
+    // Formatação da data para ISO string
+    const startDate = new Date(localStorage.getItem("Start Date"));
+    const formattedDate = startDate.toISOString();
+
+    const formData = {
+      budget: parseFloat(localStorage.getItem("Budget")) || 0,
+      dateStart: formattedDate, // Formato correto: "2025-04-15T09:00:00Z"
+      duration: parseInt(localStorage.getItem("Duration")) || 0,
+      tripType: localStorage.getItem("Trip Type") || "place",
+      users: ["user123"],
+      place: {
+        coordinates: {
+          latitude: 40.6399647406503,
+          longitude: -8.65505658124174
+        }
+      },
+      questions: {
+        "user123": userRatings.map((answer, index) => ({
+          question_id: index,
+          value: parseInt(answer.answer) || 0, // Garantindo que o valor seja número
+          type: "scale"
+        }))
+      }
+    };
+
+    console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
+
+    try {
+      const response = await axiosInstance.post("/trips", formData);
+      console.log("Response:", response.data);
+      navigate("/itinerary");
+    } catch (error) {
+      if (error.response?.data) {
+        console.error("Validation errors:", error.response.data);
+      }
+      console.error("Error submitting form:", error);
+    }
+  };
+
   return (
     <PageTemplate>
       <div className="flex justify-center w-full">
@@ -102,9 +146,9 @@ function Forms() {
                   Next →
                 </button>
               ) : (
-                <NavLink className="btn btn-primary" to="/itinerary"> 
+                <button className="btn btn-primary" onClick={handleFinish}> 
                   Finish
-                </NavLink>
+                </button>
               )}
             </div>
             
