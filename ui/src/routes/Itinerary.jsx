@@ -65,16 +65,11 @@ function Itinerary() {
     {
       polylines: [
         {
-            polylineEncoded: "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC`Cj@dAVl@C~@UhI_D^MPMfB]r@?r@NxFvCjAf@~HzCzAx@n@d@V`@Xt@|@dDp@fFPhAnBfIn@fCBb@CTFPJDV`@\\fAn@fA~A`B|AvAOb@ILBRmAz@",
+            polylineEncoded: "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC",
             duration: 583,
             distance: 4956
         },
       ],
-      options: {
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.8,
-        strokeWeight: 4,
-      },
     },
   ];
 

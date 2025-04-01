@@ -59,7 +59,12 @@ const MapComponent = ({ polylines, markers }) => {
           <Polyline
             key={`polyline-${groupIndex}-${polylineIndex}`}
             path={path}
-            options={polylineGroup.options}
+            options={{
+              strokeColor: "#FE385C",
+              strokeOpacity: 1,
+              strokeWeight: 4,
+            }
+            }
           />
         );
       });
@@ -74,7 +79,7 @@ const MapComponent = ({ polylines, markers }) => {
         title={marker.title}
         icon={{
           url: MarkerIcon,
-          scaledSize: new window.google.maps.Size(80, 80),
+          scaledSize: new window.google.maps.Size(100, 100),
         }}
         onClick={() => handleMarkerClick(marker)}
       />
