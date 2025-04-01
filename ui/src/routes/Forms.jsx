@@ -73,6 +73,8 @@ function Forms() {
     const startDate = new Date(localStorage.getItem("Start Date"));
     const formattedDate = startDate.toISOString();
 
+    console.log("User Ratings:", userRatings);
+
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       dateStart: formattedDate, // Formato correto: "2025-04-15T09:00:00Z"
@@ -88,7 +90,7 @@ function Forms() {
       questions: {
         "user123": userRatings.map((answer, index) => ({
           question_id: index,
-          value: parseInt(answer.answer) || 0, // Garantindo que o valor seja número
+          value: parseInt(answer) || 0, // Garantindo que o valor seja número
           type: "scale"
         }))
       }
