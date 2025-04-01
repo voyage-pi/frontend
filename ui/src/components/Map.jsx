@@ -4,10 +4,10 @@ import MarkerIcon from '../assets/marker2.png';
 
 const containerStyle = {
   width: '100%',
-  height: '100%'
+  height: '100%',
 };
 
-const MapComponent = ({ center, polylines, markers }) => {
+const MapComponent = ({ polylines, markers }) => {
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
   const [map, setMap] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
@@ -15,14 +15,14 @@ const MapComponent = ({ center, polylines, markers }) => {
   const { isLoaded } = useJsApiLoader({
     id: '2430af244ef47a1f',
     googleMapsApiKey: key,
-    libraries: ['geometry', 'places']
+    libraries: ['geometry', 'places'],
   });
 
   const onLoad = useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
 
     markers.forEach(marker => {
-      bounds.extend(marker.position);
+      bounds.extend(new window.google.maps.LatLng(marker.position.lat, marker.position.lng));
     });
 
     polylines.forEach(polylineGroup => {
@@ -74,7 +74,7 @@ const MapComponent = ({ center, polylines, markers }) => {
         title={marker.title}
         icon={{
           url: MarkerIcon,
-          scaledSize: new window.google.maps.Size(80, 80)
+          scaledSize: new window.google.maps.Size(80, 80),
         }}
         onClick={() => handleMarkerClick(marker)}
       />
@@ -84,7 +84,6 @@ const MapComponent = ({ center, polylines, markers }) => {
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
       options={{
         disableDefaultUI: true,
         zoomControl: true,

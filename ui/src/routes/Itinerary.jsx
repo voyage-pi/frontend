@@ -61,8 +61,6 @@ function Itinerary() {
         });
     };
 
-    const myCenter = { lat: 40.639183, lng: -8.654419 };
-
   const myPolylines = [
     {
       polylines: [
@@ -205,7 +203,6 @@ function Itinerary() {
                 {/* Right Side */}
                 <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
                 <Map
-                    center={myCenter}
                     polylines={myPolylines}
                     markers={myMarkers}
                 />
