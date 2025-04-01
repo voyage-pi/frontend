@@ -71,11 +71,6 @@ function Itinerary() {
             duration: 583,
             distance: 4956
         },
-        {
-            polylineEncoded: "aqyvFdo{s@lA{@JJLEBQTa@kDaDu@w@i@_A]gACo@@SIQKEUc@uCeLYcBk@sE[wAs@cCMWWa@w@k@sAs@qIaDcAg@oFqCs@Os@?cCb@_Bf@cGbCYLGHm@JY?{A]aDy@uJeCUM]WEWMKSDi@OgEwDgAy@{PmNKOkD_DIQCWOKQ@[IoC}Ba@u@ES@k@H]@KTYXKH?VNT\\Jh@?h@Id@{BvFMJs@|Ae@n@s@p@_@TYT_Bd@wFpA}@\\uMtGSBSCOJGVe@\\qNfHsB~@s@\\c@A]M{B{BI]QQa@CUFORCFo@t@AHwGhJaA|AGDe@dAA@MQGGkBcD",
-            duration: 551,
-            distance: 5180
-        },
       ],
       options: {
         strokeColor: "#FF0000",
@@ -87,12 +82,12 @@ function Itinerary() {
 
   const myMarkers = [
     {
-        position: { lat: 40.4168, lng: -3.7038 },
-      title: "Marker 1",
+        position: { lat: 40.63332777012159, lng: -8.659525489382625 },
+        title: "Marker 1",
     },
     {
-      position: { lat: 40.4153, lng: -3.6844 },
-      title: "Marker 2",
+        position: { lat: 40.4153, lng: -3.6844 },
+        title: "Marker 2",
     }
   ];
 

@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { GoogleMap, Polyline, Marker, useJsApiLoader } from '@react-google-maps/api';
-
-
+import MarkerIcon from '../assets/marker2.png';
 
 const containerStyle = {
   width: '100%',
@@ -12,8 +11,6 @@ const MapComponent = ({ center, polylines, markers }) => {
 
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
 
-  console.log('Google Maps API Key:', key);
-
   const [map, setMap] = useState(null);
 
   const { isLoaded } = useJsApiLoader({
@@ -23,15 +20,12 @@ const MapComponent = ({ center, polylines, markers }) => {
   });
 
   const onLoad = useCallback(function callback(map) {
-    // Fit the map to include all markers and polylines
     const bounds = new window.google.maps.LatLngBounds();
     
-    // Add marker positions to bounds
     markers.forEach(marker => {
       bounds.extend(marker.position);
     });
     
-    // Add polyline points to bounds
     polylines.forEach(polylineGroup => {
       polylineGroup.polylines.forEach(polyline => {
         const decodedPath = google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
@@ -68,9 +62,13 @@ const MapComponent = ({ center, polylines, markers }) => {
   const renderMarkers = () => {
     return markers.map((marker, index) => (
       <Marker
-        key={`marker-${index}`}
-        position={marker.position}
-        title={marker.title}
+      key={`marker-${index}`}
+      position={marker.position}
+      title={marker.title}
+      icon={{
+        url: MarkerIcon,
+        scaledSize: new window.google.maps.Size(80, 80)
+      }}
       />
     ));
   };
@@ -84,9 +82,9 @@ const MapComponent = ({ center, polylines, markers }) => {
         zoomControl: true,
         streetViewControl: false,
         mapTypeControl: false,
-        fullscreenControl: false,
+        fullscreenControl: true,
       }}
-      zoom={10}
+      zoom={13}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
