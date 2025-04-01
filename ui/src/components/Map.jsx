@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { GoogleMap, Polyline, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
 import MarkerIcon from '../assets/marker2.png';
+import MapStyle from '../assets/map-style.json';
 
 const containerStyle = {
   width: '100%',
@@ -95,6 +96,7 @@ const MapComponent = ({ polylines, markers }) => {
         streetViewControl: false,
         mapTypeControl: false,
         fullscreenControl: true,
+        styles: MapStyle
       }}
       zoom={13}
       onLoad={onLoad}
