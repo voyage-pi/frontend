@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import PageTemplate from "../components/PageTemplate"
 import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
@@ -11,11 +11,42 @@ import axiosInstance from "../utils/axiosInstance"
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isInitialized, setIsInitialized] = useState(false)
   const totalSteps = 5
   const [answers, setAnswers] = useState([...questions]) 
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
   const navigate = useNavigate()
+  
+  // Carregar o progresso do localStorage quando o componente for montado
+  useEffect(() => {
+    const savedStep = parseInt(localStorage.getItem("currentStep")) || 1
+    const savedSubQuestionIndex = parseInt(localStorage.getItem("subQuestionIndex")) || 0
+    const savedAnswers = JSON.parse(localStorage.getItem("answers"))
+    
+    if (savedStep) {
+      setCurrentStep(savedStep)
+    }
+    
+    if (savedSubQuestionIndex) {
+      setSubQuestionIndex(savedSubQuestionIndex)
+    }
+    
+    if (savedAnswers) {
+      setAnswers(savedAnswers)
+    }
+    
+    setIsInitialized(true)
+  }, [])
+  
+  // Salvar o progresso no localStorage sempre que mudar
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem("currentStep", currentStep)
+      localStorage.setItem("subQuestionIndex", subQuestionIndex)
+      localStorage.setItem("answers", JSON.stringify(answers))
+    }
+  }, [currentStep, subQuestionIndex, answers, isInitialized])
   
   // Calculate progress percentage for progress bar
   const progressPercentage = currentStep === 5 

@@ -16,6 +16,23 @@ const Step4Content = () => {
   const startCalendarRef = useRef(null);
   const endCalendarRef = useRef(null);
 
+  useEffect(() => {
+    const savedStartDate = localStorage.getItem("Start Date");
+    if (savedStartDate) {
+      setStartDate(savedStartDate);
+    }
+
+    const savedEndDate = localStorage.getItem("End Date");
+    if (savedEndDate) {
+      setEndDate(savedEndDate);
+    }
+
+    const savedBudget = localStorage.getItem("Budget");
+    if (savedBudget) {
+      setBudget(parseInt(savedBudget, 10));
+    }
+  }, []);
+
   const calculateDays = () => {
     const start = new Date(startDate);
     const end = new Date(endDate);

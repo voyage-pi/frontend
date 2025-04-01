@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaRoad } from "react-icons/fa6";
 import { PiMapPinAreaFill } from "react-icons/pi";
@@ -6,6 +6,13 @@ import FormCard from './FormCard.jsx';
 
 const Step2Content = () => {
   const [selectedCard, setSelectedCard] = useState(null);
+
+  useEffect(() =>{
+    const savedSelection = localStorage.getItem("Trip Type");
+    if (savedSelection) {
+      setSelectedCard(savedSelection);
+    }
+  }, []);
 
   const handleCardClick = (card) => {
     setSelectedCard(card);
