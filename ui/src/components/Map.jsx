@@ -104,20 +104,24 @@ const MapComponent = ({ center, polylines, markers }) => {
           position={selectedMarker.position}
           onCloseClick={handleInfoWindowClose}
         >
-          <div className="info-window-content">
-            <div className='text-lg font-bold'>
-              {selectedMarker.title}
-            </div>
-            {selectedMarker.address && <p>{selectedMarker.address}</p>}
+          <div className="flex flex-row gap-3 max-w-xs">
             {selectedMarker.image && (
-              <div className="w-[100px] h-[100px] overflow-hidden flex justify-center items-center">
+              <div className="w-16 h-16 flex-shrink-0 flex justify-center items-center rounded-md overflow-hidden">
                 <img
                   src={selectedMarker.image}
                   alt="Marker"
-                  className="max-w-full max-h-full"
+                  className="max-w-full max-h-full object-cover"
                 />
               </div>
             )}
+            <div className="flex flex-col justify-center">
+              <h3 className="mb-1 text-base font-bold">
+                {selectedMarker.title}
+              </h3>
+              {selectedMarker.address && (
+                <p className="m-0 text-sm">{selectedMarker.address}</p>
+              )}
+            </div>
           </div>
         </InfoWindow>
       )}
