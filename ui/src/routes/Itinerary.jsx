@@ -83,11 +83,15 @@ function Itinerary() {
   const myMarkers = [
     {
         position: { lat: 40.63332777012159, lng: -8.659525489382625 },
-        title: "Marker 1",
+        title: "DETI",
+        address: "Universidade de Aveiro, 3810-193 Aveiro",
+        image: "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
     },
     {
-        position: { lat: 40.4153, lng: -3.6844 },
-        title: "Marker 2",
+        position: { lat: 40.642126817325355, lng: -8.655087327254432 },
+        title: "Santos da Praça",
+        address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
+        image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
     }
   ];
 

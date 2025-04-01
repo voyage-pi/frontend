@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { GoogleMap, Polyline, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Polyline, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
 import MarkerIcon from '../assets/marker2.png';
 
 const containerStyle = {
@@ -8,10 +8,9 @@ const containerStyle = {
 };
 
 const MapComponent = ({ center, polylines, markers }) => {
-
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
-
   const [map, setMap] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState(null);
 
   const { isLoaded } = useJsApiLoader({
     id: '2430af244ef47a1f',
@@ -21,11 +20,11 @@ const MapComponent = ({ center, polylines, markers }) => {
 
   const onLoad = useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
-    
+
     markers.forEach(marker => {
       bounds.extend(marker.position);
     });
-    
+
     polylines.forEach(polylineGroup => {
       polylineGroup.polylines.forEach(polyline => {
         const decodedPath = google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
@@ -34,7 +33,7 @@ const MapComponent = ({ center, polylines, markers }) => {
         });
       });
     });
-    
+
     map.fitBounds(bounds);
     setMap(map);
   }, [markers, polylines]);
@@ -43,11 +42,19 @@ const MapComponent = ({ center, polylines, markers }) => {
     setMap(null);
   }, []);
 
+  const handleMarkerClick = (marker) => {
+    setSelectedMarker(marker);
+  };
+
+  const handleInfoWindowClose = () => {
+    setSelectedMarker(null);
+  };
+
   const renderPolylines = () => {
     return polylines.map((polylineGroup, groupIndex) => {
       return polylineGroup.polylines.map((polyline, polylineIndex) => {
         const path = google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
-        
+
         return (
           <Polyline
             key={`polyline-${groupIndex}-${polylineIndex}`}
@@ -62,13 +69,14 @@ const MapComponent = ({ center, polylines, markers }) => {
   const renderMarkers = () => {
     return markers.map((marker, index) => (
       <Marker
-      key={`marker-${index}`}
-      position={marker.position}
-      title={marker.title}
-      icon={{
-        url: MarkerIcon,
-        scaledSize: new window.google.maps.Size(80, 80)
-      }}
+        key={`marker-${index}`}
+        position={marker.position}
+        title={marker.title}
+        icon={{
+          url: MarkerIcon,
+          scaledSize: new window.google.maps.Size(80, 80)
+        }}
+        onClick={() => handleMarkerClick(marker)}
       />
     ));
   };
@@ -90,9 +98,33 @@ const MapComponent = ({ center, polylines, markers }) => {
     >
       {renderPolylines()}
       {renderMarkers()}
+
+      {selectedMarker && (
+        <InfoWindow
+          position={selectedMarker.position}
+          onCloseClick={handleInfoWindowClose}
+        >
+          <div className="info-window-content">
+            <div className='text-lg font-bold'>
+              {selectedMarker.title}
+            </div>
+            {selectedMarker.address && <p>{selectedMarker.address}</p>}
+            {selectedMarker.image && (
+              <div className="w-[100px] h-[100px] overflow-hidden flex justify-center items-center">
+                <img
+                  src={selectedMarker.image}
+                  alt="Marker"
+                  className="max-w-full max-h-full"
+                />
+              </div>
+            )}
+          </div>
+        </InfoWindow>
+      )}
     </GoogleMap>
   ) : (
     <div>Loading...</div>
   );
 };
+
 export default React.memo(MapComponent);
