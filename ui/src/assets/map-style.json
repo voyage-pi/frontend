@@ -22,9 +22,9 @@
     },
     {
       "featureType": "poi",
-      "elementType": "geometry",
+      "elementType": "all",
       "stylers": [
-        { "color": "#eaeaea" }
+        { "visibility": "#eaeaea" }
       ]
     },
     {

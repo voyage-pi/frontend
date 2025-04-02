@@ -62,7 +62,6 @@ const MapComponent = ({ polylines, markers }) => {
             path={path}
             options={{
               strokeColor: "#FE385C",
-              strokeOpacity: 1,
               strokeWeight: 4,
             }
             }
