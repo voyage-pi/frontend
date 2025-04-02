@@ -24,7 +24,7 @@
       "featureType": "poi",
       "elementType": "all",
       "stylers": [
-        { "visibility": "#eaeaea" }
+        { "visibility": "off" }
       ]
     },
     {
