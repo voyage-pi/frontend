@@ -1,0 +1,535 @@
+{
+    "status_code": 200,
+    "message": "Trips created",
+    "response": {
+        "itinerary": {
+            "id": 5401,
+            "itinerary": {
+                "id": 5401,
+                "start_date": "2025-04-15T09:00:00Z",
+                "end_date": "2025-04-17T09:00:00Z",
+                "days": [
+                    {
+                        "date": "2025-04-15T09:00:00Z",
+                        "morning_activities": [
+                            {
+                                "place": {
+                                    "id": "ChIJ_x7nY32iIw0R8BkOtYYsOFk",
+                                    "name": "Aveiro Museum",
+                                    "location": {
+                                        "latitude": 40.639299,
+                                        "longitude": -8.650948999999999
+                                    },
+                                    "types": [
+                                        "museum",
+                                        "tourist_attraction",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ1oY6R0XSN_SrKkRM8dX4vIj34M_CPPICwm-jz-9z9EmcWZU4esuPbWBlSOBMrkfvimO8PQrDGX1JIBuXa2zQHXV-hX9tVK8g5Q4Y4dSeIW3vTIDBQ-kCXBXqCapl6Yrww1Gf5q3MnHYn110vbpZtIdmqCACTh6xRYXf1ewomfx7U2VuO5J2qddfap2VzPCBo9VSrOq6d7qGnPNEH8bGtH_XoL5YpnPZbw-gHK6EL07T0_y08X2BYtp43KXoHpkazVtajWWY_CprV4WcmKFUVYlSbpwQnhhvcB5fPJkzf4ob9SJLpd7dfgm2jSBj2qTEVYnwxi3n2HW2TvOJOUss4RissEZ9tWB3qMN45DSoePK_DU9c3rvfslqk9NX0g4k5e3BTSJI9IaYhHzDh2IcQIlAsJcTUxukVH3bPJIt3mA-aTIn",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ3F3pxaCfl06s8WSy7OnScnIQ_ArNjKQhrLiOnk1CgGz8Egjbn6bv6pum8sEspnPGOKYTKKKrrWkeOuQ6r-INgA76JFTh6hitnoZ1HtZOYS_mjIbTTJbpN69IiUEQFtyatFi6D_df0IbRhlELHxHKWTNQ4KH2dnUTuFAtOilGJSmo6CU-Z5KMV8aCyvH944BIs2lQmnHUYcbW1bdnmUQ7iAYabCxo9jI5rirJXGdRwQg77Bi6kst79BwDRH_CkAPG6FMa2uQCXXFp2uHrd7Wbfrb8aQhGCBDX88eXU0ghsTmNS3aqhelUDApKrvRusObvAZmVmNcBjFSC7OgIWSM4edKFdzlnnP5XVlMiypJIzXHyTNtzc1wZpv-Zbt5q1nOV2LKrShMS-S58DiYj5uvcHpryWKCDoPRA-B44SVs2s",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ3OyThN7xi9zDJQe1e1MZOrcuMXdesp_m39tZNs9N5XymwgQP0MAVoFWWfpxy-Rm7MAxpZsnN1i64DHHPxfzRYblboUdx0eFa4Vp4GIhIr3peUsJlYQOy8RwTpMzCCTY8QO0SlrcjEr_N_deUMNYRBFkFRoU0tDGnt4RvxTOOd0_jIhAaf6-YYpAdwtJH25urhnNEvwAkdgQX9DyAdWISdMLkoj3TZyrSehlovN4AkgZre8BsMSCgqyU8eCYBZcG_tH4qWJ5rAZSaKA2kOMht0X1W81IysQg0GMT62qwKZAEp0VLlI0kQkCYNoDdi80tRYpvmUQtcKpCTe0G28RKQEKCNd8Knk1jPjKkvOfvcKBJl9yjdchZEWdYbIc4lwGYqjng-pG3cD8tmB6u15VnQ0tI3j3iwaQBDchsc7jaaUjMg",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ3Y8abWuSIaq-iMLwP-6smTwjhsgurrhQOw8vjR9ZdnyeVEoqU83bbJ2-xRQkXbalTqL5mosBBLrR-G9ZAxLVlLkBrrr5KApA2GH7EaIHOKdKy0iIMp9Z0bEY0yNj9GCDEjEx-drkPuUwkOOBq1Wrrjiwjb19NJRGyh8PuGzCdGbEuIViBhH4SgxcHPZzXyTUObXX4XTMOwF53vlIk5V5qgHHz0kManTtj45_xETU1pjyXWRrjG02fNBS_JDwDYgI44WQ7KNM7xGFiXIwOabyRNgWQLG8JgxKRcEgUtEpw0nIbG0ngCbfo88iEy6tykc4iJwGDbsvLwIWeDgG7RZJEmAq_icPJM62dGDX9pau-K8qZNcYiPVaVAkAC0TpGlOom907DmYASc4_wRg2X_l7UenmatTOEAe2UW_DKfUwqldQ",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ378daigmpuGJmhZkxhHQs9tfaLMp79tfZ8PnRFZ8t5nJi1tG_cHGqAI75wfB6DAoczhcTIQ3xtPT3n6daI7Sh6x3oFqUfwfJmuXHRghkmxZf1WIrBQm_XpWPI9u5R3Vd2nqDYSgvi6XUE88t71hKOxGnLCT1ylwIAQhMG_VdR3WEonu_QceIjfZNqddvNNqdz3PUYjcs3dufaQ3xj0gQfmt6JjWC6hNfCIWRMOWDiO-c7ZFSf3Axa0iELKx8ckWlBr8JgUm5x9FVbXTXGayxDbwqZ9CEADveR-1okq4zP7Y_FZHbrTI4CeXBqI5lfLGBwZT84UWWyxIy9B6tNnriWTurCx-J6iNuxF1GBfQ7DIuhkf-KUxnSm9gsS6PV-7jZmd_cVmCdRPefm1HR2DDCVUKtUWuKYowd4Y_cqsp_ShRWY",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ1ICexYg6tehZetkDxjjgI7Xu5fNX8brPYDl9Qfy-DJLDvGCOcINE89-6nxsyOgv3QCdom3POfJodIw5gNB3OKLBHijIcwLEirsDLlWMeTweQeOi5aQ-R2jFGE0iAl8H2YfPx8BrVw8neaInHZ5tHXhC1GK3IELunRsuvUxouc1_gNPHax912cRYTXtcbwbXUT90JeBkqkAX1gboZONSch5yrpDEaO3o1xpS-QG1nIohn69Sbbb4jyYY_9XHgBSSXaaVPpXtAZRe2wdxa6ifUf5gtZzL8chErIp4dePSwlHUs_mqCFbjaaKGdp2Yq7bdluTGPEQY9NTBPlk1lqZqRMJavMpQUUEL7ZFJ8EdRTrYBLMrUI5dkPVJE6JHe3mUjjM9k6zgNBiuD05UbMnkxo0KZZBG6Fa3kd3gZwSqE7N5aLqx",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ169AVnnk2PY00wC3Jy5ORlrsS_-NKvduNqKEpzBcjDBpoMd70IS4vYCXiK-cUOYicqY5OKFUdrLJBMDUxelwpBy5abb1w75VKpmoB-Bfd3-m0QPifbtak0L4-7RUAhHyCF1GAG3RRnprNM_KQTuviUpcgfIUXFOtTbFzPLhZ0hItzuHU3IWwdmzZeGN2jzNFe-XC4qTkFu5V70wgjxpTspPTsPovm4VHveOp_4CKrYNImqwT7gF5nXYHLqbNXb4c9e-amOrlCFxB_09Qr9dHtjk8X5ihpgfMrlAl7K2SHgj83wLoIFmXQSVzOM-hUXJ-2lUB-gHpSASLt1Hr_DHw701KCjPy6jghZYj9yS20EdJGOQllArMf7culRhm8F6e5acghq6NJGE1mzqSmxzRMsBuyJ-4lb_pJVvE-0C4aO03pI",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ0NKF5LOE_KYy3Xq365MLPAd9Jr6b2Vm7FSrY_6ZOgVAOI84vJWlsP_y78Zc6WO73GtTKQPBYqbnCTZAv6UUAa-M8CwTKasM_F0xX6iSK0HOviK-kvIxTZHm8MzHn5hakw4fU2QLO9ng33DaJD2rFeUyMwl7cMtGvG8gHZ2OU4IkgEi72Rp0u51mPl-RCKUt11LnWAKQaiaNcd3dZuhhUF2qQSeNHKOvc1v0WkjsDO9xVPC7YGkVpktI0AyRVsVl9cigDZ1z9Mbw5OYilzMUXaLKod499k3KTuWw6FjtEVu95ksU33OYgTkSO9YCeJX4eHscQjb3VpujJG15aMPo7o6taUbcT_zhNhf32MYALDhg7rTNXo2yB7tBW9nVjTq8tlAVWEm9q48PIclRse16y4Alcj3JnRRHTi4Z2xK9FcTFxTp",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ3Ak5D1i06SuSkfCx5WmS1c36q2NZyrJj8__v-6TvGlZFjca73BmBcnrIAYv_IvYflJQ-jljwBVzUeYaQBHn0Dh24rjZuvA0gbQzELG2rtNUJJCNA-myEaR9-nc1pqYqh56xMZuFizl7b509343pFnAax0_2XeNwLmWHNluf2EAUkDxvqk2UiHYBfcDdStYrKkcJGuK8yOlWV8hqpJwkZS5Xh4kJpFPsxhziHfWIMQ4O-xbN6l8Ee3KLSRXUCQudW2D6wiceFCtO2EatvkDah8S5evJd34dh3CodUediuB0HieRZ2wu1acKlpkBEB5fKIn1LzeKYrG9VfQgTWlO08qMHkLacRHO6LAFbkXPrdHsXr-jKq5dQ_8npNXWjOLOM0UtjcPwhTvnm1-nWaWoWVdk86U32EHjagLpmDbeGIj6Np2H",
+                                        "places/ChIJ_x7nY32iIw0R8BkOtYYsOFk/photos/AUy1YQ0XXwKZkt6LTIoiZMyhFzdN73h0c9_qh6V0sncy5V9Za0_RfJdWxUuXiYHhHI6mN5L1m6H3BvxqBWhZqI3OZ-IKfAb4Pb2DJWztE7z6dKKQl1va7-MFYHw3ad8_Sew9Mx8M0jiVqqOo1-84FrtejtMACgzg6One1C4iD1aQYSAICEPIRyRr3kP6K1YLe9cambI2qTSHb69ih_gWXz3gC2Z8ysksA4K4LnJm8EHoIrdDQV6fY2kcMhrP7G0h7c3ealQt4MbZUz2AMxoY8GxLyUjN77RzyaBYCpx5UvEWah8YdBj9SsluJagMJnf57eAIUZFDAjkYt9Y8KRR2NlS7V-YWdfMmp6-DdU4IsfHNVwu_aLt_3BzK0sgJ1rl1uRc3c_pvuFMM3uEprxiJM2_J25fdCN_d0wNKbfIL3kND6CFYlQ"
+                                    ],
+                                    "accessibility_options": {
+                                        "wheelchairAccessibleParking": true,
+                                        "wheelchairAccessibleEntrance": true,
+                                        "wheelchairAccessibleRestroom": true
+                                    },
+                                    "opening_hours": {
+                                        "openNow": true,
+                                        "periods": {
+                                            "Sunday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Tuesday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Wednesday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Thursday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Friday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Saturday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            }
+                                        }
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.6,
+                                    "international_phone_number": "+351 234 423 297",
+                                    "national_phone_number": "234 423 297",
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-15T09:00:00",
+                                "end_time": "2025-04-15T10:30:00",
+                                "activity_type": "museum",
+                                "duration": 90
+                            },
+                            {
+                                "place": {
+                                    "id": "ChIJHwhsjTG9Iw0RQ2xDNzwFMws",
+                                    "name": "Museu Marítimo de Ílhavo e Aquário dos Bacalhaus",
+                                    "location": {
+                                        "latitude": 40.6043972,
+                                        "longitude": -8.666021899999999
+                                    },
+                                    "types": [
+                                        "museum",
+                                        "tourist_attraction",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ1lESOLZUInnmlnDHGHW8Uw2BCTzJtLeMjwuqmoT71vyTo3lHG4kYKZf7LOHGeeuiUFzP6OsWzdyEKOwI2wBkue09JQWw8_dRaXREI9e_0Wx-lXOau3HPg8gfq7BtjUGVWTkM0jWjeDPXxSssVepEoAN4nMYPEq_VV4QbJYACqIQ17jWOQOLqAs5HzsoTl8TjlJRgphxvf6Ih9YNY4jarIF9KuOt-b2600aRCgARhkFOt70kToMkh0CFohTzKE-BZdOZeFWij3XvFmufUt51QBIXchxPbG4HQp21pYGFUTtZ4JGyKaj4wLwz53selileUa-i7VgnVPysbc8h5G5ytZKdkNapYRMJKKec5GUoAX8nYuYuYnQHe2Gh1R7rKkRS2NGAhWvfni8coCA33F-cbk9LLxLTt1EvmxqWs26G5g2zlzJ",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ3dOSLFRChlshD0bVBjLs-euCdhMMQY1jTP0Tu-CkNXfZQRhfJd34A7EHYVL79MUqRKeSnh6sbjQ5PAEXIgmOMoHmA18AYlkugNbuyQEESlEu8ppQZ9mSpTn1lGnkYuCTdpM57_gtg1xXlKpw9w47Z0TUMLDFmiuaAOK6a8Nl8s8oYxWQye7LMVhBVeBKAw7sSTyEayQ-J6hKdvhEPWk_xQItG6YD4siOKNzBrg3gsEsX-rc9mvJiEpQXAI7ocI9UYjCs2duBNjam2sBp-blIDNsvu1_sVyIVDtnWpdLHv6U_riL-Iblef3ddQ4i_wKYdHz4_gosYPCbCJckXwS5TlsXbZ9KgH3p3R8vpV5SmDlZnPIsTTDD40eepyNUNUWqu6Xdr-9VJSs63LggcQ4a2pxJrJO07Zqfji75a5jOCl8e9FL6YkZzobFTbFBp4R1",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ2Xf6ha4GlwHRbrFrhxfKs2oeArXACa0FTKWHttI2X0jrvF9KzP7cp9wPy1OWv-zYxzN1qkQuGIpTQMx6mjHGpvneYpXu8sQT5QmM-RR07HNfN0QEfQPABnvVDW8lRRZ9c5psDLG_Xo74iw16Uek8cloQnbN9AFDUV-vAjUsInP5dzUgQ_Ehcq8BV_dLiMuj11uhafCCykuRF_0zAwl8LLDIdx1S4KkwHPYBw30kj3MNRKPKCFjlbTEFG-KJlfUz9G3eTieiMg9Nan9jWy2h939Wyivv217qokEC0x036KH_tMOi2FnT0sR4dDABvVCjxQfZrmKn2T9jLSaFvw6rDeKkxQAcydR1zKY8ztvH06weksdDqnXG-QDAEbEFzuNHfblBs2MGO2L8I9Hv4mr7qFye2oqO5JVIuxUH0LM0wmcCQEI",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ0a81KLOj3zxNQtXUBJ1SIINIMrdIBv4BXSyjrSd62lJKSZg5OICFIp8-dx4D-GICGamQqxDmmuVAVrNaFL06xG1f4I1l7WKljHm3lU5XY1tVnQbc43sHlgeLDb5SHZeYsBOvJd8ZsoaKejMJVzy0DpNlbjj9FvaWBeP87_2ILtkqps8ldRXj947RxfJmrI4BvsY-JU-z9Fo34RRoVbiwmKIN1jorH43yxeWAHqWDA0vnbe9Sc6GRI3shUD5XhuMCiMdLfvz4lXxf_jBqFct7YTC4zf7ny6auN4bSU8_TsQfHJbt_0PSnhPOg_6GIX9-Q6qW3zeohCUq0UmOMI9BBz5CbpSjLXb6ET57sKrvRM6wPIzn2yCusM1g7f4WOk2wrtXhL8jUY-r0959nFwycj-7lYjZ0OIIrFEI-QLndXw",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ0xgjOYzDxLUKWLUotkSLc3AHT7vodBfugyGniEUJg-y5pL-0JIjhLECjUFpzxc-DhgjJir_IlWpZ9FEkV-ZWL91c-4PZfFPNrimksfWmsfQk6S3IdRt4QIELguvzcdGXra1NYGBd94Z2UiLQaqbPJeBNZA413jRXcX6MZgEriSA1M7etDadGdu-mNjEvd0UDJjo7DGTKJj2EAi3JrtCzBxwVBJybtuPnAPnsVHX8x4CTg0U5uqo_xW6oNLP0eZ_PjDuTmlouA47BGFOZJTZQceQ6f-rFDtR8HgCUv-afm_8Mo6X6scr6JNYW8DZzanUvOrbwxXMbuR2vvn4aTensFNogaUQjWqfDd7u9D2QBc88yCZFvYSL1W1j3fWWju1PotWZuYrFbFCOHwJBRd72WfOHX4QovGAH1WB9A5XkNpmYA",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ3aVYKtapmBpM9CMp9R8-rU4Y9TY00fWqUWpAjvj-OtVnZqO2WdP-glkPZdcXaD8bXVw1iFGVlVkVuz6UIkCZWnQBhTWixHcL1ijyiSzB72UQaLtE0izEC3-N4lzMj6cUdEFoK85M3Dgh6gXJzZpeANmYonYBOUsGLOlkLuW5_LHmWnIOFmwlEgjpZeuhsaAYEJoXHMdcDIgHOMh-NbF-cIAQz3e3KnYVwW7SqMzqZ430a9oH-YfTaydJhGdHi22wbnkdUq7tJ7FMk6L02sngRTh8nETfRkemCrzECnHQm3SPxAcL2D8KJ-iImbLMmi9SusrRNn67Nk0TBvye-KCjqrgwUsLrH2YM2rdvWerLJAcny-Dw26MnjyOc-rEzvhQJR32fVByDKxZ0FVBrQPBn6s4yYiC-lMVpzjTq9TAUyFARg",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ1sHNo2T5Z8Qa9e8_hiDJ_ubsEW_c6WvtAoFhZcusoF1oa2fSvv0YFh9oY6OMJIA8399RAQJlmeECibiXfNmQQf50Wf1QgA3fW-8uHaf1wNgsLRwynT7hBdMT_Bi_sT-FOBdwQY3ELdjz_G8Az4LbdUIDAJ2cUkVBGXLut5it-cYjRv_oULHQQNwlSlaMq40JL83Jc1DjuMdVZ5qNy93dW_aX2iDnNDoL-XaX08-Nw3YDyDql_s_wYzKvVxkwGqnWLt1YrtYmiqvdY0Vz9KF4SDnOCxXm9Zz2VISt5vw0tEZobRjrY0vJ7a9NXkYLZScWvRp-BVy4JML5p7KYy_i38JIp0G5vIgVFHcDcFbHA-M0EUxr0IOpbwJ0a1ewViCPBw0myc9NGoZoz-gWA2c3ayGFCCh2xaM3YwvXwpoV-gCOr6-9bK5sEBKaaEpKICv",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ30zCFrjx0PyZGt_sQ_U7xNO9NJBSUDulYsR2bBezEIZ-MY7uhlJZk1rDuPK4st2R9D0bbILW0tWI4loK3dzmKwBk4TO4N9yzexkJDlSKH9w8i7QUlugRtUMxP4N3Z9PuxOdE2IBntAb1qIjp-ERrdrKygWpLvR-7EotdpXJrFOQNZYXNIXV2Xz_NgHnX2Uqrh45e2nVJb0aM0-BUItAO5dp2dqyH1IZvETcyqqFqNnZBXXIDkX0Aj-X7BzXO6gPfFHCQro3nitQhOpV97W4OwIstTuvPBYo9vaQ1ihTyWh8nXc1GuUrnZR5FJJJ5CfdZlgZUu32MAPGOoiyG_EU9qBwaPjHPN3nb3YyD7DGTBOXVSDHsIx5SKburN_KOKsIl8O4tuDJGzpRRzXBfBQ89sdJpMiVWbvRaShIF4NjxGRiA",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ1bi8fP6042KlCpsUyHwrB_04sFxIhvYOYNlp0wAuyV6n-J0Zvaq5rLiL3FgFLPckUq37aXSo0P2PuB2O6K3-Ig_IBXMuYU7lwV6_-UVxJDss5iFwJALoHiWc4ulUJ6-nSop4Qj0lYbujXdPDyXWbxwfOJIEnOsfoTlC3rlHxj_bnDoQpzc61tFzgPBsk4407a3hWS6JFeDKnVI8-Kr5Wb7SEOAo4T6huxBDPn_8RlA3_9VdVjBzeqZPo8rQoVQEzRYGIqagcUJRyf8Ckf3m8TwxNIoDBhXaG6igj_kvcNNv523zp4O8HKX6L58Pxxbm6qmRUG9G7GM0MsQlsVmN21zT4QVZ4L1f3txnA3otCBcYgJS9ynt19Lzwkgn2tLkDnA5xss_PtbCU0xjSK_nYUhLuA62tWaErCoEQw9zUp37xoU5",
+                                        "places/ChIJHwhsjTG9Iw0RQ2xDNzwFMws/photos/AUy1YQ1NTg_Shle1MtcgJ1hDuMViYEux6_F7EKAK8_kri9DDLK10VC-2jZcHkPDoG3aqU_ahDB18UDw2xo2Cslehgx4Q7dY7BDFvgOcvHjNyrWaHn1Pk-LbCMqMqkcdy_hywTXTiOotH1JKuhRzoGXE3UMV2qLA8KEBpHcKaVXIhJGCqg_c_WjgBRZCfwaboPcoCzrQ9cLXpQKc7kCJc-fC9-Vh3FmBNU6eS8smG3VXeXeFG14-8BfHnlTHYDG7ZdmPoteKAE8FDWopyIDocKoOJQxIu4mNE2f_XjgGoHfiG6Ouo80wdrA0coTjRidxwy4WaNUXIzApry0UJtnnliHOeo1fXa6xAK5x4YUvE3phRbVqSTC1ykNrvRIM0Kj0y4BARHYasjvFoKXw3preNpVPI0PjLaMLwRdQW8hKcLBPGqDw"
+                                    ],
+                                    "accessibility_options": {
+                                        "wheelchairAccessibleParking": true,
+                                        "wheelchairAccessibleEntrance": true,
+                                        "wheelchairAccessibleRestroom": true
+                                    },
+                                    "opening_hours": {
+                                        "openNow": true,
+                                        "periods": {
+                                            "Sunday": {
+                                                "open": "14:00",
+                                                "close": "18:00"
+                                            },
+                                            "Tuesday": {
+                                                "open": "14:00",
+                                                "close": "18:00"
+                                            },
+                                            "Wednesday": {
+                                                "open": "14:00",
+                                                "close": "18:00"
+                                            },
+                                            "Thursday": {
+                                                "open": "14:00",
+                                                "close": "18:00"
+                                            },
+                                            "Friday": {
+                                                "open": "14:00",
+                                                "close": "18:00"
+                                            },
+                                            "Saturday": {
+                                                "open": "14:00",
+                                                "close": "18:00"
+                                            }
+                                        }
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.6,
+                                    "international_phone_number": "+351 234 329 990",
+                                    "national_phone_number": "234 329 990",
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-15T11:00:00",
+                                "end_time": "2025-04-15T12:30:00",
+                                "activity_type": "museum",
+                                "duration": 90
+                            }
+                        ],
+                        "afternoon_activities": [
+                            {
+                                "place": {
+                                    "id": "ChIJFfVwiQGYIw0RaktvoOg3pxA",
+                                    "name": "Fábrica Centro Ciência Viva de Aveiro",
+                                    "location": {
+                                        "latitude": 40.638476,
+                                        "longitude": -8.6574248
+                                    },
+                                    "types": [
+                                        "tourist_attraction",
+                                        "museum",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ3F16dyKnUmsBUkySs2tM0aCn40XMcwzWGGz0QnDElhj5hrCDJyDpBnPHlBZbASgd7lBWD4srfO_0xPmfwaWy_WiFrjhlXlWqgtgbbzSja_b8eOqEsgNBTL2qFWqiUj1FQ6RgaJlCT25nDXO0giGt2LiGnh_Oo9F_LOrMa4RQiog2ro5CTy2D3dRLYwTcJADR0RSzzDyWu3KhhFtLXOBuqlu96uhI2Er8hdPa-6J8ia0w8-kT_PhMFVKtTJmGr_ky5ie5ur-A3FX9CS4_faarjxSKW4pd6n41XkjjEZRXI83w",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ0YFaY8y9FKmxjkFjmWmY9L0ZYxYalRwnmLRBFr3ydQxTxAY0SKvAQlgTwL6b-Bp5r2CeyTfV3aFm0V1sFPMjyUHmjP3mYyO5-fsU3WJoHJSeG6x9xYBJOO39lBdcPtk9yCBs6yvDEvpncCA26Mw4ME33cIgOR8oUjW7VrMCM9U4rayPFjzWkpWj9-qyQQJ6knrabcEI9N6RSTNPOi1KOHbCs1YILyIQvBDlUpWuEQh5HyyTHMLfQd4-DbMAoOiLjE--vk4DYEouJenNzC6OpntV7ZcEWerXsO5J1kvf_Px_t_oJ8KqsHseO9FrTI_mItGjMkSryXC07oOUvZTZtH4kMv6oOhaPBGd2vxww92tfR_7fnJd_7i-MDI-Rv0Ha79prWIsYrBDY209Nr11sDi9P8aI84Xhmai6QKJSOJw0WDw",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ1amtaDBDbJ2iU_RiE2pj-PT81b4F3_4JkN-KwDECKC891Wqi8ivJnyGKs11yn56e43QRFXbsIAQd2KxdRNh344p1DsAy808aLvnvzgh9y3F7snezgQwX8dAYqydOMw2gQct9_zo74Ai9Gjs_zSG13hKXuw0X8EKaEatnVqa6CCp4ee_-62bRd8XKg429zRqJi4SOU_u9SQv7G6x7eE8TPrHEH0sXD-MMkYhAyZ412_5QTBkGvxxOxX_1pSagKSukMIiz_DRGN7upY8GKTjDNvoWTE54T9dV7DRJbjhQIC5mru7ytzhn96RqqpEl-ua5e3RH3motZz3BFLJ6gDDPZlNfb9Q8mUVyQRUBtIItv-AfO_bJbL-i5sF6_1mKzc0y_HWA75kX0N6cu6aP2ZOb4ExxGZbgpCbBaYJvuLv-pQhzQ",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ3OqywqeQ30xDFBoR1noRAWJw__E84aBSsyiYEwUeTn-ndtCsYF4JGROHhj4Fw5_9TQvez9ODj5bTaQFCWQnmplhLrO64qhWE_FQkY1SX_pF1s0UAabmLzsSiZStFKUX9F-JBDalchgGqApVBeSYz5PyqPzJf7LmQMd9Rd2CT7Dey1aghmABuQQuFyLLpxIi_PFaZjRQBg46frAe9xjZjoXZenFSc4UT4Bh_f1b1o53w-q1tjuX8ZlwK7M0zmHoL8fMh3zFNKBkbUZNf7iTl1V48Aqlf6FCefkmTgl5tDNbZgOSxjOc2CoLKMem1YMjtKnT6z_ZPDztsopzzksx8rrG03e2Cn44NMUxLTdNgtbCHDJHzz_a4Dj95liF6wiSAYaT1TcxVhIcKUDAUmLqswdydoTwcGaPIiUGxsmwryzHSmfy",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ13f7pZbhC1wnzo1Zh9udyFd3JjaCaMauWIa7-AWQSI1UlWK1hRAT2fUcyr12xYys3G49SVWFOKC2oGdfRcceOpDiyIgCkA94qEq73G-bV8kQtbFOlw1xMsDIkzPgSNwWSAJR64gh8A0IdB_GY-prbBigg1jh0fpkuwgk_cDZVYpEX-pF0kyZM1lnjIl-uz1CidWVyaEwMvnSVtyM-4VCzwWAIXIdyK4AxHP4Vs1xlX0nT75WuyZ50xJVWTKJ9ZFcMYj_u_XsUgi0IO7coLjCfOM0ktx0csN-d6r0MOwqs6k6sEsyaDaKCU6J4JhQ4NhnAG8IXEUisBrTBkJa8sjqVNuCIGnWSvfEpgG3lz3Ps_gmPNPExg1B4XgKpTKQRadMM-gEWWve8M5vGRgljiNSMFCaFDRnvJIzMonLa-69gUAg",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ3QypTZX3v3OUWYa9T50S0SMD8BIecOaDqy7mbLzn3BcUysV7tx7oX3cqlbv0QvHpj1m6OtMCV5hG_IwcqILs0naEX67luMEB6GsBg0UzGHTmTqW3LtCfoICBG3lpQfrUlR5Ir-INujBjMDy8Q_Y0YDqk5CR7KJ1RW6s9SVoOdDnwiZiNNHdc7E2kR75nLXxxF4TuObeCp2UhiaoR-t536pXb33wok4ibx6J2fEwN8Fel_Hz9xWE51GkBH19PpMZPaqYqHWgfQ4aMMaw8n84rSYSE8nY3qg-pvjtbq_7kIKvLNQ9VMZaL9gQbkgUS9YtjVVBvpI5mE_sEhnClEihhNFkJ_TJ1F3M8ZzQbrvQWfI8c2e-rOT8AMene9foMgBUw-NP6eipItkfmOYiVmpWdep5l-s4rdvvpWm9d4BmXAvTrDO",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ1PNx-2tIhKCabNcDzJkWZbEijXmDgFfBHIua8o6QFPNipkUxLhr-q3lhpSQGzkMe5bVw-Z1SfKkiFG6pwmOjFldbWcugisS1gMdlL2Ez2JpREUOPGVhJLC_oDBLc9mvvyNnzYUk9HkC3PknA_AT_IRHIbtxEtGCHUSSzyM8QqherhoDxVY51X1QkIInpao1_nn2xjLpYZtotwuuV55aF9ZKKZ_jNs2AW1GqOW4r6GiTWou0ZAqWJ7o84qWvxBFqGIsrfmgGIhlwS_yD5T85fOLIqhEfoOB1NA15y6JPCHv3it7SxHahNLZ2Jeloqc0v06uFYmrk_dDTh2AOc8h6-SVdJMrRkHcL3UY7L-0ZdPNrwasnAUpfohO0G0TsBBtR_-OzshIC856G7CFULYvl_S9GBazjv0Gi7bgDcIkk19Gqg",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ25o5ga-xo_qYfHunt3CRhqsTMY6Exy5b0zlxepzZH-I-li0zGhyho-OjUwBA0-tzQKr0ToMqNJwgRfh_lOgf-noN8PxL8MJRXlN_t0bmoOElh5pI-mKm_DYo_78ufdRttwWm2alt2tuNwfW3I-NsFzbrSG2VPvIgK5GKT1pAwz6wlq3j5moxpadFFhDSmqsH_z5DUTcu-T--dSmcfnlO2SrYt2bD6UjN-5wY4LfViiu4xOCGm_sdHq-2qjBG-nELCIpNl5gzpcJQjhbDCbzCfDIpsgTdtC0ZsPN73-cBWcVgHR0DAfESXECOsxoNFjfhovqgYsB1Rn9zB07KKwmohFOd1Wjvo7nu88f2UZ9g-ZyB5cojDIyEGDl0Ktx5HGrKusJSlQHZBfEPyxejRf2_0XrPxYbknqBqw-tdtSQp5p6wMT",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ3AsavgaX5m6DMz5Rzjq8WvBhjLwoWAKfZ4oY07HltE3APd2GPeaEly35PaV0s59jbnoDxmHjLnZ8upCdx9AKPqbr0sKCTOs45cp4RyR5rpVOA-eV9bo91jYMRMZUJEnk25qVEG06cWcy8LJ_TI3ea0OsrxwRB1kzNM_JVTKX70L0J6r1Oxbw_PV6o77XtLGshNrdVTFZmFH-xDTlxfdLPxmffAOJx7JukrQmDhRF6BY4VQJvqdtcxKKTTmecBK6_NYAAN9w26l7d9pI7cgb348GepZcxzqk3gIurNtFfpnLhlPsj9xnXc-unTL_MfDQKVtGU0tQxMF6lDHZQrK90hEdDc88HAM_5FwaicHvgkB0tqBOVwEKlbz4VQV7KZQuOEcr-YxG8eABxjU-1wz4WOLs-LW67a-9UozDDEp2wrsJgY",
+                                        "places/ChIJFfVwiQGYIw0RaktvoOg3pxA/photos/AUy1YQ2T7wWmkwmUeI4s53AjvdCLSiGR-HV7t2xQhuv9UhyeCPJ6SnM2i_HADMoOCfOxwXWBC2YGIgFfn6wVjV-p3fZhYJsgn556Hu8YgfGWXFyiTJqfu1QKhyLOxIOC4roxoxSwbwO_2SDYpl1PrAfH7lyhgEhLP9Rc-siDF0YTD1N7dsrLXz3UsiA8laC6WT1bf_waWQA0hjEMSSZAqEfh7cioeEilxiLkYq4ESXbjOf-eQZDd_4evKyjddtaW0LpOzUM4gc_DceOB0kbHmHXNnV8ao-Mff11WnaxhJr8rRd0X4R4_RLg9ifVHxAataQ_kJmL8jKPvUiNrb_uBw-0waNRcIl_LSYzUR2lzmrfVFQCDQxmUvifgiEYbMXCeW0uOJdUo6_1DtJGfzrSN6iYLxPXWU4YCJfqscDB6bFiMhEODGy"
+                                    ],
+                                    "accessibility_options": {
+                                        "wheelchairAccessibleParking": true,
+                                        "wheelchairAccessibleEntrance": true,
+                                        "wheelchairAccessibleRestroom": true
+                                    },
+                                    "opening_hours": {
+                                        "openNow": false,
+                                        "periods": {
+                                            "Sunday": {
+                                                "open": "10:00",
+                                                "close": "18:00"
+                                            },
+                                            "Tuesday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Wednesday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Thursday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Friday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Saturday": {
+                                                "open": "10:00",
+                                                "close": "18:00"
+                                            }
+                                        }
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.5,
+                                    "international_phone_number": "+351 234 427 053",
+                                    "national_phone_number": "234 427 053",
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-15T14:00:00",
+                                "end_time": "2025-04-15T15:30:00",
+                                "activity_type": "tourist_attraction",
+                                "duration": 90
+                            },
+                            {
+                                "place": {
+                                    "id": "ChIJ7c_jDgSYIw0RKenZhdIhHUE",
+                                    "name": "Teatro Aveirense",
+                                    "location": {
+                                        "latitude": 40.6400192,
+                                        "longitude": -8.654104100000001
+                                    },
+                                    "types": [
+                                        "performing_arts_theater",
+                                        "event_venue",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ2TsN007teSukiLqS3m0eBT_AeWCKU53h5ZdunYH9rU_FaK444BzdJN90GkQ9GDSANm6YZvmpb-tYDiyL32hOVR_0icnM3oLGa-AJ7kx6SnKZeaDyQn6JCSkJ2DJY3Q4UZw9dhRXup20TFy_s30dKbtRLCUIna_k71oZzNm-9M7wBX_4tHzh3e7iNuK5786EcPtiOT1T2WhyeOpbVZ6MynSUp33-a9IfwIl5x-5iAyCexBYM_3lsiArN0aD2KNsk5HPSLJrw720lsozym40H7uxlphMpq-gnCtmSaenZTopLwFNXdXld5QEoXJ-CSgxcSCL06FuzFMh2Wthl1-gT5QXdQ3t4_MeaPfapdSN0I5WI66I99due330na7K8qSen0TKOCq4YzfjqVrIr8f09EBnKT2JjK_Aa8mNnXfy4RAcqc8",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ06FwiqL-QfH-Ka-kZ8ygYHdHUsDJ22CLUAOSX0OckHEYQhFP15_RXSyTSZtDxLtxB5LSTLqv3OozPLiYg4GO8Ou62m0yEX3EE6EACM77M7UXjR171mLZkArTIRCD2ChuuaV2sFr6DG2e6HKAhXbKDwimpxFs5xoPBUYS3ONr9XcJbX-uh-xrMYmS2HdyGphCdT8BmOHjqldWWwLrieN0Z-mewYjNYswtFK-dpPR9sS5SM845FEUvuak-ct_PPhM-G8imd6nqv-34lU5liP9pfwO8ySmvYiPxFXQXB4CuzwdlhdpvEy0LZnJNObLgg1iq2ys0nAsMmXeB8Wv83hOO_GqhR2aOrdxvrEl4NHTHJNeCPJgzFxaNu2jcxbkEh1oQMOkaW3xa9WaXg1rUVaYuu9Njr9qfFirt3NtYZNVC9oTA",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ1O9gqaA8OCCMwAIiFOlcnw_4iHxHOoTORbyvPDBn5tLw8Nm_Y0zcs1Nh9TPMFgNFWb4vBmZMt5hiYtZuli5A-DNWb8LLTLqlHCEDmxn89wzO08rpUurVU9q8EY_SSFsAIbs1LNwFXw59r7EfTKHb6XCvwZ5kPNfSH7SMxN8i7AvzuTqr6AFUvOIF2Ei1OZNbJnRgXa-iUNT6WkpWcZONdiY0r8DCxf6rUXkqe-rv6sY5OuF7QyT64iZZ0ToJup7sUVWq32WSVpmt-k1VlaU51AlDYr6kuOrC9dSm8RZ5O8exZXlD2KQVW5de_4TA0gZ3gPd1RLLzzd3w-aAyL8Lcr0nLpQPhDDBwv6rWhST5AcL9g_ctkPGz5WK-LPfSPfqUxENxY07_w8B3ah7d6Ka61BQ9wlJx-9221NU-AMmQeZcUAh",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ1F-J6msWZYXC1vTvBea4eaYNLjE22h18tzcNHNJgiDjZzsuyZ9q6QrZyqXZBXm3oO1ZAqTzvkeKxkOhHrDSXwR6P_j4EyqYLvc84ULskqkVoBkeIzfzSl2bCp8aQcBmVyysYDrfH71L4VDWNF3CQmbQTVmx9ml1FWnXpIhEZ57NMeK3nB-fyH4S-S8UbRmB1-Q-BnEY5fp6eZPsoubKYShEZFO9gngw4jDQQKlLqNRzd7lSbXHadq2dFtGycoX5Y6H8p-afZmNCUVxTFZtOY0pHpSeu7ewKL61_BOciRtc41rZ8bkfDvAwLia8qDoUENrG2VL6meZH7M0Jz3O5u3ICa2RiRJO_Y8RBMUvX5SzAOJa2INfVP8JN4XxpQtaU8fqQ1fGgnth-14endzn0e_J-On2DBuCWQdI9rBktgT4",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ0lcornVY-f04dCv3GHZBDKp2kcUCKa0aEA95WPzDTkWnkrqDTRWBbAqGPS-J-NgwTUnhVm2t1uT4kEkEYbSWTS_3JkBpL6XSXOTLDdhlswKCd6jSKmRyqC-C2TYO16jGUpCnm8UI0u-IW9rXoA8uHe6_fy0rr__148hPNxXPsoQW1gFwZiplpx_Zxyy7mMOKqDBpGnCqDms8P5GwLK-XReRtQ82RW9NncErWYme8bmMA6WSy_yepOuZKFanC2eZqZ61qDtaHxAXr7UErJU9J91MWNQp4Gb7hri-6B2s_dRPVEP-4DGY3jDFcpiEn0G3n1SsS8ZEvqYWq8zRIkzfzsRfoJhocx5GTLLFOmKQ_k_sXmWFj0o2SEwcf3SJpX7bi_UmKzw3OLdhQwQtoo7-2VvLPG63-aHsCWekG5Gij1TOg",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ3GPIHQ_nAuMzHLjCraBNxgvQvpa3hpUNtyFiLeM-qb3PMCkHGEDjjENICsRzFhxcYYGOpmb1K-27RNalMwCvI8t0zlokC8-vzEohrjHnq0Awo3oG1WnYaV61GeicV4qf2S0xBzLM_QPaKSkUwQ7mJDfQ43JEgtlj0vIq2pBhaAsWfFuxs2JbI2PFuBNLjDOfmp1lPdFsGYnFfVZfJHlLeG6PrLG498vC_V48j1IL_6Kw7-lQ5YkxHnh7TVXQ0JLIWwMmdeygVp1EqAudmvtAyY2mNPFIczRGxfnhFAeIKIYpJNJ4A97F16Hbdy1pAv3Lh_xq14vN068EKwgBBfCIREaukcHZiBh7qApurOWBQaILRE7rB6jqQHsC_iqRi57t8YYDj3frM1JMWXa6W11P4BPHG-7GhbeGiz1FpaYtDUvQ",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ3urs7AA0ZymY2wqzq9WzTRDMrtbB9CyZp3AkzR_MT5xZgNKNurtdj_FwBxDlA-xnIC4xBYc3_gKJ0IuNhEOtS8Og1HYPb8kUBUjo_kLCEFzPm5vWnbwZGqIi64AxwQFISbfVLKOQbIPLMj7EuJtijz9In8HDaHTQYMzzv0pLhtj1ijAA-nfwnRO8xEDa_WHa3Th3BCRFUCCYUzM5RFAD71jXscvkXtAK_EdzmccRSnXUanIsO-CQzNhHZtyiea3QJY_1nhihBTEi1Qa2WO8Q3v7cwhPz4balMBol_N0vQTuzKfFVjF6OHJ4q31E4c-QWnSp6qpjsifZHu5jRIU5XMBAz4S_tKDYx1KmzqIXctQq0YWUEpl-UaX-YuaI7bSmJzsHDmsi1PwjfWzDoVYNEG-eHIX27pY9iswZ8o4OeVGZiX7",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ1CYfxgZ8b6gCE-2UOTT4B4cyJ8BCPm8uubOcVUKeDC4s8t7S7L8XccvNe2DrQ9_iIjeyfKj6QHu-Jb09-KIJTx6aeknIaVdrqEoH96LD-42_ctfWQ7kgrUZ3kQeqaGzTy2fItwo4bIqjmL_QPp6d7wwV1SSvr0VhbNgMtuSw-3vzC5LRsXcPywiXoZi9YufR7-ddxnA49go-7EMG00KSn9XwbH-7imi83hmia-3bXVhky550d4YZrNhlhgyd9kihQD2f3_5FMJaIekydfiSLaz2iLDR52dgEb-QXh8As-lPv9Bv_A_YoN2Q6WUCLh8cRwi59KB-dPEvcz7YBb6uHHLE_5sscGDsdpeOg1P4MhSfv08GN2rnmOwpJA3cb8_CpfIhXKrXofx6rl-7Tl2r-tqRcT7lLmn8UKLf8w7F5QB-J6t",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ346fVqBicGkj2dXDpVom8lDV6LAHLIkG8EAKfuxw18PSXRR0HoHwdkl-fnlZt6OVFPY4L5TY_VO7OeDJp0oQciUNaZP7I_xSmQVw710ez4DloaJ3CDuY4e2w1Z6AeQDCbE6ILNJJN1p5nuhyZ7z6kEJvnXI9hCXekGFEJ-VahjNXy8Eb-d6VI-pN28VuXe25VagkvQjyturUwXU_DsNq-abjLxtyb0C-UxCb56ne2IZq6Pg1X9xNnosV6gZ-HztVVBU5Bu3ObxR7GM8nWbC5dIQHlVQtiPkCZiLl6bQHwdZ5iSAD9ALLyFPGoQVK_5wPjbZoemQPUb7auYJANgrlDS9S9vz8nm0XC9_CrO2I8UQ_X5nnBb_uHv4kCJZxyyUNv6oGha1ZaTrdoa2MyQIzMRpFU7feK3O7Vpi-QS4Q6AQA",
+                                        "places/ChIJ7c_jDgSYIw0RKenZhdIhHUE/photos/AUy1YQ3jtINHYgHkWZFghA11GFs4XFDiOuPZwCAfLQ-np_6QuRcHBxLKOkr-K7Ppjx3afrM-jsuRTMTdSqOd7SdwKAAvWoNow2gTKnmNL-Ivmr0OHITpahk9Hwk6gWG7IUdwXxqdEC1j9w5E916XR_AGXaoTQYWEPj51TsRZsLrlE7rb2PqLW6pBigfFs1PDWi4qr95UR6rF-sIabheoikV-RdxI5T_rwSZQyGVtDdrSqJNdiNOaperC8TpIqw_MSeB3xQR0RO0pydiHaJ8tQE-2lUfcGLD_YLHXPe0nVl0gF6vJ61E4Z-ciAn-wr5OuyO5Z5N6ZgO-IwVqcTgMAGiX7psZ6nQuRfDw53AQ4n18kjYZGA9AssJFu90nRkLAE9jZU3Isu01PGSVO6p9mmDOgzhZInb0Os3Gzb2tUyhone6bEhiw"
+                                    ],
+                                    "accessibility_options": {
+                                        "wheelchairAccessibleParking": true,
+                                        "wheelchairAccessibleEntrance": true
+                                    },
+                                    "opening_hours": {
+                                        "openNow": null,
+                                        "periods": {}
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.5,
+                                    "international_phone_number": "+351 234 400 920",
+                                    "national_phone_number": "234 400 920",
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-15T16:00:00",
+                                "end_time": "2025-04-15T17:30:00",
+                                "activity_type": "performing_arts_theater",
+                                "duration": 90
+                            }
+                        ],
+                        "routes": [
+                            {
+                                "polylineEncoded": "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@@nMwGtAe@dB[xD_A~@e@f@@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC`Cj@dAVl@C~@UhI_D^MPMfB]r@?r@NxFvCjAf@~HzCzAx@n@d@V`@Xt@|@dDp@fFPhAnBfIn@fCBb@CTFPJDV`@\\fAn@fA~A`B|AvAOb@ILBRmAz@",
+                                "duration": 583,
+                                "distance": 4956
+                            },
+                            {
+                                "polylineEncoded": "aqyvFdo{s@lA{@JJLEBQTa@kDaDu@w@i@A]gACo@@SIQKEUc@uCeLYcBk@sE[wAs@cCMWWa@w@k@sAs@qIaDcAg@oFqCs@Os@?cCb@_Bf@cGbCYLGHm@JY?{A]aDy@uJeCUM]WEWMKSDi@OgEwDgAy@{PmNKOkD_DIQCWOKQ@[IoC}Ba@u@ES@k@H]@KTYXKH?VNT\\Jh@?h@Id@{BvFMJs@|Ae@n@s@p@@TYT_Bd@wFpA}@\\uMtGSBSCOJGVe@\\qNfHsB~@s@\\c@A]M{B{BI]QQa@CUFORCFo@t@AHwGhJaA|AGDe@dAA@MQGGkBcD",
+                                "duration": 551,
+                                "distance": 5180
+                            },
+                            {
+                                "polylineEncoded": "af`wFp|ys@m@eAQc@iCyEyDvCIAUc@Ic@IGm@eBKu@M{An@YFQF_BLY~A}@",
+                                "duration": 140,
+                                "distance": 613
+                            }
+                        ]
+                    },
+                    {
+                        "date": "2025-04-16T09:00:00Z",
+                        "morning_activities": [
+                            {
+                                "place": {
+                                    "id": "ChIJTR30n_eXIw0RcrUR5K2DPJI",
+                                    "name": "Aveiro Salt Flats",
+                                    "location": {
+                                        "latitude": 40.6448511,
+                                        "longitude": -8.662744199999999
+                                    },
+                                    "types": [
+                                        "tourist_attraction",
+                                        "museum",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ3UiPbx1h_XltIU5ZYLKk3jEVUz-9W53AjGAZ4kBnLPotlZVFWzE_DzEIANX94MHulb85MmT48DsmMAMEWQVcV9XT-i_ApZUQuUYw0mLSaV1YOkh_fea8CAwWg-pPXbZNkt4OCuv3e-2xHbMT2Mnc9146TNeJ0Mg6S62Zy3B3g6hmZstRw8eWvJRIL2WVR1giKV-8QnURsZHwJCbQ5XaHoccrUZHwcS-nzdx9yNaZEtEm-zwCy_jzxXTrRt-auofSlodCfUoDIoOYytUHqJ_V_i-nloFDG-7g16mr2hdYP3NCu1nINPyBVvHlk-KXcMKXiT1vx3goIE503hWvJDJIUJ00gknl3QKFwEdiE7lAYSa2-siHBCBzNCKxKuHk-QNZs6DmLl5JxPzKzRG3illpdc0iN2mlNkac5iUb5kp2XZ1w",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ2H_HZXlN9PA9cFadOlhioQMyz-nVyKZLTHdKSd5meclJv46rP7fpiCh0kP-C0M2WElRv-dZvuh5_AR7_xr2AAPZNGOZ2sfQZeff8la8Xw9p8R4PuQAzn3Utc-084B_WzVHxBo90pVpYk0c3jFAsuCpmufV_Tu9NxvngDLZ0MJKGmUz-fR8T24rVuKMKh3YA5-wO8pJkRELeNeqzfF0-2lXfKjIrJoBZFdoYq-ee_lLucbPugKDpQtONb_GkFHdcUwlebmEh-OaRcc1AJnQjz63Ibcij6qFhub4ec-9Gc1BE-4nkBKKtpWUvobOcRzfGmhFqT2z8IkSgkr0Tg0tRg0eU3ntPCsgxcKkn7azTc1Xam_R4YQSXO6MqtZ3sBeTaRbmX8bgX9ePhmldF0rzE_KXYUZusv6Jg99OHTR7QY1K5ds",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ0U09t1rHKCKrpNz0WgmQyUbbtX9d1GrX6q-qO8MrAtRSTdDQbIPeR05gnbXknCZM_o9uiA7F9xgt9GWNGeW2XkO6xxOC2gDOXsrVTRYrAI17JN-p-1oBGb6JFuQuczBfw48ziADDwjrA4AtDyhH4yFfwGzLAQyMHTlxAV0Uw13ioNQzT_RhHugPsZZ8yzTsXy7hMTybWXUcUyCgNcyWTyEVcBwCqcGAm4FSw-Nbadx99EdrEgOJJtoqyJroXykLZ1bJCGh6U2qnu70M3jJ0cKhwYtDk_99yQOHDIJgUpptK8MYk-_-WvRFUeD9okrfYqYcjKWE_JRMKbI5io651ounGdjW2GMdlHb83Y8CKBb0bG9lic1D1dSRTgdY1d5mM9ttJutnLcbSKH-AtbmqCvPxfi4OPt-HKs8lL2GOHrjXZ1UE",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ1V1XBDYnAaYE1bIoHXJ0vOwm22yaLid7smmWsd75_mxrNi3LxHXTpRMI-IjeHK6XbuUM2mzmAQJhyNGOosnLhsAjArRL7OkSrNSnHS146i06o9EFQwfAQ1g5TK9LD_gMNR1LojPtcPMWZ-LVVYgtPacXQGiuvX9IB_LqcM6zlsoRNQ-rRxtuuLE9FyBkbqZVKyKt-VishIC421z4ltF6031lEKg7TzwEuwyKSLWMjMLZMV2KYMQ8aafTTIRn0N5Kp54txygvpIBke67nmKZh-72eElmuR-bw_W4l30alUQqq89dXD03U9l3QZMpIUVNDWHbWNGjfOmEUPV1A19YcGwZmRsH2Vvehi8QQo7UEcrh2HvsTtCb86dLqdByPpyWdIwMd1N3kFk0XDV-UzOy27Da29xqGBxnwKSYBRJA5In6f_5",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ1NZmtXaqvoODIPr17lUivqnTmJx01OKmfuqoI6cyf4hFFYsCO42AiX8PcqDyZRTfwj7CxZl419FShEKjm4IaD8QuFUNLHgs8IU6s49uiB3MzvcsN0udmIyM6xx1_undQGoUNvzmpd1dD6jVDV0VtT2gETAu7NVV6cnvd4ijx6_uLq2LnLMYc3aZxkhelOGmN_WpTJbWOzkbAiRAEAp_5xY4X6bbgNQNEjPkq0N0OA5AcjQf2vc-lKMMKLTzXZEFFeLAElhP18c5Asjiy-THnOSDttdHL5eRN_Id4wRyKwPB3ge3zsE1YX1tjprkv90FUNjGi0bVs4ir7xwZvVuji8gI6KZ2L6QOjsfBXUbYvnq2G_w_XJnhq1B-yT1mrwFU8RSOrhIpvuCmyYmdVypVtAUEuaA4fIlR4qoD1clkdh47A",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ2ZaYXe1QsThzq4SadzvSgSnjhyFXCCa0n8AyElpPXh-cUznDn_tIv4kuNUxggxq8r9QGXbbcFKQjrixtLdzN3rdwFJAduiQ4nl5B4dY3GfOY1uXU637QgO3Cq654RupB4AnduIr-lLnr3DXh5eBhOAzlyj3OQix63bFLUtq4gPFRZRhq6TWDYn2ZVrPVqck2tKmDnWQXHJiTaixscInbcY-99ee5MfV1KswBQRSlPrgnoQUzVVWzrGG9dGjMhclY7KElyWiE-4FnwRoMkyur8bbM824wZ5OIfl-t47ehZG64ALwW94AcR_4w_0tWcl18inbaWaLYmc3cLUZQdp4dtDaL1MShogz3Kt-lJLxwq5aksvyWxbeIjSJzYYfNnxh03TG_Zpgajhw77gyGUdXh02rykVi6XZnhVMBYwjovSBMes0",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ0EGNZGZlv7xprC2xLb_Pa7-YBka6CiHeg4PtUrai773lUo8uJM-vPGBvD2C4T32T_ZdpuvGgf1yfSpy2vsxmcSp9fVRNwNVE0f3icMP7ENDrsXeHyYtYs24uZBTXnwNNgXbnfpaN1fq5O1MlI_eYUykiEZDDRK5KsHQLTeTHMuzonXDGcdzecSKr5g2Cz2CwIC_i2SVG2-8FrIcoUDaqPTDCUWHPkXAvNsIUBmM053PUpROKEBWkBy2F2lUeNtfopu3XgRdUo6A5PYtwVX8opRfVY5oIese43G9T5BKFQkAY-WNBPysYFUC0yaYVNTmztrJAvxEmEOQR1LEeXelS6uRhmKd1qvNBJYpP-dhj9UV9BgBTPcc7Sz-VeUVPHE2I0NvXRxsuQOEgeold6IrXwS_L57fhQrDh60m4FrPh5Cn--g",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ3zd3HZ6-IrIfdYWVNeYBHHHY_lGYTHzIPiqQcABJ5SBOFVOdaTP33hM45ZSVdbluLYKYHMzouS5lTd2PMQ2vl0pR0Tj_khzbLE2IWqzY-BIg2WQxDKopoibafgLXrUMvl8gdgcpvKNiCaFLFdWWu7nuMxpr9fEMnU8frdH3WuJ3kLWT9kynHTbb5WBDClXmyn7MZduOik2yqZEZj1LB6aFLs6FUDnHmjsIik-jWinCyfvRTOmvamLgqnZzTKGU0ayOPOwlUAuf7CPUxmjEZLsKEbUGzqH5AOK3YIPzW70fzf8ozAzcH6qRajCsa5zumWYW4MjMAUVoYYQWjHgFerRw1rhZWhowQRUXbMTyoYsunIvYtULBSKnmUgPD0SWnFGj1fAYKGl5Igvzyp6IJVFz12mh5usxVRvsyfbgTKlSxxQ",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ3OUjcDkVxuElToyWLYCMiTxV0qfN7JAZ7vHGG50oyqFQRsx2tRpFvajbD0vOZ7p8Fruf7av69CdJ86OlPrDc3JIPdWDc4dHpqLS18_FPX2fwTZvi1RNBQmQ_Krw2r0bXxutp31RJUuApmf5cK4pxVPP_SmryhC1L1xYUqCBeZO3ge4KTqRCX7BJfyJRDy5hSv13sXg0F4zjE4GTqJBf6zesSnW47pxFK8_DNmtjjeHww_aWTUoFkl_s8xAwfQtZYeqhZ01qgS7zlK08y235WsWLKINPreerYnZm04sXb2Yscy6TWxx_aP0JCeGiyMF7IH-r2SvA-O8cUvLtfmpcRmPGYnywoJbdN5_1vw4dWdD1XJaVJ6NowjOHIAN3YLrwfk2-1Ez9FRp7rqFSTpoNdVyhnu8GKnAEyC9yyvDAuWm1g",
+                                        "places/ChIJTR30n_eXIw0RcrUR5K2DPJI/photos/AUy1YQ0ApdGdrMQwEW8TiwuTD0NLPuS-ACLNKL0kj90OwgAHgFpaNTB-hYD-ZrX242szD2wcNY6nEZvTUmO67vss_V2ttxQcxZRpHFtJSD0HpWmDogZuzwaKilHUm_tR40mptTp5g_kwxisNGh78DA0kopNfFkDYWGY6I0e60MsDkw2dOs70XLSHHyYikaL12dHyvRp1WLLWtWjWLezc68i-1GnpLQuVuNFQZIKX9ZAgPaP4av-gMQ1IfREEb6SJ-XSiXRGeLiMi9STu8Cg4RY5o12kX3zjBcJ512DfkdECqMic8VR8l14vqWoyL1SlPARyC_nFx2GqAAj2pC3PLGfkprM56dejbfV76h25ihqXsNya6loxUHvClPnqKSi-8DPYLSI0i7e2uAym3WkXQEDhb0z-0apX1a17HHxBAvvETTX0"
+                                    ],
+                                    "accessibility_options": {},
+                                    "opening_hours": {
+                                        "openNow": false,
+                                        "periods": {
+                                            "Sunday": {
+                                                "open": "09:00",
+                                                "close": "17:00"
+                                            },
+                                            "Monday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Tuesday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Wednesday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Thursday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Friday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            },
+                                            "Saturday": {
+                                                "open": "10:00",
+                                                "close": "17:00"
+                                            }
+                                        }
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.4,
+                                    "international_phone_number": "+351 964 497 240",
+                                    "national_phone_number": "964 497 240",
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-16T09:00:00",
+                                "end_time": "2025-04-16T10:30:00",
+                                "activity_type": "tourist_attraction",
+                                "duration": 90
+                            },
+                            {
+                                "place": {
+                                    "id": "ChIJwxNQfQSYIw0Rt8reFcGO1Cg",
+                                    "name": "Obelisco da Liberdade",
+                                    "location": {
+                                        "latitude": 40.641718399999995,
+                                        "longitude": -8.6539101
+                                    },
+                                    "types": [
+                                        "historical_landmark",
+                                        "historical_place",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ0i2M4Xq3bVjW5TOfDC-hym6q1G7ZCAZJsyWKSqXuq0ji9U2lpCnTSww2IZcNpTIEb3fi6OZh196OihOK0_5ey_JKfuG36_5LhFc4UKpPbbBa4ZuIjh9qsaleqZbe61cFk4L0BtK0ulVf3pVTQ3kRGsuIOlcdMLf__A7xwB_ckKT4R2Ers2AY-3mtpzfRjJhAkffzQWXH_dLVRtnciqYV8kf7Gc84P0eeSQLP2aFinAM0q1sf1vjEdribnK_ClXwzGEUkgiTBBXXugsJAYJJ31IBeHcwVaz--4Dxo9-NjeCwzVgIhFWVwvttO5W3h4M1CD28Yr50ujfLcteSYv2RopP-Zh23XaQ4ITTT2zSJ7U_DFn0YC8ofs2H0ZnnC3FAoEUcfcobzbXc1UiQftP5-ZHi-dZWw1T6aN9dXX1z9HdwxRBP",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ1OmPzckhlkaX0ClNXj9qXclWXrxeJzpRHKakWIh4n95crFgiokYFTtiPApcrNW92tuHQX8NAPALwZa_YfxIXbxlgy1TZbVt8pQpJauD16LPVA_KUvmi4Z1xnu1ovAS5n5Ms4N-WCgYYah6LVj5PFMdj1yjs4yzNkpb7kFMRt-5wFNsmH9k4ZLwDsGJELZiORqjDOm9GpXOEaMLoYwNXSd3u8kTQ6rpHbgCy8gLK6OHC1vsoNYnl6uDCG5J4FF4ZD-y7t8RSJltsNvtkgRoI4tsCRvzWitR-PUCEeRP2sdPdcMFv_46AL0TcZZXvu4icK0svW9TK3t-gMZZNl8TX5LOLmBgsu8Wk2fZ2LNziV2DtLNZSFJjTY4Ce852sBONFf3WaIQnqjKrkeYkfOmKB5AjtMlQnCkJ7FIPltFZXa7VJ0nv",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ01XlMeNtmC8S06yH2GZfP-Bt19fHjNoSnsaodu0K_Z6XnA4gvla9QLE4uPbtAcBUGCwHp65GZkjMM8UQC1Jxfy_ByH96RI2m7cIh0am6oS-3nOJX4ibJbiQVBIasHPHiJ1TxA3dhWlExOpc8k4zjkzrFu9_EBBdXo-noG3R5QKI59bf6uwz3oJPQT8au7xwbsThFpqIh6kdmw3WEdpWwyukekD4l0M68vD3ATPiF2rjg-C80H-xw8iBnfgo1hdfCMIfptrIG2tXnQsqFj_fezXHzGs8l6TLsIE_xe8WxHsHQso9bsqDWc0gHx76bNQAZJNf9gF66-qAdn6ok5rwuNRLAfoCUuv14JQWgoN74zOP2TRO-f75lnZfgwWTO_4oL02LOW9Cq0_CYcPR5H0QirmuQTX2NPwUS7vNoVEo2-oetc",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ2QYykvozOO7GbbskGggifFal-5aMxloG3d-Pp3YPQVkEObOmN4FOUqnUpdrKKNcVXC4-yG3nTUU52-YMw7xdESytV4YKlqTT9bsSAbzCLEUobn0t8mNqCL_iq5ru4cjvDQgkYzHLL9yWYtwRCQhdWLNwPPk16qp_iylG-OsFMxHtNkzvvW9Kh2cyCwpSDXDztZP58SqKMrlGT_7Gp3HljEmVSLWT9WFwk8QpjzbkJvWvKNgD-_-XAwkbWN_NN5a1JwrWmzA3uhT75kOHTJd0HdOMi2urb939yxB_2Sv0qlAkbVbFPAiWPDbQZQRoIetzfZeAmBuKmI5k9CCZZyiEvDAztiLP63nVChwwkIL4Y7UmfJl-VeqrpuFC6HOXD3wFk0jq9B2qwLSp6UOuTZnzK1GQrTrw7vpq8BM-RPJ7Y_vKl1",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ1B_e8GkIb0F06PU3lLdja5Mw3SCVPdPKnYKCqjKfMf8WFqymemEb-8eKqcxMHceg5WpddGy5rxKlS0NuRrF__sznPgZXr-fnNTHd1uZcQI_cDr1chJqmZyHK6QqPDQJd7TVJNRlPiXHmoyt_7q_s2qmWMSDEmxBEGZRSb0WXlNfwbyhTtOTfPTgXs0f6oUUE5Rrw3c9ooTFHudGXdvWyzib2BSaxtSEnAMoQ8An2riW8w_fSVyC0DrnD7ZWyCh4EMy93J0uDR3KhJJMu6vGFOf4Yvd4Gh5x7sRNOxOWYOCcWcUMEDBCK_NfWGi1iEmdBq0M-CYrSWg5ahy2v-mpmghe4vvGQSIObhTCA-1EH8Y0308MSmcWF_Gj28ePIq2leeggg2fsKza-PwEP1ng9c_NvJbi5RnGkEUxhe-l2BJZyUA",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ2NVsyLvdh9SNdGNcO0BsuLlMU88Zz-H1qKID3p3OEppy-CPfmeY6CRcUwwPjGVXn3EYUNvUUzlFfvW-MnDgsCJiDlz-gWLt1omzv5Nd6GU5vsONf0eUtjTxTCqApO0lV9zdnpD7Jozk4rR82U4V5vPaQSelWvh7qiJdIy86VuOfj1F0tmGWeuuwnS-i38CfidhskHBVo5bG-sVv5V9pppZlS2i4KwZs1gaPTYNdCCVbg9ido29UPc028dddqqdHn_BAfO323Wng9A4xgqyrfkbhleRqFKcjii6GLcVvSGp7HSFpwvn4bBZP7oQ4JcKeRH_4c_2TbzI_klBexZAPZr44jqeiR3vFpE5N3jecT-BpTBgIDoywtVPs-7FbnDBmtVgYIKp_fb3MCVj0Nd601evP18bMokg-wl1Ii1priVFGQ",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ2jmokmy3oaEG0EgbsXDTXjy1YZhcR6ttSFn2VmNqWf5RY0_5yeIs1XyTkAkOJhUnXKGdmVN3rDvPn33OGzZPehyN48COovRgDEgDayKhZSsW507YWMPYM86rp6ZsUWXlbrDriSqzeTwF1G2_ktvDJIfTzcw9kr4YpraOWL_i4tl6rwqqgCb-5MBLaRONRhfg4sfcDyBl0dKleGGKRdhnb_7MPCHENEeT_8qzZQ1QGk8lPBXjfphZt3GwKbCm2gl5O4ejkm-rpBRwF4HLuEUJtNKFiZZx7LhaHnFWVRtR-SPVWJMtmkNA0svCnPGwVdDwcmcqaphzJu6-sE77duTkpVK2uwgcegfksaxHNjQqQS_uPajTvLFNjmEXFvLxj0ZAQyddA6HxniUWhYY1Uw_jvDeDxd6zpXLSdgU0IC-BfbI4I",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ3kWGeDH3Pz2ukNx4Kpm8Ob3_IaxSIJgnZRi0BlY0ziuzujfKzGPCnr-5W8L3KTgjP-hS9mcYaxZiH8ZPWnIfkZbylfB3W0twz5xRKjEghoMVFL9_b11Rtwdx-B9_kegjtrS_e1ZIMa4W2uwKFqvj2KJLTmJQ-CfpoKXpBX09VW_olVXgRAFhzXduSBK-z5ocFDCy0IWA0SkIPPS5rgqsdbv2S13jRiuSs6ODOTYkbvt2JrlkSlFVkmsQq6haUPDz1pPT838fmUUEFnh8yT2zg7CEqvO1UZXN0E7SvIXqEIXo9vnXAPT9kgzZyGifhvQ9WYD-P6IoWfYRwLxLmyH80f50H5JAOTnTdN-WqH-joVmjEEBABvtlV4VsZwnjCDQT4pxTg7nPgmucBC_pNEOdbpj0iadNBBtyrP31eeXgR2BRcY",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ3IIQS0yHgPojr5JcDIPsIUQJDSXUL7IpU1jKbfBrVi_sEi-M_ItcRJN_pDSOMvoKfJCoGJ0eVta7O0OOCtoTd7guWakTboJwl2kDODJYVl8PZ127rKJHS08sdH6_o0gz1tcMkZNzvmg67arvSXJLxH3v-2uw36azpQdVY8auF2JsxHGl1xmtVMk1X51S1e4yX48Ag2csb7DVjXSFYwIC8AeGv3gKekFHPjD1bohbfOvGYSZvf0BDBlasnoEoYcHAjJKrGPYzuTqWFklDahVOYVBNZJvBucy65WebaJRxgv0MhAqkc83gvVcYBFjsb8aeh3P2y3tlOVllG_3Ghc_heuA1Zpy3EmTXzsfKIXwSmKyPItEV6C3_e7L1hPTTHjWVm8tHpB9VtMiLBoBFdUX3a597KC4pnI1HqpjXwMnUqe0HZR",
+                                        "places/ChIJwxNQfQSYIw0Rt8reFcGO1Cg/photos/AUy1YQ2mk6TWtpiEepHV-kfOYpt-vIHRjTijcKmIAxXzekTwqf6EhVQVVqvqU1L4o086bw6sqgKA3cKPtD26tJ6MF8In7r0Q5hhYLkMqyf4EeeKg40-SU1w_wZ2C_zt6yTH8TVWe3sc365L5U3d3XaZLawfbABgLZJPD9BMuFNrBDZyYRkw83WBkhdpuEdgo2-Y7CSA3CTkruyzFilzyX0Uqi8cEVyS8NMD0hI8AuL08rgg6r1JAh453YavOvidXx0uBwTuULovNlcpLbGR1w7d8b81S5Q0KfI36rk0e1ZHESiQuH53PhAMokcmqkEQ44WBmeheQ_i7v3ENT5Z7GSHDrOCxH9fTdnhngWNOFWYIHImnS_nG13Yq8_HxaifXnOm1A1BpMlgXic_kUPkahnkbxR4rBjq2hc7l5mAEUAEl8uaQd20_7"
+                                    ],
+                                    "accessibility_options": {
+                                        "wheelchairAccessibleEntrance": true
+                                    },
+                                    "opening_hours": {
+                                        "openNow": true,
+                                        "periods": {
+                                            "Tuesday": {
+                                                "open": "00:00",
+                                                "close": "23:59"
+                                            }
+                                        }
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.4,
+                                    "international_phone_number": null,
+                                    "national_phone_number": null,
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-16T11:00:00",
+                                "end_time": "2025-04-16T12:30:00",
+                                "activity_type": "historical_landmark",
+                                "duration": 90
+                            }
+                        ],
+                        "afternoon_activities": [
+                            {
+                                "place": {
+                                    "id": "ChIJP4qKgAOYIw0R4skHQv_TvkQ",
+                                    "name": "Aveiro City Museum",
+                                    "location": {
+                                        "latitude": 40.6415874,
+                                        "longitude": -8.6545386
+                                    },
+                                    "types": [
+                                        "tourist_attraction",
+                                        "museum",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ0_2HFGSwkiFNXFKKIKCOUXJbgfRLbZ9KOEWKWBip6e9coqA9Rip1y9I2lIrKLHUNoh__P2hbIARq2DW0zBrqSnLaIeRBEeBjMhYu7WHyOvlS3E-Bl_H1Yr5gfqi4KiMGKEbbct4STr3lA21Wa50uRyBN5frKRSQZ9MLYEk5PlB1W4MvYpNItxtVghjWXq2fL4XrMGnf-u5KaiCo1zOSBWDDVniUGcX1AdJguG-qdQxk77X6hpU0Vt1AfX_LHFqGwXjNHEHN169gf3MoiaW_NJFmha92MSXqo-0jzgVXAybT4KSMYhWwifom8sZGvRTtYXXJzUHxlNw-8htHlqj2bOS2fb9ykNe9Aq_59IRbeiHWd0RaTXGfh65lOpN4QfsHmqrDbJfELt_iwaOkEORxQyMj3Eu_QBJOc8-YV-SqFH-HuFD",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ1xunclX8h8d0U2sg-jzaWQLbQkioj4rIc14ngZX34face_Xx_U_dDBHZVyRF4D-hN3Fy7SCHCBnhlII-IlXK22MlHB1NceDwfK4eakpbE2NgOHSsxujLVA2GyREI3eJhYYdioSGY8inphax3mS6zopJR00XN_arZiB5z_8s_6OKWkjxE7D_KAjiKKSNBq_3S95ARy_VKja0ARY8nFUVwzs4bUNOApz8O43yDWmdX9dR2a6YKDhGd1-3ToE7h92OGXzc1KTSB8eEWm58O0-9TSkiy0lj7XDzzB4TB3D08DwD2uKfCHNhvpy5bcOi8tdOS55j8-ij7AlYIevDautqdiJCBfhcBo5JY6iGFdVBZtsVGzeMo7yjxL-LZpLWpTk_gYlb7U5ePW74JnnvmCLg8bskGnK4hrt2azWg8yQRAG-oQ",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ1Y_KZLMHK6zoYJDYASQ0d941_LiWHcC2h1wepPrR18GmC2MtmnsAdhfAL2HLoD6gBczzVV6Vgxf3Lie5qPnx2uYBrAvMG7wEOUNd6xLGdrZ6Ly0xhNnpA6I1UWO5kVfG5vEs1N9Df9zKb3NsyBrJrajttV4MaFQebyGPC9JXTyF_kOPfBDl6mAvblLM-943SSI2xyjz2m-syzSbatnTGUmRtWeVVAdQ8ICttGSGFsvIQuEW4cAzHw0F4hPA4w7j5tEi2m0DVKFIodRBhFN91aRct4RyQRpP65EQrldzhyL2rDF4RNkiWrRjNRDjcu0Ney9oTrTlnjV2B9IGnrNhd28228LH7_67dXnu4T89FnzgaXqQTucpJlTNZKIpq2HyaQDzt8l83ECQ2SrGcv3GfV293c_D_c0O_J23aT3zeJClA",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ2wGrLfgK2Rhu-7FQIamXyJJ8N_vFDl7H7zt0Z_CUBWPnDrDia3PDMSiRwEs3ID-fKpKVRZav15a-xZm4KYfogABFSW0Gv6L28RT0VMHlJ2a1Nej68jZnvONfuT2mYglV1rrsAGPvaRKE8nsEqbPE5v84aE8IjWaGPcf-YGn7iMFAfrVai-5n-gvhfrU-Xvm1eg9RXA2S7VmzizUM5pnJlZVwD1ZJxQbOQ6lLL3Vb4GAKswyK8L8Oyn08qFGA6RIwoKdrBPZI85hZsDmcezCY-aLpnavWd0wdiKpFNEwC6HWA012NAsy7H2bKUMbEoflBbN3IPvPxk2UXQT8WW3f192PEpGtqvqhbW3-gz311_NP-9LW2RPvKVZPVi9TVhY6kKC-_Jl_J9YF12P1-9w9KdGuDCXnLSG0n8cvEQsSKhQT_4",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ0boSzotiz11pLnNzPSy8FDbuKPn4pKD8Z_lLlKKKZVcdJjd1f-6PLzyl3JzF6QXzYrNcBE9HKL-3qEoDGfnWRqJoplifW_oaipjcWWgv6_Kmru_wGd4BffY89cR92mDasJ7lppciAs5dAU3vUOxEx7B_G0_fbkIuYmAH1Mdf0io6Jps3hrM-iVn_A1tvA_BABhSweWQib5O5OBhWxT1rSxVHFPzQZXaltzQgbfadcZfvOGTh5cGV-06Q6Kb4PNkX0gqDOW0hpcQC09m-lxhuoEvH-ROpihSAyiDFVs-JerBMgPJhjyt45mk2S0Hb8MGySs4S2g-ODQbiBdkS0HlDU7BcZlU5QRmuQzi88VLYImO22odXx6nSZUboAy22AJ3NsckDKTI_-AA6dzCyMKrkjJMUY2Er0mojYR5Hv3cgPJAlE",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ1cVYx2Lm7Uk1vA4XeCpe4BJBvZbaKZhKUkN99P2CNOivH9PT_tnZUjNe2uLjfv1LXax7D5BxQANcXYroVHv3Lx2RaXP8ML7wUBJhbcJ8FQ2qszLSrhVngLXgmOkhYrw469JxNmq82MYuLZPK4hXyIYJAgTineXesuDepN0eshU8NyGRRzfdCtcQQtgynDHEIHLjcXPCEkL9oCrnKUjQnUX5Z4-W3wT2w9ymFxk8D-AIUHWCtS3zvwMIbNjbc5aDrFiIuhLwvDxjydKlF_Zqh2zoPPafP6jGAqgdd0syUKuIBS8Kf_2QPFsWv4XbyQfpgag4gyiptODMTIPgWGQWGOqfzd_aaBYTRJuUFEppxcRVswHkYIusTc4OoMGTdtrGYpXR5rnaiS7S88vcBNzllBpz4VuSJ7Ty2L9VgnbpsM",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ1ApijxZRRvrTgvUypzNYifum-suAfHMdzTqi4WjCtTWE_tvQaMQROeychEspkyEmKGG_OpeUQ6qcJc-C2qSUrN5iB3TPoE8tOP6SY8r0qgQIOp59BdO_RcJLvH5PdyT1R1k1oUH7aymukaxMZvrLzF2cMyoez8USyHZdiqK0SM4IihqNTf24kPXCAInicQXjtKxW9hPUEOo6c9WwpWL8No5JP2i6g6bffVDUQ41vone3EZKNGs-0H4Pnz9aqWTDvQy1PEgF2s2dJVHTU8XZaM0ZIhrsuUE7io2ZFWr0wK2iTgOTN_b31yK3v-v5oiBLsB5o90vlsZxwTUPjdpu7_oCzwINMLiRb9SElfQ9eWNElSOXzJG3h0MZW_OZ2BbJ0C26Wmd4PlmvfvydX5WFsja5I_w3g90m4ifrsFJOJ5ESphk",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ20TGU7TCQh658eV4V__857YTwLPPPIM0QotN_9tUGHVILzje9y1lTFMV9ahGo2NzF2o7h_iwq3eKP7ekqgXqssACIVWtKSG2GhuzCh0dGmKiE1_yL0TxUsdcz4V57C3N-Qz161DVg6G9UhvXC6xdUiVIzgLvLjwAihH5N6jtxTIkeT6U652lkP2MLs7mAFzB5_eEfxHTJZoIFZHZ504FYc6VKgJHHs3u2bhw6LmRPNLlSkSq-JYYzIbnVwL4MAQlm745Im9CH-lpE75xAcypAxBjIqoE_L7VDHqIkSy4GrUL2PSvG13e-Bloxy2LC2gyw4ypY6Or5nDNuJA7Qp9jK2KkflJtPVkpewwr1b2GoWytEolBUq0vrFDJ0IGeWiCkOrUDYPmn0b1UZ1Z1LU1msB_H6R6GN1EciAXY5uE83nxg",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ14HKlbfTwGOHRjfBnJ58Dfc_gg1jOAb84FvwIfZUmJeb5_Lou619JRiO_B-ZfpoWOxeeUhZSkMqSvitPiEP6DqDBQWhHyeMcFxxeMqXBpVgUo1Bmy5o6JQ0bMBRwkVsWwix5X_ZyObf9iaOaXyde_z6KR-emzTSo5_vPrSpYm9HvuzwAjNLCOIH3nZZXbb9A3PoNq_QQjWmTqpt29U4mAdL1UkTWbcCBO8p88RcSQR8nvUVI5EVVrjEReFKqPOWO4uiZJ06rXSowhhja6cuP-or0vYEMQfHSHIrzzI95ZD5ueZjAFhdFtLcbJS8UFmCQwS1EfRy9McyYQTmllnqfR8ptENf88Suqw20zQxOxSXjaqt2QuUIWdfDhjSLCGQWWC_AHO5MOuGFUHuCKO4Pz3PCAFatI0Mv07WsPDoADiI1A",
+                                        "places/ChIJP4qKgAOYIw0R4skHQv_TvkQ/photos/AUy1YQ260-cuLxye3Z-mnNfm1nS-xyDTTBzycW3pfzoO_yGuSup3FAjdOQUXX7Y6J5mqL6HrDfzIYDPXWWz1EC9pr33q49pGW3QqWQE8PysgFmI4Q-KloSiR4Snv-a5y4l-hQVoB39skh2_4ZzTfhJXy4tAF9fYy1htpjVAkj3UFv-4y134YjdSITMbhYIo_Cd1CjMsh2glv77r0p_GISFadE20sPQ3IhYDHl9mj95Od7SpUGPE1THwyrXl7BCNZMpnaLxCUjUTwoSWWZdeCTZVu0HU79-f2ws9MAK6b_Y1pypdySuIsl8udhD66yZpq1QA0G-j7dtC21cx1EM3blSlpTGtxlahwwOVkf-ow54TCNKj4lbFSnRB70CXSwtYe4odRn2N3sxyMtKJQzTD_vBv7I0BukLPUzaDOau7z-D87ompkqXd-"
+                                    ],
+                                    "accessibility_options": {
+                                        "wheelchairAccessibleEntrance": true,
+                                        "wheelchairAccessibleRestroom": true
+                                    },
+                                    "opening_hours": {
+                                        "openNow": true,
+                                        "periods": {
+                                            "Sunday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Tuesday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Wednesday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Thursday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Friday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            },
+                                            "Saturday": {
+                                                "open": "13:30",
+                                                "close": "18:00"
+                                            }
+                                        }
+                                    },
+                                    "price_range": "UNKNOWN",
+                                    "rating": 4.2,
+                                    "international_phone_number": "+351 234 406 485",
+                                    "national_phone_number": "234 406 485",
+                                    "allows_dogs": null,
+                                    "good_for_children": true,
+                                    "good_for_groups": null
+                                },
+                                "start_time": "2025-04-16T14:00:00",
+                                "end_time": "2025-04-16T15:30:00",
+                                "activity_type": "tourist_attraction",
+                                "duration": 90
+                            },
+                            {
+                                "place": {
+                                    "id": "ChIJu_pgTgmYIw0RCPh0s55LJwE",
+                                    "name": "Ovos Moles de Aveiro",
+                                    "location": {
+                                        "latitude": 40.639598299999996,
+                                        "longitude": -8.6447864
+                                    },
+                                    "types": [
+                                        "sculpture",
+                                        "tourist_attraction",
+                                        "point_of_interest",
+                                        "establishment"
+                                    ],
+                                    "photos": [
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ18O82WOtKZxRocQXPjHx7fK9LE6V4pDxZStvsqpvJ1k84raoTXCGIWZ1oz3OYrEOT2lUZ_Xee5R8mySPzycqFgbrkHOOGA9KWVeODJA-Q5wjnqtJUjAf4m6VEUA4SwlWydbs523WwkLjdcSvopYXofY0_s7ApUhUGNOxEmybA8szQEPJcd2HQgRPsGnWsuWSWquz3WCgGVK_xM5TrXBmfw8zyOtVIK2tJE8cIsp-1G_wcK5kqvA54YnApDy3V3ie0B1tu-EQJ2t_QkE7ObD7AgklLpyA_JKKa52yChl4y3yA2iWBJkVPUSPG2rlA434lrvvNY_5ZN2luFpIO4QqTHgD-zL4THwPc6imxbuZSUc5n3TcU3cVEuOnKL9Wq8X5YQ_GoN2-8MI2LWt8LycwH27JwNJKdjlUlvAS00kzYFLbNfZ",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ17Gz3enRcbsejw4iSmbj8o7H7Wv2aHAyzdZUyaJad9Nd6xX7yxKtS-owL92ZBvpzJGI8Nx_qlCz9ZoJCWGT8mcK6x24Y_wZA58Gv76n4Dd72I8MRmQ6E72QCS34dCzfeQjMlKnkKkUVZSWxha8UIXZO3Ek2v1n6o6Bl6x1melcwUtBIaThmbtCe8g9Uezbjcld72M1jVR8LKqe42qosQWc7U88CezF6xnOc3zRhqedfv7nouMSh2WO_dCDuAmaaUkwL4VlDx-OF-UeOpanaHM8wM4VtEMn53thM3tFkQuPAxnOruPdGK_YDb9XE_-XmybMABhcug6sVNEETeb8CuIqqoyy_VxlCBddjQCjTWS5TKruIE0gHNxQRTo61KQUC1syoah_kXJ-uaPH4r2goTblM5pP-JjpMYB91cBt9nKVFg",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ08sfU_l_6iCnXKkN1LF3Y8M7iu8YJC6KECZOpsUPGheB-bOXtqyQ5FIHrzv1wGKx8_ZgHn6d3E_mHEb2b9rLVmRz753CpPh5DdH4H0XFEG_Sh1ZkgF3Xlgo4Y91EkGH0q9HjoqLNZQZ0TpFoqQDzMlArvVIrit6yhM2jGV1CzUeAc-qg3pXnBNrab4IFsoqVBv3Nnkz48ONDNGNBYZ1VsLX-MYLOQMOc16q5oja5L0Cz9DkGvARpprSTBb93JTXk56MZnlmu0TmHqgCxWG_qHsyyB5OL1W9_xhAp8XnKI2JeR1qfhAeM8yIUXcbKneYD3MpB2zscUWZ_ZnzqBCUp31TyV6ZZ-bSgBudBolCXxcZAner1ei0RkxpDeO7tGVXB_7KGEYMGWzGPrIvSU2lUUXwW64ZQMzXmvIoRHLd3_UWQ",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ27QH-d2mT__8yXAVXSskY3RfNF9gNbxc9N0MoaTtEBQ8N21sx5q11bnulHHdBFH_Y1fu9azn7RnWHK5MHgj6cLEKXksUZyk548mZb_1C8NkWaJ0SoE-cl-DGZgjFCAXJKtn3GPRdRrZJCNr1-p_iwqMrE3YKeSUV7Di86B6TA2w-zglqJ0NzMG2bw2CvBfGEY2lGkTB-nVa-yyPfH86INxM1oalRAn-BRtj8oWUsRZc-1vRuGZKVMLKLHi4kpm860grNP5AxygOFQ1L4O848-LPaMWHgHzQIZJAB6mS5ZirlmRHKZqUWVt6Zrvhe8f08RGrVxot5AfXMNlBNbVLrY3AA_jsZeqnecH4oai6Yi72apZEyZujOubcWSJdnPbC-LwsNqM5C0Dm_J9S95Ph6nIVdbHa7pF3QB8K-grbejz2w",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ2WUtqkepXORi-xzlDPrtroa79-JXPMsUaCFzUb30avUkcjRoB1CZKJ3s_YO9V1bM6maMLToCtUw2Q0URA_d1Q4z61jOPYQgYU-aAT1mHqcoiuY7MwGTPWTOE8a89dcbFa9b9TZrkkpf-82QjGtCzvjZ2asRiY4J4RZsKcFb-2A8ulUrUzVpR4zoXOEhZ05-3PuCCOApZIIEy8noonLSgiA6IhcEytLF5OG9NgSYVJeJugJIgtZeU4Z9DEw2pQlSLTKkKhZYH7EgYPr4dnxdGl91e_YOMeLYgREMvFt82uwqxxE1LlyYfiTZrgvg7_dDJZVJDVrncXmlIfdprTuVixJtf1DG_pSHwCW-QDH3FF_56Hqny6m7x5XWeMHN_XaRNNsJHgiIVX9CGUWFjVgyDgIG2kwKc5vf0a9qh7UiGs",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ0XXSfENUII13M3m-PaYtb2lCEwvlmxsMeV36wnDfRkxjKBEq_cipEfeb_XHmKvTIqh69mKZ3fPUiDpogmbZo13Pikq41FJJMQ8NlNYauM8NOiYLOq8A6ogUksDh2DZkZP46HB6F7GzEP1jgwPHZLzRwscHwlgGOaYZD54qzRY0UAHsvNHnRBC7RmKANTeDH3iPkeJu-rKtuF7ZHCA-2pzEGkF3oQJIgTxQLKMLaR-Ktow7DDmylOXT1WFqMp7GF43HhEDPZt-tOwFiQB6eSUJbdOhxi4Ccg74dRyV-HCDxqKD8xddoyH3T80-Bl2UFvmjGZscj56cN-RIkiaagaG0ScaoMbm5AplBaP5AzEkmwSBMCPNEsm681GzxTghZzVvZ-NLisfpzzPDmyGuZKnR9pxNsk7V_3oVdrFyRzqNX0Yw",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ0LFrjS43eYOe2pUjDEqn4adaXI3ZuqfGB4L5DaF2Vj6YeCYa7CksMUthdmYs_xpOKKF1MpJfvzxjMBZ9gv5RXuEZOsUH9F8faFH5FtgXwZSu5DCzMQhuLVTVR8nrci4D4mIABp2sDxVas1cNl7og_LtTonAJvk9Fsu6W8epWQzlKTeKzsIuEkHmf-vNoOUbe2l6zvN-V8N2F_IEeZuFV_h9zTa2XoVKBpsXs5WKamJf0GN3yMywKtmT9CiDb-kLc3Xp6rDhycCbxEmz9LgcK5YboT5kSkynw050s7_6akEFBNpfV-23wTSGLuIkLCl3cobLlxwGy9JStWvz9pouKT4zTZpPayYeA__SkSKEw9N1YFJLI72zr4idsMdA45K0MVnrGgRmhFlBISk6LjPdjseVyEbCBFyVahY5TxtzgwA4myq",
+                                        "places/ChIJu_pgTgmYIw0RCPh0s55LJwE/photos/AUy1YQ0KTXSWFchk-0BG4DGBzsTsdS6lcQS8nNjm6ymWbtkOxwhiD5lcR3hodYUPR7PZYCP6mm-xeSzoM1fng28c3kCN16SE_oZh4icyHYwjfgpHhgJT5dOfRyI6YLAdtfhFwz2Swqv7WcaXaRBpMqtbwsov_QNL3LEq2a0H7LSr3nKzAAZRs9NdFb9GRv4x_we4b9gtOvRDrb_Bn3hBuAbNYdNyGOD28FwbcXjFikACDhYNibFcIDp14g0q1kFflJszf"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
