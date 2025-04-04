@@ -167,6 +167,7 @@ function Forms() {
           <div className="relative bg-white rounded-md shadow-primary shadow-[0px_0px_20px_-13px] p-6 w-7xl mx-auto my-4 mt-15 overflow-hidden">
             <StepContent
               currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
               subQuestionIndex={subQuestionIndex}
               totalSubQuestions={totalSubQuestions}
               answers={answers}
@@ -184,20 +185,19 @@ function Forms() {
               )}
 
               {/* In the Forms.jsx component, update the Next button rendering */}
-              {currentStep >= 3 &&
-                (currentStep < totalSteps ||
-                  (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1)) ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto px-4 py-2 text-primary hover:text-rose-700 font-medium"
-                >
-                  Next →
-                </button>
-              ) : currentStep === 5 ? (
-                <button className="btn btn-primary" onClick={handleFinish}>
-                  Finish
-                </button>
-              ) : null}
+              {(currentStep >= 3 && currentStep < 5) || 
+                (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
+                  <button
+                    onClick={handleNext}
+                    className="ml-auto px-4 py-2 text-primary hover:text-rose-700 font-medium"
+                  >
+                    Next →
+                  </button>
+                ) : currentStep === 5 ? (
+                  <button className="btn btn-primary" onClick={handleFinish}> 
+                    Finish
+                  </button>
+                ) : null}
             </div>
 
             {currentStep === 5 && (

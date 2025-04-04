@@ -4,7 +4,7 @@ import { FaRoad } from "react-icons/fa6";
 import { PiMapPinAreaFill } from "react-icons/pi";
 import FormCard from './FormCard.jsx';
 
-const Step2Content = () => {
+const Step2Content = ({setCurrentStep}) => {
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() =>{
@@ -17,11 +17,11 @@ const Step2Content = () => {
   const handleCardClick = (card) => {
     setSelectedCard(card);
     localStorage.setItem("Trip Type", card);
-    
-    const currentStep = parseInt(localStorage.getItem("currentStep")) || 2;
-    localStorage.setItem("currentStep", currentStep + 1);
-    
-    window.location.reload();
+
+    setTimeout(() => {
+      setCurrentStep(3);
+    }, 300);
+   
   };
 
   const cardData = [

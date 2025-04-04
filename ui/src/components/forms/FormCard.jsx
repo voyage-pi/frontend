@@ -22,7 +22,7 @@ const Card = ({
 
   return (
     <div
-      className={`card bg-white rounded-lg p-6 w-80 h-100 items-center justify-center shadow-[0px_0px_1px_0px] transform transition-transform duration-200 hover:scale-105 ${selected ? 'border-1 border-primary' : ''}`}
+      className={`card bg-white rounded-lg p-6 w-80 h-100 items-center justify-center shadow-[0px_0px_1px_0px] transform transition-transform duration-200 hover:scale-105`}
       onClick={handleClick}
     >
       <InformationalModal infoSize={infoSize} title={title} text={text} id={id} />
