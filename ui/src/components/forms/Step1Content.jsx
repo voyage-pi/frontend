@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
 
-const Step1Content = () => {
+const Step1Content = ({setCurrentStep}) => {
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
@@ -14,7 +14,12 @@ const Step1Content = () => {
 
   const handleCardClick = (card) => {
     setSelectedCard(card);
-    localStorage.setItem("Trip Dimension", card)
+    localStorage.setItem("Trip Dimension", card);
+    
+    setTimeout(() => {
+      setCurrentStep(2);
+    }, 300);
+
   };
 
   const cardData = [

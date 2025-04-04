@@ -7,6 +7,7 @@ import Step5Content from "./Step5Content"
 
 const StepContent = ({
   currentStep,
+  setCurrentStep,
   subQuestionIndex,
   totalSubQuestions,
   answers,
@@ -14,11 +15,11 @@ const StepContent = ({
 }) => {
   switch (currentStep) {
     case 1:
-      return <Step1 />
+      return <Step1 setCurrentStep={setCurrentStep} />
     case 2:
-      return <Step2 />
+      return <Step2 setCurrentStep={setCurrentStep} />
     case 3:
-      return <Step3 />
+      return <Step3 setCurrentStep={setCurrentStep} />
     case 4:
       return <Step4 />
     case 5:
