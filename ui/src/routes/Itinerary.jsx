@@ -27,14 +27,85 @@ function Itinerary() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/itinerary.json")
+        fetch("/trip_management_resp.json")
             .then((response) => response.json())
             .then((data) => {
-                setItinerary(data);
+                // Set the itinerary data from the new structure
+                if (data.response && data.response.itinerary) {
+                    const responseItinerary = data.response.itinerary;
+                    
+                    // Prepare the calendar object
+                    const calendar = {};
+                    if (responseItinerary.itinerary && responseItinerary.itinerary.days) {
+                        responseItinerary.itinerary.days.forEach((day, index) => {
+                            const dayKey = `Day ${index + 1}`;
+                            const dayActivities = [];
+                            
+                            // Add morning activities
+                            if (day.morning_activities) {
+                                day.morning_activities.forEach(activity => {
+                                    dayActivities.push({
+                                        place: activity.place.name,
+                                        time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
+                                        image: activity.place.photos && activity.place.photos.length > 0 ? 
+                                            getImageUrl(activity.place.photos[0]) : "",
+                                        transport: activity.transport || {}
+                                    });
+                                });
+                            }
+                            
+                            // Add afternoon activities
+                            if (day.afternoon_activities) {
+                                day.afternoon_activities.forEach(activity => {
+                                    dayActivities.push({
+                                        place: activity.place.name,
+                                        time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
+                                        image: activity.place.photos && activity.place.photos.length > 0 ? 
+                                            getImageUrl(activity.place.photos[0]) : "",
+                                        transport: activity.transport || {}
+                                    });
+                                });
+                            }
+                            
+                            calendar[dayKey] = dayActivities;
+                        });
+                    }
+                    
+                    const totalDays = responseItinerary.itinerary && responseItinerary.itinerary.days ? 
+                        responseItinerary.itinerary.days.length : 0;
+                   
+                        
+                    // vai ser preciso arranjar esta informação de algum lado
+                    setItinerary({
+                        title: "Trip to Aveiro", 
+                        totalDays: totalDays,
+                        totalPeople: 1, 
+                        budget: 0, 
+                        location: "Aveiro", 
+                        calendar: calendar
+                    });
+                }
                 setLoading(false);
             })
             .catch((error) => console.error("Error loading itinerary:", error));
     }, []);
+
+    const formatTime = (isoString) => {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const getImageUrl = (photoReference) => {
+        if (!photoReference) return "";
+        if (photoReference.startsWith('http')) return photoReference;
+        
+        // as fotos do google places nao funcionam
+        const parts = photoReference.split('/');
+        const placeId = parts.length > 1 ? parts[1] : 'place';
+        
+        return `https://source.unsplash.com/400x300/?landmark,travel,museum&sig=${placeId}`;
+    };
 
     const sensors = useSensors(
         useSensor(PointerSensor),
