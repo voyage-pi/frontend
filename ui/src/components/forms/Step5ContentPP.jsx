@@ -18,7 +18,7 @@ const Step5ContentPP = ({
   if (!currentQuestion) return null;
 
   return (
-    <div className="h-99 flex flex-col">
+    <div className="relative h-99 flex flex-col">
       <div className="max-w-2xl mx-auto p-3 flex flex-col items-center">
         <div className="text-center h-40 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-2">{currentQuestion.question}</h2>
@@ -27,7 +27,7 @@ const Step5ContentPP = ({
       </div>
 
       <div
-        className="fixed left-0 right-0 flex justify-center items-center"
+        className="absolute left-0 right-0 flex justify-center items-center"
         style={{ top: "55%", left: "3.5%" }}
       >
         {[1, 2, 3, 4, 5, 6, 7].map((rating) => (
