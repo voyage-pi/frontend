@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
 
 const Step1Content = () => {
   const [selectedCard, setSelectedCard] = useState(null);
+
+  useEffect(() => {
+    const savedSelection = localStorage.getItem("Trip Dimension");
+    if (savedSelection) {
+      setSelectedCard(savedSelection);
+    }
+  }, []);
 
   const handleCardClick = (card) => {
     setSelectedCard(card);

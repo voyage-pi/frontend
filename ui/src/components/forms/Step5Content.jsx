@@ -7,14 +7,16 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
   const [showNewPreferences, setShowNewPreferences] = useState(false);
 
   useEffect(() => {
-    const savedRatings = JSON.parse(localStorage.getItem("userRatings"));
-    if (savedRatings) {
-      const currentRating = savedRatings[subQuestionIndex];
-      if (currentRating) {
-        setShowNewPreferences(true);
-      }
+    // Verificar se já existe um perfil de preferências salvo
+    const preferencesProfile = localStorage.getItem("Preferences Profile");
+    
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    
+    // Se já existe um perfil "New" ou se há avaliações para a pergunta atual
+    if (preferencesProfile === "New" || savedRatings[subQuestionIndex]) {
+      setShowNewPreferences(true);
     }
-  }, []);
+  }, [subQuestionIndex]);
 
   const handleNewPreferencesClick = () => {
     setShowNewPreferences(true);

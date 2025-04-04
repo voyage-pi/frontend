@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const Step5ContentPP = ({
   currentQuestion,
@@ -6,6 +6,15 @@ const Step5ContentPP = ({
   totalSubQuestions,
   onRatingSelect,
 }) => {
+  useEffect(() => {
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    const savedRating = savedRatings[subQuestionIndex];
+    
+    if (savedRating && currentQuestion && currentQuestion.answer !== savedRating) {
+      onRatingSelect(savedRating);
+    }
+  }, [subQuestionIndex, currentQuestion, onRatingSelect]);
+
   if (!currentQuestion) return null;
 
   return (
