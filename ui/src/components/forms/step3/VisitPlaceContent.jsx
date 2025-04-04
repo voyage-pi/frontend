@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaSistrix } from 'react-icons/fa6';
+import Map from "../../Map"; 
 
 const VisitPlaceContent = () => {
   const [selectedLocation, setSelectedLocation] = useState('Barcelona');
@@ -17,6 +18,33 @@ const VisitPlaceContent = () => {
     }
   }, []);
 
+  const myPolylines = [
+    {
+      polylines: [
+        {
+            polylineEncoded: "",
+            duration: 0,
+            distance: 0
+        },
+      ],
+    },
+  ];
+
+  const myMarkers = [
+    {
+        position: { lat: 32.61402777012159, lng: -8.656425489382625 },
+        title: "DETI",
+        address: "Universidade de Aveiro, 3810-193 Aveiro",
+        image: "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
+    },
+    {
+        position: { lat: 40.637322817325355, lng: -8.650697327204432 },
+        title: "Santos da Praça",
+        address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
+        image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
+    }
+  ];
+  
   const locations = [
     { id: 1, name: 'Barcelona' },
     { id: 2, name: 'Barceloneta Beach Espanha' },
@@ -60,9 +88,10 @@ const VisitPlaceContent = () => {
         </div>
 
         <div className="flex-1 bg-blue-50 rounded-lg overflow-hidden h-109 flex-col -mb-10">
-          <div className="text-center">
-            <div className="text-md font-light text-gray-500 pt-10">[Map View]</div>
-          </div>
+          <Map
+            polylines={myPolylines}
+            markers={myMarkers}
+          />
         </div>
       </div>  
     </div>

@@ -85,7 +85,7 @@ function Trips() {
                 />
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 space-x-auto">                {filteredTrips.map((trip) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 space-x-auto space-y-5">                {filteredTrips.map((trip) => (
                   <TripCard
                     key={trip.id}
                     image={trip.image}
@@ -105,7 +105,6 @@ function Trips() {
               </div>
             </div>
           </div>
-          
           <div className="w-3/7 rounded-lg h-[51rem] overflow-hidden">
             <Map
               polylines={myPolylines}
