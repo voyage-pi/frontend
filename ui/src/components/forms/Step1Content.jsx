@@ -14,7 +14,12 @@ const Step1Content = () => {
 
   const handleCardClick = (card) => {
     setSelectedCard(card);
-    localStorage.setItem("Trip Dimension", card)
+    localStorage.setItem("Trip Dimension", card);
+    
+    const currentStep = parseInt(localStorage.getItem("currentStep")) || 1;
+    localStorage.setItem("currentStep", currentStep + 1);
+    
+    window.location.reload();
   };
 
   const cardData = [
