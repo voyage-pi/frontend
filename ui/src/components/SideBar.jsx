@@ -132,7 +132,7 @@ function SideBar({ onToggle }) {
                             ))}
                         </div>
                         <NavLink to="/forms">
-                            <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
+                            <button className="btn btn-primary border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
                                 <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-2">
                                     <span className="text-primary text-2xl font-light">+</span>
                                 </div>
@@ -142,9 +142,12 @@ function SideBar({ onToggle }) {
                     </div>
 
                     {!isExpanded && (
-                        <button className="btn bg-primary hover:bg-[#f42753] border-none rounded-full mt-51 w-7 h-7 flex items-center justify-center p-0 transition-all duration-400 ease-in-out">
-                            <span className="text-primary-content text-2xl font-light">+</span>
-                        </button>
+                        <NavLink to="/forms">
+                            <button className="btn btn-primary border-none rounded-full mt-51 w-7 h-7 flex items-center justify-center p-0 transition-all duration-400 ease-in-out">
+                                <span className="text-primary-content text-2xl font-light">+</span>
+                            </button>
+                        </NavLink>
+
                     )}
 
                     {/* Navigation */}
