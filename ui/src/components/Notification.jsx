@@ -1,18 +1,17 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-const Notification = ({ type, text, options = {} }) => {
+const Notification = ({ type, text, onClose, options = {} }) => {
   const defaultOptions = {
     position: "top-right",
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,
-    pauseOnHover: true,
+    pauseOnHover: false,
     draggable: true,
     progress: undefined,
+    onClose: onClose, 
     ...options
   };
 
@@ -35,7 +34,7 @@ const Notification = ({ type, text, options = {} }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     showNotification();
   }, []);
 
