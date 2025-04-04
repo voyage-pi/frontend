@@ -3,7 +3,7 @@ import PageTemplate from "../components/PageTemplate"
 import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
-import questions from "../../public/questions.json" 
+import questions from "../../public/questions.json"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosInstance"
 import Loading from "../components/Loading"
@@ -12,34 +12,34 @@ function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isInitialized, setIsInitialized] = useState(false)
   const totalSteps = 5
-  const [answers, setAnswers] = useState([...questions]) 
+  const [answers, setAnswers] = useState([...questions])
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
   const navigate = useNavigate()
   const [isNavigating, setIsNavigating] = useState(false)
 
-  
+
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const savedStep = parseInt(localStorage.getItem("currentStep")) || 1
     const savedSubQuestionIndex = parseInt(localStorage.getItem("subQuestionIndex")) || 0
     const savedAnswers = JSON.parse(localStorage.getItem("answers"))
-    
+
     if (savedStep) {
       setCurrentStep(savedStep)
     }
-    
+
     if (savedSubQuestionIndex) {
       setSubQuestionIndex(savedSubQuestionIndex)
     }
-    
+
     if (savedAnswers) {
       setAnswers(savedAnswers)
     }
-    
+
     setIsInitialized(true)
   }, [])
-  
+
   // Salvar o progresso no localStorage sempre que mudar
   useEffect(() => {
     if (isInitialized) {
@@ -48,10 +48,10 @@ function Forms() {
       localStorage.setItem("answers", JSON.stringify(answers))
     }
   }, [currentStep, subQuestionIndex, answers, isInitialized])
-  
+
   // Calculate progress percentage for progress bar
-  const progressPercentage = currentStep === 5 
-    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100) 
+  const progressPercentage = currentStep === 5
+    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
     : 0;
 
   const handleNext = () => {
@@ -182,26 +182,28 @@ function Forms() {
                   Back
                 </button>
               )}
-              
-              {currentStep < totalSteps ||
-              (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
+
+              {/* In the Forms.jsx component, update the Next button rendering */}
+              {currentStep >= 3 &&
+                (currentStep < totalSteps ||
+                  (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1)) ? (
                 <button
                   onClick={handleNext}
                   className="ml-auto px-4 py-2 text-primary hover:text-rose-700 font-medium"
                 >
                   Next →
                 </button>
-              ) : (
-                <button className="btn btn-primary" onClick={handleFinish}> 
+              ) : currentStep === 5 ? (
+                <button className="btn btn-primary" onClick={handleFinish}>
                   Finish
                 </button>
-              )}
+              ) : null}
             </div>
-            
+
             {currentStep === 5 && (
               <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-200">
-                <div 
-                  className="bg-primary h-full transition-all duration-300 ease-in-out" 
+                <div
+                  className="bg-primary h-full transition-all duration-300 ease-in-out"
                   style={{ width: `${progressPercentage}%` }}
                 ></div>
               </div>
