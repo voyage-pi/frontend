@@ -3,43 +3,45 @@ import PageTemplate from "../components/PageTemplate"
 import StepIndicator from "../components/StepIndicator"
 import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
-import questions from "../../public/questions.json" 
+import questions from "../../public/questions.json"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosInstance"
 import Loading from "../components/Loading"
+import { BsArrowLeftSquareFill } from "react-icons/bs";
+import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isInitialized, setIsInitialized] = useState(false)
   const totalSteps = 5
-  const [answers, setAnswers] = useState([...questions]) 
+  const [answers, setAnswers] = useState([...questions])
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
   const navigate = useNavigate()
   const [isNavigating, setIsNavigating] = useState(false)
 
-  
+
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const savedStep = parseInt(localStorage.getItem("currentStep")) || 1
     const savedSubQuestionIndex = parseInt(localStorage.getItem("subQuestionIndex")) || 0
     const savedAnswers = JSON.parse(localStorage.getItem("answers"))
-    
+
     if (savedStep) {
       setCurrentStep(savedStep)
     }
-    
+
     if (savedSubQuestionIndex) {
       setSubQuestionIndex(savedSubQuestionIndex)
     }
-    
+
     if (savedAnswers) {
       setAnswers(savedAnswers)
     }
-    
+
     setIsInitialized(true)
   }, [])
-  
+
   // Salvar o progresso no localStorage sempre que mudar
   useEffect(() => {
     if (isInitialized) {
@@ -48,10 +50,10 @@ function Forms() {
       localStorage.setItem("answers", JSON.stringify(answers))
     }
   }, [currentStep, subQuestionIndex, answers, isInitialized])
-  
+
   // Calculate progress percentage for progress bar
-  const progressPercentage = currentStep === 5 
-    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100) 
+  const progressPercentage = currentStep === 5
+    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
     : 0;
 
   const handleNext = () => {
@@ -96,6 +98,10 @@ function Forms() {
       updated[subQuestionIndex].answer = rating
       return updated
     })
+  }
+
+  const handleLeave = () => {
+    navigate("/")
   }
 
   const handleFinish = async () => {
@@ -167,6 +173,7 @@ function Forms() {
           <div className="relative bg-white rounded-md shadow-primary shadow-[0px_0px_20px_-13px] p-6 w-7xl mx-auto my-4 mt-15 overflow-hidden">
             <StepContent
               currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
               subQuestionIndex={subQuestionIndex}
               totalSubQuestions={totalSubQuestions}
               answers={answers}
@@ -174,34 +181,43 @@ function Forms() {
             />
 
             <div className="flex justify-between mt-8">
+              {currentStep === 1 && (
+                <button
+                  onClick={() => handleLeave()}
+                  className="btn btn-primary"
+                > 
+                  <BsArrowLeftSquareFill className="text-white" /> Leave
+                </button>
+              )}  
+
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className="px-4 py-2 text-primary hover:text-rose-700"
+                  className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"
                 >
-                  Back
+                  <TiArrowLeft className="mr-1"/> Back
                 </button>
               )}
-              
-              {currentStep < totalSteps ||
-              (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto px-4 py-2 text-primary hover:text-rose-700 font-medium"
-                >
-                  Next →
-                </button>
-              ) : (
-                <button className="btn btn-primary" onClick={handleFinish}> 
-                  Finish
-                </button>
-              )}
+
+              {(currentStep >= 3 && currentStep < 5) || 
+                (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
+                  <button
+                    onClick={handleNext}
+                    className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                  >
+                    Next <TiArrowRight className="ml-1"/>
+                  </button>
+                ) : currentStep === 5 ? (
+                  <button className="btn btn-primary" onClick={handleFinish}> 
+                    Finish
+                  </button>
+                ) : null}
             </div>
-            
+
             {currentStep === 5 && (
               <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-200">
-                <div 
-                  className="bg-primary h-full transition-all duration-300 ease-in-out" 
+                <div
+                  className="bg-primary h-full transition-all duration-300 ease-in-out"
                   style={{ width: `${progressPercentage}%` }}
                 ></div>
               </div>
