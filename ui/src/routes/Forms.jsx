@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import PageTemplate from "../components/PageTemplate"
 import StepIndicator from "../components/StepIndicator"
@@ -8,6 +6,7 @@ import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json" 
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosInstance"
+import Loading from "../components/Loading"
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -17,6 +16,8 @@ function Forms() {
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
   const navigate = useNavigate()
+  const [isNavigating, setIsNavigating] = useState(false)
+
   
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
@@ -100,6 +101,8 @@ function Forms() {
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
 
+    setIsNavigating(true)
+
     // Formatação da data para ISO string
     const startDate = new Date(localStorage.getItem("Start Date"));
     const formattedDate = startDate.toISOString();
@@ -129,17 +132,27 @@ function Forms() {
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
-    try {
-      const response = await axiosInstance.post("/trips", formData);
-      console.log("Response:", response.data);
-      navigate("/itinerary");
-    } catch (error) {
-      if (error.response?.data) {
-        console.error("Validation errors:", error.response.data);
-      }
-      console.error("Error submitting form:", error);
-    }
+    // Commented out the axios call for now, while ain't fixed
+
+    // try {
+    //   const response = await axiosInstance.post("/trips", formData);
+    //   console.log("Response:", response.data);
+    //   navigate("/itinerary");
+    // } catch (error) {
+    //   if (error.response?.data) {
+    //     console.error("Validation errors:", error.response.data);
+    //   }
+    //   console.error("Error submitting form:", error);
+    // }
+
+    setTimeout(() => {
+      navigate("/itinerary")
+    }, 1000)
   };
+
+  if (!isInitialized || isNavigating) {
+    return <Loading />
+  }
 
   return (
     <PageTemplate>

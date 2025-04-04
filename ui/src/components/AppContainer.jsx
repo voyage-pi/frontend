@@ -1,4 +1,3 @@
-// components/AppContainer.jsx
 import { useState, useEffect } from 'react';
 
 function AppContainer({ children }) {
