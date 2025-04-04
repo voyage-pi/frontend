@@ -3,7 +3,7 @@ import { FaClock, FaUsers, FaLocationDot, FaEye } from "react-icons/fa6";
 
 function TripCard({ image, days, people, destinations, name, date }) {
   return (
-    <div className="card w-65 h-65 rounded-xl overflow-hidden shadow-sm relative">
+    <div className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative">
       <img
         src={image}
         alt={name}

@@ -20,7 +20,7 @@ import { TbMoneybag } from "react-icons/tb";
 import { IoLocationOutline } from "react-icons/io5";
 import { CiSaveDown1 } from "react-icons/ci";
 import { TfiReload } from "react-icons/tfi";
-
+import Map from "../components/Map"; 
 
 function Itinerary() {
     const [itinerary, setItinerary] = useState({});
@@ -132,6 +132,33 @@ function Itinerary() {
         });
     };
 
+  const myPolylines = [
+    {
+      polylines: [
+        {
+            polylineEncoded: "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC",
+            duration: 583,
+            distance: 4956
+        },
+      ],
+    },
+  ];
+
+  const myMarkers = [
+    {
+        position: { lat: 40.61402777012159, lng: -8.656425489382625 },
+        title: "DETI",
+        address: "Universidade de Aveiro, 3810-193 Aveiro",
+        image: "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
+    },
+    {
+        position: { lat: 40.637322817325355, lng: -8.650697327204432 },
+        title: "Santos da Praça",
+        address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
+        image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
+    }
+  ];
+
     return (
         <PageTemplate>
             <div className="flex justify-center items-center flex-col w-full px-4 -mt-5">
@@ -241,7 +268,10 @@ function Itinerary() {
 
                 {/* Right Side */}
                 <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
-                    [Map Placeholder]
+                <Map
+                    polylines={myPolylines}
+                    markers={myMarkers}
+                />
                 </div>
             </div>
         </PageTemplate>
