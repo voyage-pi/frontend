@@ -7,6 +7,8 @@ import questions from "../../public/questions.json"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../utils/axiosInstance"
 import Loading from "../components/Loading"
+import { BsArrowLeftSquareFill } from "react-icons/bs";
+import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -98,6 +100,10 @@ function Forms() {
     })
   }
 
+  const handleLeave = () => {
+    navigate("/")
+  }
+
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
 
@@ -175,23 +181,31 @@ function Forms() {
             />
 
             <div className="flex justify-between mt-8">
+              {currentStep === 1 && (
+                <button
+                  onClick={() => handleLeave()}
+                  className="btn btn-primary"
+                > 
+                  <BsArrowLeftSquareFill className="text-white" /> Leave
+                </button>
+              )}  
+
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className="px-4 py-2 text-primary hover:text-rose-700"
+                  className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"
                 >
-                  Back
+                  <TiArrowLeft className="mr-1"/> Back
                 </button>
               )}
 
-              {/* In the Forms.jsx component, update the Next button rendering */}
               {(currentStep >= 3 && currentStep < 5) || 
                 (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
                   <button
                     onClick={handleNext}
-                    className="ml-auto px-4 py-2 text-primary hover:text-rose-700 font-medium"
+                    className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
                   >
-                    Next →
+                    Next <TiArrowRight className="ml-1"/>
                   </button>
                 ) : currentStep === 5 ? (
                   <button className="btn btn-primary" onClick={handleFinish}> 
