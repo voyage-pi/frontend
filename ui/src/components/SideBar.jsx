@@ -66,7 +66,7 @@ function SideBar({ onToggle }) {
     ]
 
     return (
-        <div className={`bg-base-300 min-h-screen fixed top-0 left-0 overflow-hidden transition-all duration-400 ease-in-out flex flex-col justify-between ${isExpanded ? "w-64" : "w-16"}`}>
+        <div className={`bg-base-300 h-full fixed top-0 left-0 transition-all duration-400 ease-in-out flex flex-col justify-between ${isExpanded ? "w-64" : "w-16"}`}>
             {/* Top section */}
             <div className="flex flex-col">
                 <div className="flex items-center justify-between">
