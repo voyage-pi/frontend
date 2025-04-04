@@ -13,7 +13,7 @@ import VoyageCompleteLogo from "../assets/voyage-complete-logo-navy.png"
 import VoyageIconLogo from "../assets/voyage-logo.png"
 import userData from "../../public/user.json"
 
-function SideBar({ onToggle }) {
+function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     
@@ -60,10 +60,26 @@ function SideBar({ onToggle }) {
     ]
 
     const menuItems = [
-        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/" },
-        { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved" },
-        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends" },
+        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/", blockNavigation: false },
+        { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved", blockNavigation: true },
+        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends", blockNavigation: true },
     ]
+
+    const handleMenuItemClick = (item, blockNavigation, e) => {
+        if (blockNavigation) {
+            e.preventDefault(); 
+        }
+        
+        if (onMenuItemClick) {
+            onMenuItemClick(item);
+        }
+    };
+
+    const handleBottomItemClick = (label) => {
+        if (onMenuItemClick) {
+            onMenuItemClick(label);
+        }
+    };
 
     return (
         <div className={`bg-base-300 h-full fixed top-0 left-0 transition-all duration-400 ease-in-out flex flex-col justify-between ${isExpanded ? "w-64" : "w-16"}`}>
@@ -153,24 +169,40 @@ function SideBar({ onToggle }) {
                     {/* Navigation */}
                     <nav className="w-full mt-10 transition-all duration-400 ease-in-out">
                         <ul className="w-full">
-                            {menuItems.map(({ icon: Icon, label, count, path }, index) => (
+                            {menuItems.map(({ icon: Icon, label, count, path, blockNavigation }, index) => (
                                 <li key={index} className="w-full">
-                                    <NavLink
-                                        to={path}
-                                        className={({ isActive }) =>`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
-                                                    <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
-                                                </div>
-                                                <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
-                                                    <span className="text-lg whitespace-nowrap">{label}</span>
-                                                    <span className="opacity-70">{count}</span>
-                                                </div>
-                                            </>
-                                        )}
-                                    </NavLink>
+                                    {blockNavigation ? (
+                                        <div
+                                            className={`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isExpanded ? "px-3" : "px-0 items-center justify-center"} cursor-pointer hover:opacity-80`}
+                                            onClick={(e) => handleMenuItemClick(label, blockNavigation, e)}
+                                        >
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
+                                                <Icon className="text-secondary" size={22}/>
+                                            </div>
+                                            <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
+                                                <span className="text-lg whitespace-nowrap">{label}</span>
+                                                <span className="opacity-70">{count}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <NavLink
+                                            to={path}
+                                            className={({ isActive }) =>`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}
+                                            onClick={(e) => handleMenuItemClick(label, blockNavigation, e)}
+                                        >
+                                            {({ isActive }) => (
+                                                <>
+                                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
+                                                        <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
+                                                    </div>
+                                                    <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
+                                                        <span className="text-lg whitespace-nowrap">{label}</span>
+                                                        <span className="opacity-70">{count}</span>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </NavLink>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -182,7 +214,10 @@ function SideBar({ onToggle }) {
             <div className={`mb-4 text-lg text-secondary ${isExpanded ? "mx-10" : "ml-3"} transition-all duration-400 ease-in-out`}>
                 <ul className="p-0">
                     <li>
-                        <a className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95">
+                        <a 
+                            className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
+                            onClick={() => handleBottomItemClick("Share")}
+                        >
                             <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
                                 <FaShareNodes size={22} />
                             </div>
@@ -190,7 +225,10 @@ function SideBar({ onToggle }) {
                         </a>
                     </li>
                     <li>
-                        <a className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95">
+                        <a 
+                            className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
+                            onClick={() => handleBottomItemClick("Settings")}
+                        >
                             <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
                                 <FaGear size={22}/>
                             </div>

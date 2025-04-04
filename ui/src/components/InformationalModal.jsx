@@ -12,7 +12,10 @@ function InformationalModal({ infoSize, title, text, id }) {
         document.getElementById(modalId).showModal();
     };
 
-    const closeModal = () => {
+    const closeModal = (e) => {
+        if (e) {
+            e.stopPropagation();
+        }
         setIsOpen(false);
         document.getElementById(modalId).close();
     };
@@ -41,7 +44,10 @@ function InformationalModal({ infoSize, title, text, id }) {
                         <h3 className="font-bold text-xl">{title}</h3>
                         <p className="py-4 text-justify text-md">{text}</p>
                     </div>
-                    <div className="modal-backdrop bg-black/50" onClick={closeModal}></div>
+                    <div className="modal-backdrop bg-black/50" onClick={(e) => {
+                        e.stopPropagation();
+                        closeModal();
+                    }}></div>
                 </dialog>,
                 document.body
             )}
