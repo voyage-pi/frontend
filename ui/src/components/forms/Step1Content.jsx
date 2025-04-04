@@ -28,8 +28,8 @@ const Step1Content = ({ setCurrentStep }) => {
     if (card.id === selectedCard && card.implemented === false) {
       setNotification(
         <Notification
-          type="warning"
-          text="This feature is not yet implemented."
+          type="info"
+          text="Group Trip is comming soon!"
           onClose={closeNotification} 
         />
       );
@@ -40,8 +40,8 @@ const Step1Content = ({ setCurrentStep }) => {
     if (card.implemented === false) {
       setNotification(
         <Notification
-          type="warning"
-          text="This feature is not yet implemented."
+          type="info"
+          text="Group Trip is comming soon!"
           onClose={closeNotification} 
         />
       );

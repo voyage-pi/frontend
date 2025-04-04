@@ -67,7 +67,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
     const handleMenuItemClick = (item, blockNavigation, e) => {
         if (blockNavigation) {
-            e.preventDefault(); // Prevent the default navigation behavior
+            e.preventDefault(); 
         }
         
         if (onMenuItemClick) {
@@ -172,7 +172,6 @@ function SideBar({ onToggle, onMenuItemClick }) {
                             {menuItems.map(({ icon: Icon, label, count, path, blockNavigation }, index) => (
                                 <li key={index} className="w-full">
                                     {blockNavigation ? (
-                                        // Use a div styled like NavLink for items that should not navigate
                                         <div
                                             className={`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isExpanded ? "px-3" : "px-0 items-center justify-center"} cursor-pointer hover:opacity-80`}
                                             onClick={(e) => handleMenuItemClick(label, blockNavigation, e)}
@@ -186,7 +185,6 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                             </div>
                                         </div>
                                     ) : (
-                                        // Use NavLink for normal navigation items
                                         <NavLink
                                             to={path}
                                             className={({ isActive }) =>`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}

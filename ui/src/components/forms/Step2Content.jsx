@@ -32,8 +32,8 @@ const Step2Content = ({setCurrentStep}) => {
     if (card.implemented === false) {
       setNotification(
         <Notification
-          type="warning"
-          text="This feature is not yet implemented."
+          type="info"
+          text="Road Trip is coming soon!"
           onClose={closeNotification} 
         />
       );
