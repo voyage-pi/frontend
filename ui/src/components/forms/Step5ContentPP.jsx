@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 const Step5ContentPP = ({
   currentQuestion,
   subQuestionIndex,
-  totalSubQuestions,
   onRatingSelect,
 }) => {
   useEffect(() => {
