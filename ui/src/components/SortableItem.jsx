@@ -74,14 +74,14 @@ const SortableItem = ({ id, place, time, transport, image }) => {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-between pl-3 -mr-2 gap-y-2 -mt-3">
+                {/* <div className="flex flex-col items-center justify-between pl-3 -mr-2 gap-y-2 -mt-3">
                     <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
                         <TfiReload className="text-primary text-lg" />
                     </div>
                     <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
                         <HiOutlineTrash className="text-primary text-xl" />
                     </div>
-                </div>
+                </div> */}
             </div>
             {transport && transport.type && transport.duration ? (
                     <p className="text-xs text-gray-400">
