@@ -35,6 +35,8 @@ const VisitPlaceContent = () => {
         image: "",
       };
       console.log(m);
+      localStorage.setItem("Longitude", response.data.longitude);
+      localStorage.setItem("Latitude", response.data.latitude);
       setMarkers([m]);
     } catch (error) {
       setNotify({

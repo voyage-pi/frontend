@@ -162,21 +162,56 @@ function Itinerary() {
     // Get image URL from photo object or collection
     const getPhotoUrl = (place) => {
         // No photos available
-
-        console.log("place at getPhotoUrl", place);
-
         if (!place || !place.photos || !place.photos.length) {
-            console.log("No photos available for", place.name);
-            return generatePlaceholderImage(place.name);
+            console.log("No photos available for", place?.name);
+            return generatePlaceholderImage(place ? place.name : "place");
         }
         
         const photo = place.photos[0];
         
-        console.log("returning photo", photo);
-        return photo.googleMapsUri;
+        // If the photo is already a direct URL (not from Google Maps), use it
+        if (typeof photo === 'string' && 
+            !photo.includes('google.com/maps') && 
+            !photo.includes('maps.googleapis.com')) {
+            return photo;
+        }
+        
+        // If we have a googleMapsUri, convert it to a usable format
+        if (photo.googleMapsUri) {
+            try {
+                // Extract the photo reference from the URL if possible
+                const url = photo.googleMapsUri;
+                const match = url.match(/!1s(.*?)!/);
+                
+                if (match && match[1]) {
+                    const photoRef = match[1];
+                    // Use your own API key to create a direct photo URL
+                    // This approach avoids the cookie consent issues
+                    const apiKey = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
+                    return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${apiKey}`;
+                }
+            } catch (e) {
+                console.warn("Error extracting photo reference:", e);
+            }
+        }
+        
+        // If we have a photoReference directly, use it
+        if (photo.photoReference) {
+            const apiKey = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
+            return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photoReference}&key=${apiKey}`;
+        }
+        
+        // If we have a URL property
+        if (photo.url) {
+            return photo.url;
+        }
+        
+        // Fallback to using a placeholder image
+        console.log("Using placeholder for", place.name);
+        return generatePlaceholderImage(place.name);
     };
     
-    // Helper function to create reliable placeholder images
+    // Helper function for placeholders as a fallback
     const generatePlaceholderImage = (seed) => {
         const seedStr = typeof seed === 'string' ? seed : 'place';
         const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, '');

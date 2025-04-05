@@ -124,8 +124,8 @@ function Forms() {
       users: ["user123"],
       place: {
         coordinates: {
-          latitude: 40.6399647406503,
-          longitude: -8.65505658124174
+          latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
+          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
         }
       },
       questions: {
