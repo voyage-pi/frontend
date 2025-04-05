@@ -1,0 +1,12 @@
+{
+    "name": "Guest",
+    "tag": "",
+    "image": "../src/assets/rui.jpg",
+    "stats": {
+      "trips": 0,
+      "friends": 0,
+      "saved": 0,
+      "countries": 0
+    },
+    "trips": []
+  }
