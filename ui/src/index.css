@@ -72,3 +72,36 @@
     --color-error:oklch(65.62% 0.23 16.99);
     --color-error-content: oklch(100% 0 0);
 }
+
+
+@keyframes shake-vertical-normal {
+0%, 100% { transform: translateY(0); } 
+10%, 30%, 50%, 70% { transform: translateY(-8px); } 
+20%, 40%, 60% { transform: translateY(8px); } 
+80% { transform: translateY(6.4px); } 
+90% { transform: translateY(-6.4px);}
+}
+
+@keyframes slide-tr-reverse {
+0% { transform: translateY(-50px) translateX(50px); opacity: 0;} 
+25% { opacity: 0.2;}
+50% { transform: translateY(0) translateX(0); opacity: 1;}
+100% { transform: translateY(50px) translateX(-100px); opacity: 0;} 
+}
+
+#plane {
+width: 50%;
+animation: shake-vertical-normal 5s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0s infinite normal none; 
+}
+
+#air_b {
+animation: slide-tr-reverse 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0s infinite normal none; 
+}
+
+#air_t {
+animation: slide-tr-reverse 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) .2s infinite normal none; 
+}
+
+#air_m {
+animation: slide-tr-reverse 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) .3s infinite normal none; 
+}

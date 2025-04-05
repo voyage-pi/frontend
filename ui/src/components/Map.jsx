@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GoogleMap, Polyline, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
 import MarkerIcon from '../assets/marker2.png';
 import MapStyle from '../assets/map-style.json';
@@ -8,39 +8,82 @@ const containerStyle = {
   height: '100%',
 };
 
-const MapComponent = ({ polylines, markers }) => {
+// Default center and zoom for Europe view
+const defaultCenter = {
+  lat: 48.8566, // Paris latitude (roughly center of Europe)
+  lng: 9.3517   // Adjusted longitude to center Europe in the view
+};
+const defaultZoom = 4;
+
+const MapComponent = ({ polylines=[], markers=[] }) => {
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
-  const [map, setMap] = useState(null);
+  const [mapInstance, setMapInstance] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [hasElements, setHasElements] = useState(false);
 
   const { isLoaded } = useJsApiLoader({
     id: '2430af244ef47a1f',
     googleMapsApiKey: key,
     libraries: ['geometry', 'places'],
   });
-
-  const onLoad = useCallback(function callback(map) {
-    const bounds = new window.google.maps.LatLngBounds();
-
-    markers.forEach(marker => {
-      bounds.extend(new window.google.maps.LatLng(marker.position.lat, marker.position.lng));
-    });
-
-    polylines.forEach(polylineGroup => {
-      polylineGroup.polylines.forEach(polyline => {
-        const decodedPath = google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
-        decodedPath.forEach(point => {
-          bounds.extend(point);
-        });
-      });
-    });
-
-    map.fitBounds(bounds);
-    setMap(map);
+  
+  useEffect(() => {
+    setHasElements(markers.length > 0 || polylines.length > 0);
   }, [markers, polylines]);
 
+  useEffect(() => {
+    if (!mapInstance || !window.google || !hasElements) return;
+    
+    const bounds = new window.google.maps.LatLngBounds();
+    let hasValidBounds = false;
+
+    if (markers.length > 0) {
+      markers.forEach(marker => {
+        if (marker.position && marker.position.lat && marker.position.lng) {
+          bounds.extend(new window.google.maps.LatLng(
+            marker.position.lat, 
+            marker.position.lng
+          ));
+          hasValidBounds = true;
+        }
+      });
+    }
+
+    // Add polylines to bounds
+    if (polylines.length > 0) {
+      polylines.forEach(polylineGroup => {
+        if (polylineGroup.polylines) {
+          polylineGroup.polylines.forEach(polyline => {
+            if (polyline.polylineEncoded) {
+              const decodedPath = window.google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
+              decodedPath.forEach(point => {
+                bounds.extend(point);
+                hasValidBounds = true;
+              });
+            }
+          });
+        }
+      });
+    }
+
+    if (hasValidBounds) {
+      mapInstance.fitBounds(bounds);
+      mapInstance.setZoom(8)
+    } else if (!hasElements) {
+      // Reset to default view if no elements
+      mapInstance.setCenter(defaultCenter);
+      mapInstance.setZoom(defaultZoom);
+    }
+  }, [mapInstance, markers, polylines, hasElements]);
+
+  const onLoad = useCallback(function callback(map) {
+    setMapInstance(map);
+    
+    // Initial setup - will be handled by the useEffect above once map is set
+  }, []);
+
   const onUnmount = useCallback(function callback() {
-    setMap(null);
+    setMapInstance(null);
   }, []);
 
   const handleMarkerClick = (marker) => {
@@ -52,9 +95,9 @@ const MapComponent = ({ polylines, markers }) => {
   };
 
   const renderPolylines = () => {
-    return polylines.map((polylineGroup, groupIndex) => {
+    return polylines.length!==0 ? polylines.map((polylineGroup, groupIndex) => {
       return polylineGroup.polylines.map((polyline, polylineIndex) => {
-        const path = google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
+        const path = window.google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
 
         return (
           <Polyline
@@ -63,16 +106,15 @@ const MapComponent = ({ polylines, markers }) => {
             options={{
               strokeColor: "#FE385C",
               strokeWeight: 4,
-            }
-            }
+            }}
           />
         );
       });
-    });
+    }) : <></>;
   };
 
   const renderMarkers = () => {
-    return markers.map((marker, index) => (
+    return markers.length!==0 ? markers.map((marker, index) => (
       <Marker
         key={`marker-${index}`}
         position={marker.position}
@@ -83,12 +125,13 @@ const MapComponent = ({ polylines, markers }) => {
         }}
         onClick={() => handleMarkerClick(marker)}
       />
-    ));
+    )): <></>;
   };
 
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
+      center={!hasElements ? defaultCenter : undefined}
       options={{
         disableDefaultUI: true,
         zoomControl: true,
@@ -97,7 +140,7 @@ const MapComponent = ({ polylines, markers }) => {
         fullscreenControl: true,
         styles: MapStyle
       }}
-      zoom={13}
+      zoom={!hasElements ? defaultZoom : undefined}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
