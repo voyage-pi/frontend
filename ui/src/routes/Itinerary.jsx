@@ -29,6 +29,8 @@ function Itinerary() {
     const location = useLocation();
     const [routes, setRoutes] = useState([]);
     const [markers, setMarkers] = useState([]);
+    // State to track which days are open
+    const [openDays, setOpenDays] = useState({});
 
     useEffect(() => {
         if (location.state?.itineraryData) {
@@ -47,6 +49,28 @@ function Itinerary() {
                 .catch((error) => console.error("Error loading itinerary:", error));
         }
     }, [location]);
+
+    useEffect(() => {
+        // Initialize first day as open when itinerary is loaded
+        if (!loading && itinerary.calendar) {
+            const days = Object.keys(itinerary.calendar);
+            if (days.length > 0) {
+                // Initialize with first day open
+                setOpenDays(prevState => ({
+                    ...prevState,
+                    [days[0]]: true
+                }));
+            }
+        }
+    }, [loading, itinerary.calendar]);
+
+    // Toggle function to open/close a day
+    const toggleDay = (day) => {
+        setOpenDays(prevState => ({
+            ...prevState,
+            [day]: !prevState[day]
+        }));
+    };
 
     const processItineraryData = (data) => {
         // Set the itinerary data from the new structure
@@ -270,11 +294,12 @@ function Itinerary() {
     }
   ];
 
-  console.log("itinerary", itinerary)
+  console.log("itinerary", itinerary);
+  console.log("openDays", openDays);
 
     return (
         <PageTemplate>
-            <div className="flex justify-center items-center flex-col w-full px-4 -mt-5">
+            <div className="flex justify-center items-center flex-col w-full px-4 ">
                 <div className="mb-4">
                     <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
                 </div>
@@ -337,15 +362,15 @@ function Itinerary() {
                         Object.keys(itinerary.calendar).map((day, index) => (
                             <div
                                 key={index}
-                                className="collapse collapse-arrow bg-base-100 mb-6 -ml-4"
+                                className={`collapse mb-6 -ml-4 ${openDays[day] ? "collapse-open" : "collapse-close"}`}
                             >
-                                <input
-                                    type="radio"
-                                    name="itinerary-accordion"
-                                    defaultChecked={index === 0}
-                                />
-                                <div className="collapse-title font-semibold text-xl">{day}</div>
-                                <div className="collapse-content">
+                                <div 
+                                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center cursor-pointer"
+                                    onClick={() => toggleDay(day)}
+                                >
+                                    {day}
+                                </div>
+                                <div className="collapse-content bg-base-100">
                                     {itinerary.calendar[day].length > 0 ? (
                                         <DndContext
                                             sensors={sensors}
@@ -357,7 +382,6 @@ function Itinerary() {
                                                 strategy={verticalListSortingStrategy}
                                             >
                                                 {itinerary.calendar[day].map((item, idx) => (
-                                                    console.log("item", item),
                                                     <SortableItem
                                                         key={idx}
                                                         id={item.place}
