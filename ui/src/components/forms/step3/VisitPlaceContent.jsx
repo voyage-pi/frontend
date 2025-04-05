@@ -166,7 +166,7 @@ const VisitPlaceContent = () => {
               )
             ) : (
               <div className=" flex justify-center">
-                <LoadingAnimation />
+                <LoadingAnimation width={"150px"} height={"150px"} />
               </div>
             )}
           </div>
