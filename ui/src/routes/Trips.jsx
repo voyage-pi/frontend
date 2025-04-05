@@ -4,7 +4,7 @@ import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
-import userData from "../../public/user.json";
+import userData from "../../public/guest.json";
 import Map from "../components/Map";
 
 function Trips() {
@@ -84,7 +84,11 @@ function Trips() {
                   placeholder="Search..."
                 />
               </div>
-
+              {filteredTrips.length === 0 && (
+                  <div className="text-center py-10">
+                    <p className="text-gray-500">No trips created yet.</p>
+                  </div>
+                )}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-2 gap-y-5">
                 {filteredTrips.map((trip) => (
                   <TripCard
@@ -97,12 +101,6 @@ function Trips() {
                     date={trip.date}
                   />
                 ))}
-
-                {filteredTrips.length === 0 && (
-                  <div className="text-center py-10">
-                    <p className="text-gray-500">No trips found matching your search.</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
