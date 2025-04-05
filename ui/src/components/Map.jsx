@@ -32,11 +32,20 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
   }, [markers, polylines]);
 
   useEffect(() => {
-    if (!mapInstance || !window.google || !hasElements) return;
+    if (!mapInstance || !window.google) return;
     
+    // If no elements, just set default view and return early
+    if (!hasElements) {
+      mapInstance.setCenter(defaultCenter);
+      mapInstance.setZoom(defaultZoom);
+      return;
+    }
+    
+    // If we have elements, calculate bounds
     const bounds = new window.google.maps.LatLngBounds();
     let hasValidBounds = false;
 
+    // Add markers to bounds
     if (markers.length > 0) {
       markers.forEach(marker => {
         if (marker.position && marker.position.lat && marker.position.lng) {
@@ -66,11 +75,13 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
       });
     }
 
+    // If we found valid bounds, fit the map to them
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
-      mapInstance.setZoom(8)
-    } else if (!hasElements) {
-      // Reset to default view if no elements
+      // Optional: adjust zoom after fitting bounds
+      mapInstance.setZoom(Math.min(mapInstance.getZoom(), 8));
+    } else {
+      // Fallback to default view if we have elements but couldn't calculate bounds
       mapInstance.setCenter(defaultCenter);
       mapInstance.setZoom(defaultZoom);
     }
@@ -78,8 +89,6 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
 
   const onLoad = useCallback(function callback(map) {
     setMapInstance(map);
-    
-    // Initial setup - will be handled by the useEffect above once map is set
   }, []);
 
   const onUnmount = useCallback(function callback() {
@@ -131,7 +140,7 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={!hasElements ? defaultCenter : undefined}
+      center={defaultCenter}  // Always provide a default center
       options={{
         disableDefaultUI: true,
         zoomControl: true,
@@ -140,7 +149,7 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
         fullscreenControl: true,
         styles: MapStyle
       }}
-      zoom={!hasElements ? defaultZoom : undefined}
+      zoom={defaultZoom}  // Always provide a default zoom
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
