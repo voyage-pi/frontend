@@ -1,59 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { FaMapMarkerAlt } from 'react-icons/fa';
-import { FaSistrix } from 'react-icons/fa6';
-import Map from "../../Map"; 
+import React, { useState, useEffect, useRef } from "react";
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaSistrix } from "react-icons/fa6";
+import Map from "../../Map";
+import { axiosPlace } from "../../../utils/axiosInstance";
+import LoadingAnimation from "../../LoadingAnimation";
+import { ToastContainer } from "react-toastify";
+import Notification from "../../Notification";
 
 const VisitPlaceContent = () => {
-  const [selectedLocation, setSelectedLocation] = useState('Barcelona');
+  const [selectedLocation, setSelectedLocation] = useState("Barcelona");
+  const [suggestionlist, setSuggestionList] = useState([]);
+  const [currentText, setCurrentText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [notify,setNotify] =useState()
+  const [markers, setMarkers] = useState([]);
+  const timeoutRef = useRef(null);
 
-  const handleSelectLocation = (location) => {
+  const handleSelectLocation = async (location) => {
     setSelectedLocation(location);
-    localStorage.setItem('Location', location);
+    setCurrentText(location);
+
+    try {
+      const response = await axiosPlace.post("/search/", {
+        place_name: location,
+      });
+      console.log(response.data);
+      let m = {
+        position: {
+          lat: response.data.latitude,
+          lng: response.data.longitude,
+        },
+        title: location,
+        address: "",
+        image: "",
+      };
+      console.log(m);
+      setMarkers([m]);
+    } catch (error) {
+      setNotify({
+        type: 'error',
+        text: `There was an error ${error}`,
+        key: Date.now() 
+      })
+      console.error("Search error:", error);
+    }
+    localStorage.setItem("Location", location);
   };
 
   useEffect(() => {
-    const savedLocation = localStorage.getItem('Location');
+    const savedLocation = localStorage.getItem("Location");
     if (savedLocation) {
-      setSelectedLocation(savedLocation); 
+      setSelectedLocation(savedLocation);
+    }
+    //clean up timeout when the component unmounts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
   }, []);
 
-  const myPolylines = [
-    {
-      polylines: [
-        {
-            polylineEncoded: "",
-            duration: 0,
-            distance: 0
-        },
-      ],
-    },
-  ];
-
-  const myMarkers = [
-    {
-        position: { lat: 32.61402777012159, lng: -8.656425489382625 },
-        title: "DETI",
-        address: "Universidade de Aveiro, 3810-193 Aveiro",
-        image: "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
-    },
-    {
-        position: { lat: 40.637322817325355, lng: -8.650697327204432 },
-        title: "Santos da Praça",
-        address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
-        image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
+  const autocompleteSearch = async () => {
+    try {
+      const response = await axiosPlace.post("/places/autocomplete", {
+        input: currentText,
+      });
+      setSuggestionList(response.data.suggestions_list);
+      setLoading(false);
+      // Here you can handle the response, for example updating the locations list
+      // based on the API response
+    } catch (error) {
+      setNotify({
+        type: 'error',
+        text: `There was an error ${error}`,
+        key: Date.now() 
+      })
+      console.error("Search error:", error);
     }
-  ];
-  
-  const locations = [
-    { id: 1, name: 'Barcelona' },
-    { id: 2, name: 'Barceloneta Beach Espanha' },
-    { id: 3, name: 'Bacelona led 1' },
-    { id: 4, name: 'Confeitaria Barcelona By Ayete' }
-  ];
+  };
+
+  // Handle input changes with debounce
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setLoading(value!=="");
+    setCurrentText(value);
+    if(value=="")
+    {
+      //to avoid making requests to the backend for a null string
+      return 0
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    if (value.length > 2) {
+      // Only search if there are at least 3 characters
+      timeoutRef.current = setTimeout(() => {
+        autocompleteSearch();
+      }, 1200); 
+    }
+  };
 
   return (
     <div>
+       <ToastContainer />
+      
+      {notify && (
+        <Notification 
+          key={notify.key}
+          type={notify.type} 
+          text={notify.text}
+          onClose={()=>setNotify(null)}
+          options={{ 
+            position: "top-right",
+            autoClose: 3000,
+            pauseOnHover: false
+          }}
+        />
+      )} 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Side - Location Selection */}
         <div className="flex-1">
@@ -66,34 +128,54 @@ const VisitPlaceContent = () => {
               <FaSistrix className="text-gray-400 text-xl" />
             </div>
             <input
+              onChange={handleInputChange}
+              value={currentText}
               type="text"
               className="pl-10 p-3 w-full border border-gray-200 rounded-lg focus:outline-none"
               placeholder="Barcelona"
             />
           </div>
 
-          <div className="space-y-3">
-            {locations.map(location => (
-              <div
-                key={location.id}
-                className={`flex items-center p-3 rounded-lg text-lg cursor-pointer ${location.name === selectedLocation ? 'bg-primary text-white' : 'bg-gray-50'
-                  }`}
-                onClick={() => handleSelectLocation(location.name)}
-              >
-                <FaMapMarkerAlt className={`mr-3 ${location.name === selectedLocation ? 'text-white' : 'text-primary'}`} />
-                <span>{location.name}</span>
+          <div className="space-y-3 text-center">
+            {!loading ? (
+              currentText === "" ? (
+                <div className="w-full text-primary opacity-50 text-center my-3">
+                  Insert a location that you would like to visit...
+                </div>
+              ) : (
+                suggestionlist.map((location) => (
+                  <div
+                    key={location.place_id}
+                    className={`flex items-center p-3 rounded-lg text-lg cursor-pointer ${
+                      location.text === selectedLocation
+                        ? "bg-primary text-white"
+                        : "bg-gray-50"
+                    }`}
+                    onClick={() => handleSelectLocation(location.text)}
+                  >
+                    <FaMapMarkerAlt
+                      className={`mr-3 ${
+                        location.text === selectedLocation
+                          ? "text-white"
+                          : "text-primary"
+                      }`}
+                    />
+                    <span>{location.text}</span>
+                  </div>
+                ))
+              )
+            ) : (
+              <div className=" flex justify-center">
+                <LoadingAnimation />
               </div>
-            ))}
+            )}
           </div>
         </div>
 
         <div className="flex-1 bg-blue-50 rounded-lg overflow-hidden h-109 flex-col -mb-10">
-          <Map
-            polylines={myPolylines}
-            markers={myMarkers}
-          />
+          <Map markers={markers} />
         </div>
-      </div>  
+      </div>
     </div>
   );
 };

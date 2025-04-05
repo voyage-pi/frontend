@@ -5,8 +5,8 @@ import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json"
 import { useNavigate } from "react-router-dom"
-import axiosInstance from "../utils/axiosInstance"
-import Loading from "../components/Loading"
+import {axiosInstance } from "../utils/axiosInstance"
+import LoadingItinerary from "../components/LoadingItinerary"
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 
@@ -156,7 +156,7 @@ function Forms() {
   };
 
   if (!isInitialized || isNavigating) {
-    return <Loading />
+    return <LoadingItinerary />
   }
 
   return (
