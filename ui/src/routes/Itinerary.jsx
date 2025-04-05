@@ -175,9 +175,9 @@ function Itinerary() {
                         <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
                             <CiSaveDown1 className="text-white text-2xl" />
                         </div>
-                        {/* <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
+                        <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
                             <TfiReload className="text-primary text-xl" />
-                        </div> */}
+                        </div>
                     </div>
 
                     <div className="flex flex-row gap-x-5 pb-5">
