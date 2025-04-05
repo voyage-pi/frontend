@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa6"
 import VoyageCompleteLogo from "../assets/voyage-complete-logo-navy.png"
 import VoyageIconLogo from "../assets/voyage-logo.png"
-import userData from "../../public/user.json"
+import userData from "../../public/guest.json"
 
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
@@ -128,10 +128,10 @@ function SideBar({ onToggle, onMenuItemClick }) {
                 <div
                     className={`flex flex-col ${isExpanded ? "px-8 items-start" : "px-0 items-center"} mt-5 transition-all duration-400 ease-in-out`}
                 >
-                    <div className="avatar">
+                    <div className="avatar avatar-placeholder">
                         <div
-                            className={`rounded-full border-2 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
-                            <img src={userData.image} alt={userData.name} />
+                            className={`rounded-full text-primary/90 bg-white border-1 border-primary/90 transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
+                            <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>G</span>
                         </div>
                     </div>
 
