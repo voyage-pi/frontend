@@ -21,6 +21,7 @@ import { TbMoneybag } from "react-icons/tb";
 import { IoLocationOutline } from "react-icons/io5";
 import { CiSaveDown1 } from "react-icons/ci";
 import { TfiReload } from "react-icons/tfi";
+import { IoChevronDown } from "react-icons/io5"; // Added chevron icon
 import Map from "../components/Map"; 
 
 function Itinerary() {
@@ -365,10 +366,13 @@ function Itinerary() {
                                 className={`collapse mb-6 -ml-4 ${openDays[day] ? "collapse-open" : "collapse-close"}`}
                             >
                                 <div 
-                                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center cursor-pointer"
+                                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
                                     onClick={() => toggleDay(day)}
                                 >
-                                    {day}
+                                    <span>{day}</span>
+                                    <IoChevronDown 
+                                        className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"}`} 
+                                    />
                                 </div>
                                 <div className="collapse-content bg-base-100">
                                     {itinerary.calendar[day].length > 0 ? (
