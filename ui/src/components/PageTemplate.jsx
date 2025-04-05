@@ -1,5 +1,5 @@
 import SideBar from "./SideBar"
-import { useState, useEffect } from "react"
+import { useState} from "react"
 import Notification from "./Notification"
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'

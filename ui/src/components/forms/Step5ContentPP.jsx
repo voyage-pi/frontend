@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 const Step5ContentPP = ({
   currentQuestion,
   subQuestionIndex,
-  totalSubQuestions,
   onRatingSelect,
 }) => {
   useEffect(() => {
@@ -27,8 +26,7 @@ const Step5ContentPP = ({
       </div>
 
       <div
-        className="absolute left-0 right-0 flex justify-center items-center"
-        style={{ top: "55%", left: "3.5%" }}
+        className="relative origin-center flex justify-center items-center"
       >
         {[1, 2, 3, 4, 5, 6, 7].map((rating) => (
           <div key={rating} className="flex flex-col items-center mx-5">
