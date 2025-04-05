@@ -138,18 +138,17 @@ function Forms() {
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
-    // Commented out the axios call for now, while ain't fixed
 
-    // try {
-    //   const response = await axiosInstance.post("/trips", formData);
-    //   console.log("Response:", response.data);
-    //   navigate("/itinerary");
-    // } catch (error) {
-    //   if (error.response?.data) {
-    //     console.error("Validation errors:", error.response.data);
-    //   }
-    //   console.error("Error submitting form:", error);
-    // }
+    try {
+      const response = await axiosInstance.post("/trips/", formData);
+       console.log("Response:", response.data);
+       navigate("/itinerary");
+     } catch (error) {
+       if (error.response?.data) {
+         console.error("Validation errors:", error.response.data);
+       }
+       console.error("Error submitting form:", error);
+     }
 
     setTimeout(() => {
       navigate("/itinerary")
