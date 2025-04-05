@@ -12,6 +12,7 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useLocation } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import SortableItem from "../components/SortableItem";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
@@ -25,70 +26,132 @@ import Map from "../components/Map";
 function Itinerary() {
     const [itinerary, setItinerary] = useState({});
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
+    const [routes, setRoutes] = useState([]);
+    const [markers, setMarkers] = useState([]);
 
     useEffect(() => {
-        fetch("/trip_management_resp.json")
-            .then((response) => response.json())
-            .then((data) => {
-                // Set the itinerary data from the new structure
-                if (data.response && data.response.itinerary) {
-                    const responseItinerary = data.response.itinerary;
+        if (location.state?.itineraryData) {
+            // Use data passed from Forms component
+            const responseData = location.state.itineraryData;
+            console.log("Received itinerary data from Forms:", responseData);
+            processItineraryData(responseData);
+        } else {
+            // Fallback to fetching from JSON file if no state data exists
+            fetch("/trip_management_resp.json")
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("Loaded itinerary data from JSON file:", data);
+                    processItineraryData(data);
+                })
+                .catch((error) => console.error("Error loading itinerary:", error));
+        }
+    }, [location]);
+
+    const processItineraryData = (data) => {
+        // Set the itinerary data from the new structure
+        if (data.response && data.response.itinerary) {
+            const responseItinerary = data.response.itinerary.itinerary || data.response.itinerary;
+            console.log("Processing itinerary data:", responseItinerary);
+            
+            // Prepare the calendar object
+            const calendar = {};
+            const routesData = [];
+            const markersData = [];
+            
+            if (responseItinerary.days) {
+                responseItinerary.days.forEach((day, index) => {
+                    const dayKey = `Day ${index + 1}`;
+                    const dayActivities = [];
                     
-                    // Prepare the calendar object
-                    const calendar = {};
-                    if (responseItinerary.itinerary && responseItinerary.itinerary.days) {
-                        responseItinerary.itinerary.days.forEach((day, index) => {
-                            const dayKey = `Day ${index + 1}`;
-                            const dayActivities = [];
+                    // Add morning activities
+                    if (day.morning_activities) {
+                        day.morning_activities.forEach(activity => {
+                            dayActivities.push({
+                                place: activity.place.name,
+                                time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
+                                image: getPhotoUrl(activity.place),
+                                transport: activity.transport || {}
+                            });
                             
-                            // Add morning activities
-                            if (day.morning_activities) {
-                                day.morning_activities.forEach(activity => {
-                                    dayActivities.push({
-                                        place: activity.place.name,
-                                        time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
-                                        image: activity.place.photos && activity.place.photos.length > 0 ? 
-                                            getImageUrl(activity.place.photos[0]) : "",
-                                        transport: activity.transport || {}
-                                    });
+                            // Add marker for this place
+                            if (activity.place.location) {
+                                markersData.push({
+                                    position: { 
+                                        lat: activity.place.location.latitude, 
+                                        lng: activity.place.location.longitude 
+                                    },
+                                    title: activity.place.name,
+                                    address: activity.place.name,
+                                    image: getPhotoUrl(activity.place)
                                 });
                             }
-                            
-                            // Add afternoon activities
-                            if (day.afternoon_activities) {
-                                day.afternoon_activities.forEach(activity => {
-                                    dayActivities.push({
-                                        place: activity.place.name,
-                                        time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
-                                        image: activity.place.photos && activity.place.photos.length > 0 ? 
-                                            getImageUrl(activity.place.photos[0]) : "",
-                                        transport: activity.transport || {}
-                                    });
-                                });
-                            }
-                            
-                            calendar[dayKey] = dayActivities;
                         });
                     }
                     
-                    const totalDays = responseItinerary.itinerary && responseItinerary.itinerary.days ? 
-                        responseItinerary.itinerary.days.length : 0;
-                   
-                        
-                    // vai ser preciso arranjar esta informação de algum lado
-                    setItinerary({
-                        title: "Trip to Aveiro", 
-                        totalDays: totalDays,
-                        totalPeople: 1, 
-                        budget: 0, 
-                        location: "Aveiro", 
-                        calendar: calendar
-                    });
-                }
-                setLoading(false);
-            })
-            .catch((error) => console.error("Error loading itinerary:", error));
-    }, []);
+                    // Add afternoon activities
+                    if (day.afternoon_activities) {
+                        day.afternoon_activities.forEach(activity => {
+                            dayActivities.push({
+                                place: activity.place.name,
+                                time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
+                                image: getPhotoUrl(activity.place),
+                                transport: activity.transport || {}
+                            });
+                            
+                            // Add marker for this place
+                            if (activity.place.location) {
+                                markersData.push({
+                                    position: { 
+                                        lat: activity.place.location.latitude, 
+                                        lng: activity.place.location.longitude 
+                                    },
+                                    title: activity.place.name,
+                                    address: activity.place.name,
+                                    image: getPhotoUrl(activity.place)
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Add routes for this day
+                    if (day.routes && day.routes.length > 0) {
+                        routesData.push({
+                            polylines: day.routes.map(route => ({
+                                polylineEncoded: route.polylineEncoded,
+                                duration: route.duration,
+                                distance: route.distance
+                            }))
+                        });
+                    }
+                    
+                    calendar[dayKey] = dayActivities;
+                });
+            }
+            
+            const totalDays = responseItinerary.days ? responseItinerary.days.length : 0;
+            
+            // Extract location from first activity if available
+            let location = "Aveiro";
+            if (totalDays > 0 && responseItinerary.days[0].morning_activities && 
+                responseItinerary.days[0].morning_activities.length > 0) {
+                location = responseItinerary.days[0].morning_activities[0].place.name.split(',')[0];
+            }
+            
+            setItinerary({
+                title: `Trip to ${location}`,
+                totalDays: totalDays,
+                totalPeople: 1, 
+                budget: responseItinerary.budget || 0,
+                location: location,
+                calendar: calendar
+            });
+            
+            setRoutes(routesData);
+            setMarkers(markersData);
+        }
+        setLoading(false);
+    }
 
     const formatTime = (isoString) => {
         if (!isoString) return "";
@@ -96,15 +159,31 @@ function Itinerary() {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    const getImageUrl = (photoReference) => {
-        if (!photoReference) return "";
-        if (photoReference.startsWith('http')) return photoReference;
+    // Get image URL from photo object or collection
+    const getPhotoUrl = (place) => {
+        // No photos available
+        if (!place || !place.photos || !place.photos.length) {
+            return generateUnsplashUrl(place ? place.name : "place");
+        }
         
-        // as fotos do google places nao funcionam
-        const parts = photoReference.split('/');
-        const placeId = parts.length > 1 ? parts[1] : 'place';
+        const photo = place.photos[0];
         
-        return `https://source.unsplash.com/400x300/?landmark,travel,museum&sig=${placeId}`;
+        // Check if photo is a direct image URL (not from Google Maps)
+        if (typeof photo === 'string' && !photo.includes('google.com/maps') && !photo.includes('maps.googleapis.com')) {
+            return photo;
+        }
+        
+        // Always use Unsplash for reliable images based on place name
+        // This avoids the Google Maps tracking/auth issues entirely
+        return generateUnsplashUrl(place.name);
+    };
+    
+    // Helper function to create consistent Unsplash URLs
+    const generateUnsplashUrl = (seed) => {
+        // Create a consistent ID from the seed
+        const seedStr = typeof seed === 'string' ? seed : 'place';
+        const id = seedStr.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
+        return `https://source.unsplash.com/400x300/?landmark,travel,${encodeURIComponent(seedStr.split(' ')[0])}&sig=${id}`;
     };
 
     const sensors = useSensors(
@@ -158,6 +237,8 @@ function Itinerary() {
         image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
     }
   ];
+
+  console.log("itinerary", itinerary)
 
     return (
         <PageTemplate>
@@ -269,8 +350,8 @@ function Itinerary() {
                 {/* Right Side */}
                 <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
                 <Map
-                    polylines={myPolylines}
-                    markers={myMarkers}
+                    polylines={routes.length > 0 ? routes : myPolylines}
+                    markers={markers.length > 0 ? markers : myMarkers}
                 />
                 </div>
             </div>

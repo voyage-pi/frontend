@@ -19,6 +19,7 @@ function Forms() {
   const totalSubQuestions = answers.length
   const navigate = useNavigate()
   const [isNavigating, setIsNavigating] = useState(false)
+  const [itinerary, setItinerary] = useState(null)
 
 
   // Carregar o progresso do localStorage quando o componente for montado
@@ -140,19 +141,24 @@ function Forms() {
 
 
     try {
-      const response = await axiosInstance.post("/trips/", formData);
-       console.log("Response:", response.data);
-       navigate("/itinerary");
-     } catch (error) {
-       if (error.response?.data) {
-         console.error("Validation errors:", error.response.data);
-       }
-       console.error("Error submitting form:", error);
-     }
-
-    setTimeout(() => {
-      navigate("/itinerary")
-    }, 1000)
+      const response = await axiosInstance.post("/trips", formData);
+      console.log("Response:", response.data);
+      
+      // Ensure we have the complete response data with the correct structure
+      if (response.data && response.data.response && response.data.response.itinerary) {
+        setItinerary(response.data);
+        navigate("/itinerary", { state: { itineraryData: response.data } });
+      } else {
+        console.error("Invalid response structure:", response.data);
+        setIsNavigating(false);
+      }
+    } catch (error) {
+      if (error.response?.data) {
+        console.error("Validation errors:", error.response.data);
+      }
+      console.error("Error submitting form:", error);
+      setIsNavigating(false);
+    }
   };
 
   if (!isInitialized || isNavigating) {
