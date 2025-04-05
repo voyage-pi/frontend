@@ -144,9 +144,9 @@ function Itinerary() {
                 totalPeople: 1, 
                 budget: responseItinerary.budget || 0,
                 location: location,
-                calendar: calendar
+                calendar: calendar,
             });
-            
+
             setRoutes(routesData);
             setMarkers(markersData);
         }
@@ -162,28 +162,25 @@ function Itinerary() {
     // Get image URL from photo object or collection
     const getPhotoUrl = (place) => {
         // No photos available
+
+        console.log("place at getPhotoUrl", place);
+
         if (!place || !place.photos || !place.photos.length) {
-            return generateUnsplashUrl(place ? place.name : "place");
+            console.log("No photos available for", place.name);
+            return generatePlaceholderImage(place.name);
         }
         
         const photo = place.photos[0];
         
-        // Check if photo is a direct image URL (not from Google Maps)
-        if (typeof photo === 'string' && !photo.includes('google.com/maps') && !photo.includes('maps.googleapis.com')) {
-            return photo;
-        }
-        
-        // Always use Unsplash for reliable images based on place name
-        // This avoids the Google Maps tracking/auth issues entirely
-        return generateUnsplashUrl(place.name);
+        console.log("returning photo", photo);
+        return photo.googleMapsUri;
     };
     
-    // Helper function to create consistent Unsplash URLs
-    const generateUnsplashUrl = (seed) => {
-        // Create a consistent ID from the seed
+    // Helper function to create reliable placeholder images
+    const generatePlaceholderImage = (seed) => {
         const seedStr = typeof seed === 'string' ? seed : 'place';
-        const id = seedStr.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
-        return `https://source.unsplash.com/400x300/?landmark,travel,${encodeURIComponent(seedStr.split(' ')[0])}&sig=${id}`;
+        const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, '');
+        return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
     };
 
     const sensors = useSensors(
@@ -325,6 +322,7 @@ function Itinerary() {
                                                 strategy={verticalListSortingStrategy}
                                             >
                                                 {itinerary.calendar[day].map((item, idx) => (
+                                                    console.log("item", item),
                                                     <SortableItem
                                                         key={idx}
                                                         id={item.place}
