@@ -159,6 +159,10 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
                   src={selectedMarker.image}
                   alt="Marker"
                   className="max-w-full max-h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://picsum.photos/seed/${encodeURIComponent(selectedMarker.title || 'place')}/200/200`;
+                  }}
                 />
               </div>
             )}
