@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "/api/v1/trip-management/api", // sem barra no final
+  baseURL: "api/v1/trip-management/api", // Updated to include /api prefix
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
