@@ -83,7 +83,6 @@ function Itinerary() {
       return generatePlaceholderImage(place ? place.name : "place");
     }
 
-    // Use cached photo if available
     const placeId = place.id || place.name;
     if (photoCache[placeId]) {
       return photoCache[placeId];
@@ -92,9 +91,11 @@ function Itinerary() {
     const photo = place.photos[0];
     try {
       const response = await axiosPlace.post("/places/photo", { gRPC: photo.name });
+      console.log(response)
+      if (response.status == 429) {
+        return getPhotoUrl(place)
+      }
       const photoUrl = response.data?.uri || generatePlaceholderImage(place.name);
-
-      // Cache the photo URL
       setPhotoCache(prev => ({
         ...prev,
         [placeId]: photoUrl
@@ -182,10 +183,8 @@ function Itinerary() {
           const dayKey = `Day ${dayIndex + 1}`;
           const dayActivities = [];
 
-          // Process morning activities
           if (day.morning_activities) {
             for (const activity of day.morning_activities) {
-              // Get photo URL and store the promise
               const photoPromise = getPhotoUrl(activity.place).then(imageUrl => {
                 dayActivities.push({
                   place: activity.place.name,
@@ -194,7 +193,6 @@ function Itinerary() {
                   transport: activity.transport || {}
                 });
 
-                // Add marker for this place
                 if (activity.place.location) {
                   markersData.push({
                     position: {
