@@ -108,7 +108,6 @@ function Itinerary() {
       const photoUrl =
         response.data?.uri;
       setPhotoCache((prev) => ({
-        ...prev,
         [placeId]: photoUrl,
       }));
 
@@ -152,36 +151,6 @@ function Itinerary() {
       };
     });
   };
-
-  const myPolylines = [
-    {
-      polylines: [
-        {
-          polylineEncoded:
-            "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC",
-          duration: 583,
-          distance: 4956,
-        },
-      ],
-    },
-  ];
-
-  const myMarkers = [
-    {
-      position: { lat: 40.61402777012159, lng: -8.656425489382625 },
-      title: "DETI",
-      address: "Universidade de Aveiro, 3810-193 Aveiro",
-      image:
-        "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
-    },
-    {
-      position: { lat: 40.637322817325355, lng: -8.650697327204432 },
-      title: "Santos da Praça",
-      address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
-      image:
-        "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
-    },
-  ];
 
   const processItineraryData = async (data) => {
     if (data.response && data.response.itinerary) {
@@ -283,20 +252,20 @@ function Itinerary() {
         ? responseItinerary.days.length
         : 0;
 
-        let locationTrip = "...";
-        if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
-          responseItinerary.days[0].morning_activities.length > 0) {
-          locationTrip = localStorage.getItem("Location")
-        }
-  
-        setItinerary({
-          title: `Trip to ${locationTrip}`,
-          totalDays: totalDays,
-          totalPeople: 1,
-          budget: responseItinerary.budget || 0,
-          location: locationTrip,
-          calendar: calendar,
-        });
+      let locationTrip = "...";
+      if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
+        responseItinerary.days[0].morning_activities.length > 0) {
+        locationTrip = localStorage.getItem("Location")
+      }
+
+      setItinerary({
+        title: `Trip to ${locationTrip}`,
+        totalDays: totalDays,
+        totalPeople: 1,
+        budget: responseItinerary.budget || 0,
+        location: locationTrip,
+        calendar: calendar,
+      });
 
       setRoutes(routesData);
       setMarkers(markersData);
@@ -374,71 +343,69 @@ function Itinerary() {
           </div>
 
 
-    <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
-        {loading ? (
-          <div className="flex flex-col text-center justify-center p-3  ">
-            <LoadingAnimation />
-            <div>Loading images and Places</div>
-          </div>
-        ) : (
-          Object.keys(itinerary.calendar).map((day, index) => (
-            <div
-              key={index}
-              className={`collapse mb-6 -ml-4  ${
-                openDays[day] ? "collapse-open" : "collapse-close"
-              }`}
-            >
-              <div
-                className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
-                onClick={() => toggleDay(day)}
-              >
-                <span>{day}</span>
-                <IoChevronDown
-                  className={`text-xl transition-transform duration-300 ${
-                    openDays[day] ? "rotate-180" : "rotate-0"
-                  }`}
-                />
+          <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
+            {loading ? (
+              <div className="flex flex-col text-center justify-center p-3  ">
+                <LoadingAnimation />
+                <div>Loading images and Places</div>
               </div>
-              <div className="collapse-content bg-base-100">
-                {itinerary.calendar[day].length > 0 ? (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={(event) => handleDragEnd(event, day)}
+            ) : (
+              Object.keys(itinerary.calendar).map((day, index) => (
+                <div
+                  key={index}
+                  className={`collapse mb-6 -ml-4  ${openDays[day] ? "collapse-open" : "collapse-close"
+                    }`}
+                >
+                  <div
+                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
+                    onClick={() => toggleDay(day)}
                   >
-                    <SortableContext
-                      items={itinerary.calendar[day].map((item) => item.place)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {itinerary.calendar[day].map((item, idx) => (
-                        <SortableItem
-                          key={idx}
-                          id={item.place}
-                          place={item.place}
-                          time={item.time}
-                          transport={item.transport}
-                          image={item.image}
-                        />
-                      ))}
-                    </SortableContext>
-                  </DndContext>
-                ) : (
-                  <p className="text-gray-500 italic p-4 text-center">
-                    No itinerary items for this day
-                  </p>
-                )}
-              </div>
-            </div>
-          ))
-        )}
+                    <span>{day}</span>
+                    <IoChevronDown
+                      className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"
+                        }`}
+                    />
+                  </div>
+                  <div className="collapse-content bg-base-100">
+                    {itinerary.calendar[day].length > 0 ? (
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(event) => handleDragEnd(event, day)}
+                      >
+                        <SortableContext
+                          items={itinerary.calendar[day].map((item) => item.place)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {itinerary.calendar[day].map((item, idx) => (
+                            <SortableItem
+                              key={idx}
+                              id={item.place}
+                              place={item.place}
+                              time={item.time}
+                              transport={item.transport}
+                              image={item.image}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    ) : (
+                      <p className="text-gray-500 italic p-4 text-center">
+                        No itinerary items for this day
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
 
           </div>
         </div>
         {/* Right Side */}
         <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
           <Map
-            polylines={routes.length > 0 ? routes : myPolylines}
-            markers={markers.length > 0 ? markers : myMarkers}
+            polylines={routes}
+            markers={markers}
           />
         </div>
       </div>
