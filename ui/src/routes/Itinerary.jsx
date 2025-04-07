@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { axiosPlace } from "../utils/axiosInstance";
-import LoadingAnimation from "../components/LoadingAnimation"
+import LoadingAnimation from "../components/LoadingAnimation";
 import {
   DndContext,
   closestCenter,
@@ -25,6 +25,14 @@ import { CiSaveDown1 } from "react-icons/ci";
 import { TfiReload } from "react-icons/tfi";
 import { IoChevronDown } from "react-icons/io5"; // Added chevron icon
 import Map from "../components/Map";
+
+const CustomScrollbarStyle = () => (
+  <style>{`
+    .custom-scrollbar {
+      scrollbar-width: thin;
+    }
+  `}</style>
+);
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
@@ -61,9 +69,9 @@ function Itinerary() {
       const days = Object.keys(itinerary.calendar);
       if (days.length > 0) {
         // Initialize with first day open
-        setOpenDays(prevState => ({
+        setOpenDays((prevState) => ({
           ...prevState,
-          [days[0]]: true
+          [days[0]]: true,
         }));
       }
     }
@@ -71,9 +79,9 @@ function Itinerary() {
 
   // Toggle function to open/close a day
   const toggleDay = (day) => {
-    setOpenDays(prevState => ({
+    setOpenDays((prevState) => ({
       ...prevState,
-      [day]: !prevState[day]
+      [day]: !prevState[day],
     }));
   };
 
@@ -90,15 +98,18 @@ function Itinerary() {
 
     const photo = place.photos[0];
     try {
-      const response = await axiosPlace.post("/places/photo", { gRPC: photo.name });
-      console.log(response)
+      const response = await axiosPlace.post("/places/photo", {
+        gRPC: photo.name,
+      });
+      console.log(response);
       if (response.status == 429) {
-        return getPhotoUrl(place)
+        return getPhotoUrl(place);
       }
-      const photoUrl = response.data?.uri || generatePlaceholderImage(place.name);
-      setPhotoCache(prev => ({
+      const photoUrl =
+        response.data?.uri || generatePlaceholderImage(place.name);
+      setPhotoCache((prev) => ({
         ...prev,
-        [placeId]: photoUrl
+        [placeId]: photoUrl,
       }));
 
       return photoUrl;
@@ -110,9 +121,11 @@ function Itinerary() {
 
   // Helper function for placeholders as a fallback
   const generatePlaceholderImage = (seed) => {
-    const seedStr = typeof seed === 'string' ? seed : 'place';
-    const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, '');
-    return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
+    const seedStr = typeof seed === "string" ? seed : "place";
+    const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, "");
+    return `https://picsum.photos/seed/${encodeURIComponent(
+      cleanSeed
+    )}/400/300`;
   };
 
   const sensors = useSensors(
@@ -144,9 +157,10 @@ function Itinerary() {
     {
       polylines: [
         {
-          polylineEncoded: "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC",
+          polylineEncoded:
+            "mi`wFzqxs@pEbHRXLFxCtD|@jBl@bA~@lAr@r@|@dA\\f@SJKX?^DN`@\\VHVELM`@B|AxAVLh@@h@SpNoHtCuAVCRDNIHWb@_@nMwGtAe@dB[xD_A~@e@f@_@h@m@d@s@h@oAXYNERD`@Px@JXCPKV]HA`@RxAhAdA|@PFzPlNfAx@fEvD^d@BTLNPADEd@@h@TvKpC",
           duration: 583,
-          distance: 4956
+          distance: 4956,
         },
       ],
     },
@@ -157,19 +171,22 @@ function Itinerary() {
       position: { lat: 40.61402777012159, lng: -8.656425489382625 },
       title: "DETI",
       address: "Universidade de Aveiro, 3810-193 Aveiro",
-      image: "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
+      image:
+        "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
     },
     {
       position: { lat: 40.637322817325355, lng: -8.650697327204432 },
       title: "Santos da Praça",
       address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
-      image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
-    }
+      image:
+        "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
+    },
   ];
 
   const processItineraryData = async (data) => {
     if (data.response && data.response.itinerary) {
-      const responseItinerary = data.response.itinerary.itinerary || data.response.itinerary;
+      const responseItinerary =
+        data.response.itinerary.itinerary || data.response.itinerary;
       console.log("Processing itinerary data:", responseItinerary);
 
       const calendar = {};
@@ -185,26 +202,30 @@ function Itinerary() {
 
           if (day.morning_activities) {
             for (const activity of day.morning_activities) {
-              const photoPromise = getPhotoUrl(activity.place).then(imageUrl => {
-                dayActivities.push({
-                  place: activity.place.name,
-                  time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
-                  image: imageUrl,
-                  transport: activity.transport || {}
-                });
-
-                if (activity.place.location) {
-                  markersData.push({
-                    position: {
-                      lat: activity.place.location.latitude,
-                      lng: activity.place.location.longitude
-                    },
-                    title: activity.place.name,
-                    address: activity.place.name,
-                    image: imageUrl
+              const photoPromise = getPhotoUrl(activity.place).then(
+                (imageUrl) => {
+                  dayActivities.push({
+                    place: activity.place.name,
+                    time: `${formatTime(activity.start_time)} - ${formatTime(
+                      activity.end_time
+                    )}`,
+                    image: imageUrl,
+                    transport: activity.transport || {},
                   });
+
+                  if (activity.place.location) {
+                    markersData.push({
+                      position: {
+                        lat: activity.place.location.latitude,
+                        lng: activity.place.location.longitude,
+                      },
+                      title: activity.place.name,
+                      address: activity.place.name,
+                      image: imageUrl,
+                    });
+                  }
                 }
-              });
+              );
 
               imagePromises.push(photoPromise);
             }
@@ -212,26 +233,30 @@ function Itinerary() {
 
           if (day.afternoon_activities) {
             for (const activity of day.afternoon_activities) {
-              const photoPromise = getPhotoUrl(activity.place).then(imageUrl => {
-                dayActivities.push({
-                  place: activity.place.name,
-                  time: `${formatTime(activity.start_time)} - ${formatTime(activity.end_time)}`,
-                  image: imageUrl,
-                  transport: activity.transport || {}
-                });
-
-                if (activity.place.location) {
-                  markersData.push({
-                    position: {
-                      lat: activity.place.location.latitude,
-                      lng: activity.place.location.longitude
-                    },
-                    title: activity.place.name,
-                    address: activity.place.name,
-                    image: imageUrl
+              const photoPromise = getPhotoUrl(activity.place).then(
+                (imageUrl) => {
+                  dayActivities.push({
+                    place: activity.place.name,
+                    time: `${formatTime(activity.start_time)} - ${formatTime(
+                      activity.end_time
+                    )}`,
+                    image: imageUrl,
+                    transport: activity.transport || {},
                   });
+
+                  if (activity.place.location) {
+                    markersData.push({
+                      position: {
+                        lat: activity.place.location.latitude,
+                        lng: activity.place.location.longitude,
+                      },
+                      title: activity.place.name,
+                      address: activity.place.name,
+                      image: imageUrl,
+                    });
+                  }
                 }
-              });
+              );
 
               imagePromises.push(photoPromise);
             }
@@ -240,11 +265,11 @@ function Itinerary() {
           // Add routes for this day
           if (day.routes && day.routes.length > 0) {
             routesData.push({
-              polylines: day.routes.map(route => ({
+              polylines: day.routes.map((route) => ({
                 polylineEncoded: route.polylineEncoded,
                 duration: route.duration,
-                distance: route.distance
-              }))
+                distance: route.distance,
+              })),
             });
           }
 
@@ -254,12 +279,20 @@ function Itinerary() {
 
       await Promise.all(imagePromises);
 
-      const totalDays = responseItinerary.days ? responseItinerary.days.length : 0;
+      const totalDays = responseItinerary.days
+        ? responseItinerary.days.length
+        : 0;
 
       let location = "Aveiro";
-      if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
-        responseItinerary.days[0].morning_activities.length > 0) {
-        location = responseItinerary.days[0].morning_activities[0].place.name.split(',')[0];
+      if (
+        totalDays > 0 &&
+        responseItinerary.days[0].morning_activities &&
+        responseItinerary.days[0].morning_activities.length > 0
+      ) {
+        location =
+          responseItinerary.days[0].morning_activities[0].place.name.split(
+            ","
+          )[0];
       }
 
       setItinerary({
@@ -275,12 +308,12 @@ function Itinerary() {
       setMarkers(markersData);
     }
     setLoading(false);
-  }
+  };
 
   const formatTime = (isoString) => {
     if (!isoString) return "";
     const date = new Date(isoString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   console.log("itinerary", itinerary);
@@ -288,7 +321,8 @@ function Itinerary() {
 
   return (
     <PageTemplate>
-      <div className="flex justify-center items-center flex-col w-full px-4 ">
+      <CustomScrollbarStyle />
+      <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
         <div className="mb-4">
           <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
         </div>
@@ -313,7 +347,7 @@ function Itinerary() {
                 <GoClock className="text-primary ml-1" />
                 <div className="mr-2">
                   <span className="font-bold"> {itinerary.totalDays} </span>
-                  {itinerary.totalDays === 1 ? 'day' : 'days'}
+                  {itinerary.totalDays === 1 ? "day" : "days"}
                 </div>
               </div>
             </div>
@@ -323,7 +357,7 @@ function Itinerary() {
                 <GoPeople className="text-primary ml-1" />
                 <div className="mr-2">
                   <span className="font-bold"> {itinerary.totalPeople} </span>
-                  {itinerary.totalPeople === 1 ? 'person' : 'people'}
+                  {itinerary.totalPeople === 1 ? "person" : "people"}
                 </div>
               </div>
             </div>
@@ -339,67 +373,69 @@ function Itinerary() {
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <IoLocationOutline className="text-primary ml-1" />
                 <div className="mr-2">
-                  <span > {itinerary.location} </span>
+                  <span> {itinerary.location} </span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {loading ? (
-            <div className="flex flex-col text-center justify-center p-3">
-              <LoadingAnimation />
-              <div>
-                Loading images and Places
+        {loading ? (
+          <div className="flex flex-col text-center justify-center p-3">
+            <LoadingAnimation />
+            <div>Loading images and Places</div>
+          </div>
+        ) : (
+          Object.keys(itinerary.calendar).map((day, index) => (
+            <div
+              key={index}
+              className={`collapse mb-6 -ml-4 ${
+                openDays[day] ? "collapse-open" : "collapse-close"
+              }`}
+            >
+              <div
+                className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
+                onClick={() => toggleDay(day)}
+              >
+                <span>{day}</span>
+                <IoChevronDown
+                  className={`text-xl transition-transform duration-300 ${
+                    openDays[day] ? "rotate-180" : "rotate-0"
+                  }`}
+                />
+              </div>
+              <div className="collapse-content bg-base-100">
+                {itinerary.calendar[day].length > 0 ? (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event) => handleDragEnd(event, day)}
+                  >
+                    <SortableContext
+                      items={itinerary.calendar[day].map((item) => item.place)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {itinerary.calendar[day].map((item, idx) => (
+                        <SortableItem
+                          key={idx}
+                          id={item.place}
+                          place={item.place}
+                          time={item.time}
+                          transport={item.transport}
+                          image={item.image}
+                        />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
+                ) : (
+                  <p className="text-gray-500 italic p-4 text-center">
+                    No itinerary items for this day
+                  </p>
+                )}
               </div>
             </div>
-          ) : (
-            Object.keys(itinerary.calendar).map((day, index) => (
-              <div
-                key={index}
-                className={`collapse mb-6 -ml-4 ${openDays[day] ? "collapse-open" : "collapse-close"}`}
-              >
-                <div
-                  className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
-                  onClick={() => toggleDay(day)}
-                >
-                  <span>{day}</span>
-                  <IoChevronDown
-                    className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"}`}
-                  />
-                </div>
-                <div className="collapse-content bg-base-100">
-                  {itinerary.calendar[day].length > 0 ? (
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={(event) => handleDragEnd(event, day)}
-                    >
-                      <SortableContext
-                        items={itinerary.calendar[day].map((item) => item.place)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        {itinerary.calendar[day].map((item, idx) => (
-                          <SortableItem
-                            key={idx}
-                            id={item.place}
-                            place={item.place}
-                            time={item.time}
-                            transport={item.transport}
-                            image={item.image}
-                          />
-                        ))}
-                      </SortableContext>
-                    </DndContext>
-                  ) : (
-                    <p className="text-gray-500 italic p-4 text-center">
-                      No itinerary items for this day
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+          ))
+        )}
 
         {/* Right Side */}
         <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
