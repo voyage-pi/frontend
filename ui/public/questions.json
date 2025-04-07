@@ -21,23 +21,9 @@
     },
 
     {
-        "id": 3,
-        "question": "How important is food in your travel experience for this trip?",
-        "description": "(e.g., trying local cuisine, street food, fine dining, food tours)",
-        "answer": 0
-    },
-
-    {
         "id": 4,
         "question": "Are you looking to meet new people during this trip?",
         "description": "(e.g., group tours, social events, nightlife, staying in hostels)",
-        "answer": 0
-    },
-
-    {
-        "id": 5,
-        "question": "Do you plan to do any shopping during your trip?",
-        "description": "(e.g., markets, boutiques, souvenirs)",
         "answer": 0
     },
 
@@ -58,27 +44,6 @@
     {
         "id": 8,
         "question": "Are you okay with visiting places during peak tourist times?",
-        "description": "",
-        "answer": 0
-    },
-
-    {
-        "id": 9,
-        "question": "Do you plan to experience the nightlife during this trip?",
-        "description": "(e.g., bars, clubs, live music, cultural night events)",
-        "answer": 0
-    },
-
-    {
-        "id": 10,
-        "question": "Would you be comfortable using public transportation at your destination?",
-        "description": "(e.g., buses, trains, subways)",
-        "answer": 0
-    },
-
-    {
-        "id": 11,
-        "question": "Would you like to explore your destination mostly on foot?",
         "description": "",
         "answer": 0
     }

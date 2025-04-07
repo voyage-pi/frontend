@@ -54,7 +54,7 @@ function Forms() {
 
   // Calculate progress percentage for progress bar
   const progressPercentage = currentStep === 5
-    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
+    ? Math.round(((subQuestionIndex) / totalSubQuestions) * 100)
     : 0;
 
   const handleNext = () => {
