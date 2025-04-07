@@ -348,14 +348,14 @@ function Itinerary() {
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-full border-1 border-secondary/10">
+                        {/* <div className="rounded-full border-1 border-secondary/10">
                             <div className="flex flex-row items-center gap-x-3 m-1">
                                 <TbMoneybag className="text-primary ml-1" />
                                 <div className="mr-2">
                                     <span className="font-bold"> {itinerary.budget} </span> €
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="rounded-full border-1 border-secondary/10">
                             <div className="flex flex-row items-center gap-x-3 m-1">
                                 <IoLocationOutline className="text-primary ml-1" />
