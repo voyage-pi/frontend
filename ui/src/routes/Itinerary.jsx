@@ -283,26 +283,20 @@ function Itinerary() {
         ? responseItinerary.days.length
         : 0;
 
-      let location = "Aveiro";
-      if (
-        totalDays > 0 &&
-        responseItinerary.days[0].morning_activities &&
-        responseItinerary.days[0].morning_activities.length > 0
-      ) {
-        location =
-          responseItinerary.days[0].morning_activities[0].place.name.split(
-            ","
-          )[0];
-      }
-
-      setItinerary({
-        title: `Trip to ${location}`,
-        totalDays: totalDays,
-        totalPeople: 1,
-        budget: responseItinerary.budget || 0,
-        location: location,
-        calendar: calendar,
-      });
+        let locationTrip = "...";
+        if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
+          responseItinerary.days[0].morning_activities.length > 0) {
+          locationTrip = localStorage.getItem("Location")
+        }
+  
+        setItinerary({
+          title: `Trip to ${locationTrip}`,
+          totalDays: totalDays,
+          totalPeople: 1,
+          budget: responseItinerary.budget || 0,
+          location: locationTrip,
+          calendar: calendar,
+        });
 
       setRoutes(routesData);
       setMarkers(markersData);
@@ -330,7 +324,7 @@ function Itinerary() {
 
       <div className="flex flex-col md:flex-row h-min-screen p-10 -mt-10">
         {/* Left Side */}
-        <div className="w-full md:w-1/2 pr-4 overflow-hidden">
+        <div className="w-full md:w-1/2 pr-4 overflow-hidden  ">
           <div className="flex flex-row  mb-4 items-center gap-5">
             <h1 className="text-3xl font-bold">{itinerary.title}</h1>
             <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
@@ -341,7 +335,7 @@ function Itinerary() {
                         </div> */}
           </div>
 
-          <div className="flex flex-row gap-x-5 pb-5">
+          <div className="flex flex-row gap-x-5 pb-5 ">
             <div className="rounded-full border-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <GoClock className="text-primary ml-1" />
@@ -378,10 +372,11 @@ function Itinerary() {
               </div>
             </div>
           </div>
-        </div>
 
+
+    <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
         {loading ? (
-          <div className="flex flex-col text-center justify-center p-3">
+          <div className="flex flex-col text-center justify-center p-3  ">
             <LoadingAnimation />
             <div>Loading images and Places</div>
           </div>
@@ -389,7 +384,7 @@ function Itinerary() {
           Object.keys(itinerary.calendar).map((day, index) => (
             <div
               key={index}
-              className={`collapse mb-6 -ml-4 ${
+              className={`collapse mb-6 -ml-4  ${
                 openDays[day] ? "collapse-open" : "collapse-close"
               }`}
             >
@@ -437,6 +432,8 @@ function Itinerary() {
           ))
         )}
 
+          </div>
+        </div>
         {/* Right Side */}
         <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
           <Map
