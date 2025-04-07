@@ -3,8 +3,9 @@ import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6";
 import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
 
-function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect,}) {
+function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect,setCurrentStep,onValidationChange}) {
   const [showNewPreferences, setShowNewPreferences] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     // Verificar se já existe um perfil de preferências salvo
@@ -33,6 +34,13 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
     }
   };
 
+  const handleValidationChange = (isValid) => {
+    setIsValid(isValid);
+    if (onValidationChange) {
+      onValidationChange(isValid);
+    }
+  };
+
   if (showNewPreferences) {
     const currentQuestion = answers[subQuestionIndex];
     return (
@@ -41,7 +49,8 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
           currentQuestion={currentQuestion}
           subQuestionIndex={subQuestionIndex}
           totalSubQuestions={totalSubQuestions}
-          onRatingSelect={handleRatingSelect} 
+          onRatingSelect={handleRatingSelect}
+          onValidationChange={handleValidationChange}
         />
       </div>
     );
