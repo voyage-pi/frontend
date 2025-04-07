@@ -283,20 +283,20 @@ function Itinerary() {
         ? responseItinerary.days.length
         : 0;
 
-        let locationTrip = "...";
-        if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
-          responseItinerary.days[0].morning_activities.length > 0) {
-          locationTrip = localStorage.getItem("Location")
-        }
-  
-        setItinerary({
-          title: `Trip to ${locationTrip}`,
-          totalDays: totalDays,
-          totalPeople: 1,
-          budget: responseItinerary.budget || 0,
-          location: locationTrip,
-          calendar: calendar,
-        });
+      let locationTrip = "...";
+      if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
+        responseItinerary.days[0].morning_activities.length > 0) {
+        locationTrip = localStorage.getItem("Location")
+      }
+
+      setItinerary({
+        title: `Trip to ${locationTrip}`,
+        totalDays: totalDays,
+        totalPeople: 1,
+        budget: responseItinerary.budget || 0,
+        location: locationTrip,
+        calendar: calendar,
+      });
 
       setRoutes(routesData);
       setMarkers(markersData);
@@ -374,63 +374,62 @@ function Itinerary() {
           </div>
 
 
-    <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
-        {loading ? (
-          <div className="flex flex-col text-center justify-center p-3  ">
-            <LoadingAnimation />
-            <div>Loading images and Places</div>
-          </div>
-        ) : (
-          Object.keys(itinerary.calendar).map((day, index) => (
-            <div
-              key={index}
-              className={`collapse mb-6 -ml-4  ${
-                openDays[day] ? "collapse-open" : "collapse-close"
-              }`}
-            >
-              <div
-                className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
-                onClick={() => toggleDay(day)}
-              >
-                <span>{day}</span>
-                <IoChevronDown
-                  className={`text-xl transition-transform duration-300 ${
-                    openDays[day] ? "rotate-180" : "rotate-0"
-                  }`}
-                />
+          <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
+            {loading ? (
+              <div className="flex flex-col text-center justify-center p-3  ">
+                <div className="w-full h-[100px] skeleton"></div>
+                <div className="w-full h-[100px] skeleton"></div>
+                <div className="w-full h-[100px] skeleton"></div>
               </div>
-              <div className="collapse-content bg-base-100">
-                {itinerary.calendar[day].length > 0 ? (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={(event) => handleDragEnd(event, day)}
+            ) : (
+              Object.keys(itinerary.calendar).map((day, index) => (
+                <div
+                  key={index}
+                  className={`collapse mb-6 -ml-4  ${openDays[day] ? "collapse-open" : "collapse-close"
+                    }`}
+                >
+                  <div
+                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
+                    onClick={() => toggleDay(day)}
                   >
-                    <SortableContext
-                      items={itinerary.calendar[day].map((item) => item.place)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {itinerary.calendar[day].map((item, idx) => (
-                        <SortableItem
-                          key={idx}
-                          id={item.place}
-                          place={item.place}
-                          time={item.time}
-                          transport={item.transport}
-                          image={item.image}
-                        />
-                      ))}
-                    </SortableContext>
-                  </DndContext>
-                ) : (
-                  <p className="text-gray-500 italic p-4 text-center">
-                    No itinerary items for this day
-                  </p>
-                )}
-              </div>
-            </div>
-          ))
-        )}
+                    <span>{day}</span>
+                    <IoChevronDown
+                      className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"
+                        }`}
+                    />
+                  </div>
+                  <div className="collapse-content bg-base-100">
+                    {itinerary.calendar[day].length > 0 ? (
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(event) => handleDragEnd(event, day)}
+                      >
+                        <SortableContext
+                          items={itinerary.calendar[day].map((item) => item.place)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {itinerary.calendar[day].map((item, idx) => (
+                            <SortableItem
+                              key={idx}
+                              id={item.place}
+                              place={item.place}
+                              time={item.time}
+                              transport={item.transport}
+                              image={item.image}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    ) : (
+                      <p className="text-gray-500 italic p-4 text-center">
+                        No itinerary items for this day
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
 
           </div>
         </div>
