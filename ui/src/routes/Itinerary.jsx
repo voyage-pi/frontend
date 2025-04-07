@@ -346,8 +346,9 @@ function Itinerary() {
           <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
             {loading ? (
               <div className="flex flex-col text-center justify-center p-3  ">
-                <LoadingAnimation />
-                <div>Loading images and Places</div>
+                <div className="w-full h-[100px] skeleton"></div>
+                <div className="w-full h-[100px] skeleton"></div>
+                <div className="w-full h-[100px] skeleton"></div>
               </div>
             ) : (
               Object.keys(itinerary.calendar).map((day, index) => (

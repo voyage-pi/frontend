@@ -11,7 +11,8 @@ const StepContent = ({
   subQuestionIndex,
   totalSubQuestions,
   answers,
-  onRatingSelect
+  onRatingSelect,
+  onValidationChange
 }) => {
   switch (currentStep) {
     case 1:
@@ -29,6 +30,7 @@ const StepContent = ({
           totalSubQuestions={totalSubQuestions}
           answers={answers}
           onRatingSelect={onRatingSelect}
+          onValidationChange={onValidationChange}
         />
       )
     default:

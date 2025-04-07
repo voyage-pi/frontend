@@ -15,7 +15,7 @@ const defaultCenter = {
 };
 const defaultZoom = 4;
 
-const MapComponent = ({ polylines=[], markers=[] }) => {
+const MapComponent = ({ polylines = [], markers = [] }) => {
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
@@ -26,21 +26,20 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
     googleMapsApiKey: key,
     libraries: ['geometry', 'places'],
   });
-  
+
   useEffect(() => {
     setHasElements(markers.length > 0 || polylines.length > 0);
   }, [markers, polylines]);
 
   useEffect(() => {
     if (!mapInstance || !window.google) return;
-    
-    // If no elements, just set default view and return early
+
     if (!hasElements) {
       mapInstance.setCenter(defaultCenter);
       mapInstance.setZoom(defaultZoom);
       return;
     }
-    
+
     // If we have elements, calculate bounds
     const bounds = new window.google.maps.LatLngBounds();
     let hasValidBounds = false;
@@ -50,7 +49,7 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
       markers.forEach(marker => {
         if (marker.position && marker.position.lat && marker.position.lng) {
           bounds.extend(new window.google.maps.LatLng(
-            marker.position.lat, 
+            marker.position.lat,
             marker.position.lng
           ));
           hasValidBounds = true;
@@ -78,8 +77,10 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
     // If we found valid bounds, fit the map to them
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
-      // Optional: adjust zoom after fitting bounds
-      mapInstance.setZoom(Math.min(mapInstance.getZoom(), 8));
+      if(markers.length===1)
+      {
+        mapInstance.setZoom(8);
+      }
     } else {
       // Fallback to default view if we have elements but couldn't calculate bounds
       mapInstance.setCenter(defaultCenter);
@@ -104,7 +105,7 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
   };
 
   const renderPolylines = () => {
-    return polylines.length!==0 ? polylines.map((polylineGroup, groupIndex) => {
+    return polylines.length !== 0 ? polylines.map((polylineGroup, groupIndex) => {
       return polylineGroup.polylines.map((polyline, polylineIndex) => {
         const path = window.google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
 
@@ -123,7 +124,7 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
   };
 
   const renderMarkers = () => {
-    return markers.length!==0 ? markers.map((marker, index) => (
+    return markers.length !== 0 ? markers.map((marker, index) => (
       <Marker
         key={`marker-${index}`}
         position={marker.position}
@@ -134,7 +135,7 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
         }}
         onClick={() => handleMarkerClick(marker)}
       />
-    )): <></>;
+    )) : <></>;
   };
 
   return isLoaded ? (

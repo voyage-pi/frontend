@@ -9,6 +9,7 @@ import {axiosInstance } from "../utils/axiosInstance"
 import LoadingItinerary from "../components/LoadingItinerary"
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
+import Notification from "../components/Notification";
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -20,7 +21,8 @@ function Forms() {
   const navigate = useNavigate()
   const [isNavigating, setIsNavigating] = useState(false)
   const [itinerary, setItinerary] = useState(null)
-
+  const [isStep5Valid, setIsStep5Valid] = useState(false)
+  const [showError, setShowError] = useState(false)
 
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
@@ -54,10 +56,15 @@ function Forms() {
 
   // Calculate progress percentage for progress bar
   const progressPercentage = currentStep === 5
-    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
+    ? Math.round(((subQuestionIndex) / totalSubQuestions) * 100)
     : 0;
 
   const handleNext = () => {
+    if (currentStep === 5 && !isStep5Valid) {
+      setShowError(true);
+      return;
+    }
+
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1)
       return
@@ -148,6 +155,7 @@ function Forms() {
       if (response.data && response.data.response && response.data.response.itinerary) {
         setItinerary(response.data);
         navigate("/itinerary", { state: { itineraryData: response.data } });
+        localStorage.clear();
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -183,7 +191,16 @@ function Forms() {
               totalSubQuestions={totalSubQuestions}
               answers={answers}
               onRatingSelect={handleRatingSelect}
+              onValidationChange={setIsStep5Valid}
             />
+
+            {showError && (
+              <Notification
+                type="error"
+                text="You must select an answer before proceeding"
+                onClose={() => setShowError(false)}
+              />
+            )}
 
             <div className="flex justify-between mt-8">
               {currentStep === 1 && (
