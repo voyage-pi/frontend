@@ -32,7 +32,11 @@ const Step5ContentPP = ({
           <div key={rating} className="flex flex-col items-center mx-5">
             <button
               onClick={() => onRatingSelect(rating)}
-              className={`rounded-full border-2 border-primary/70 flex items-center justify-center transition-all duration-200 hover:bg-primary/20
+              className={`rounded-full border-2 border-primary/70 flex items-center justify-center transition-all duration-200 
+                          ${currentQuestion.answer === rating
+                              ? "bg-primary border-primary"
+                              : "bg-white hover:bg-primary/20"
+                          }
                           ${rating === 1
                               ? "w-18 h-18"
                               : rating === 2
@@ -46,10 +50,6 @@ const Step5ContentPP = ({
                               : rating === 6
                               ? "w-16 h-16"
                               : "w-18 h-18"
-                          }
-                          ${currentQuestion.answer === rating
-                              ? "bg-primary border-primary"
-                              : "bg-white"
                           }
                         `}
             >
