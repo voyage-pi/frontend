@@ -24,6 +24,14 @@ import { TfiReload } from "react-icons/tfi";
 import { IoChevronDown } from "react-icons/io5"; // Added chevron icon
 import Map from "../components/Map"; 
 
+const CustomScrollbarStyle = () => (
+  <style>{`
+    .custom-scrollbar {
+      scrollbar-width: thin;
+    }
+  `}</style>
+);
+
 function Itinerary() {
     const [itinerary, setItinerary] = useState({});
     const [loading, setLoading] = useState(true);
@@ -300,7 +308,8 @@ function Itinerary() {
 
     return (
         <PageTemplate>
-            <div className="flex justify-center items-center flex-col w-full px-4 ">
+            <CustomScrollbarStyle />
+            <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
                 <div className="mb-4">
                     <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
                 </div>
@@ -360,51 +369,53 @@ function Itinerary() {
                     {loading ? (
                         <p>Loading itinerary...</p>
                     ) : (
-                        Object.keys(itinerary.calendar).map((day, index) => (
-                            <div
-                                key={index}
-                                className={`collapse mb-6 -ml-4 ${openDays[day] ? "collapse-open" : "collapse-close"}`}
-                            >
-                                <div 
-                                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
-                                    onClick={() => toggleDay(day)}
+                        <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
+                            {Object.keys(itinerary.calendar).map((day, index) => (
+                                <div
+                                    key={index}
+                                    className={`collapse mb-6 -ml-4 ${openDays[day] ? "collapse-open" : "collapse-close"}`}
                                 >
-                                    <span>{day}</span>
-                                    <IoChevronDown 
-                                        className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"}`} 
-                                    />
-                                </div>
-                                <div className="collapse-content bg-base-100">
-                                    {itinerary.calendar[day].length > 0 ? (
-                                        <DndContext
-                                            sensors={sensors}
-                                            collisionDetection={closestCenter}
-                                            onDragEnd={(event) => handleDragEnd(event, day)}
-                                        >
-                                            <SortableContext
-                                                items={itinerary.calendar[day].map((item) => item.place)}
-                                                strategy={verticalListSortingStrategy}
+                                    <div 
+                                        className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
+                                        onClick={() => toggleDay(day)}
+                                    >
+                                        <span>{day}</span>
+                                        <IoChevronDown 
+                                            className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"}`} 
+                                        />
+                                    </div>
+                                    <div className="collapse-content bg-base-100">
+                                        {itinerary.calendar[day].length > 0 ? (
+                                            <DndContext
+                                                sensors={sensors}
+                                                collisionDetection={closestCenter}
+                                                onDragEnd={(event) => handleDragEnd(event, day)}
                                             >
-                                                {itinerary.calendar[day].map((item, idx) => (
-                                                    <SortableItem
-                                                        key={idx}
-                                                        id={item.place}
-                                                        place={item.place}
-                                                        time={item.time}
-                                                        transport={item.transport}
-                                                        image={item.image}
-                                                    />
-                                                ))}
-                                            </SortableContext>
-                                        </DndContext>
-                                    ) : (
-                                        <p className="text-gray-500 italic p-4 text-center">
-                                            No itinerary items for this day
-                                        </p>
-                                    )}
+                                                <SortableContext
+                                                    items={itinerary.calendar[day].map((item) => item.place)}
+                                                    strategy={verticalListSortingStrategy}
+                                                >
+                                                    {itinerary.calendar[day].map((item, idx) => (
+                                                        <SortableItem
+                                                            key={idx}
+                                                            id={item.place}
+                                                            place={item.place}
+                                                            time={item.time}
+                                                            transport={item.transport}
+                                                            image={item.image}
+                                                        />
+                                                    ))}
+                                                </SortableContext>
+                                            </DndContext>
+                                        ) : (
+                                            <p className="text-gray-500 italic p-4 text-center">
+                                                No itinerary items for this day
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     )}
                 </div>
 
