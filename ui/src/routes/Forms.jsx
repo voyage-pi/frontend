@@ -148,6 +148,7 @@ function Forms() {
       if (response.data && response.data.response && response.data.response.itinerary) {
         setItinerary(response.data);
         navigate("/itinerary", { state: { itineraryData: response.data } });
+        localStorage.clear();
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
