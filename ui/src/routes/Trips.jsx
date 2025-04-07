@@ -4,7 +4,7 @@ import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
-import userData from "../../public/user.json";
+import userData from "../../public/guest.json";
 import Map from "../components/Map";
 
 function Trips() {
@@ -36,6 +36,13 @@ function Trips() {
     return true;
   });
 
+  const allMarkers = [];
+  filteredTrips.forEach(trip => {
+    if (trip.markers && trip.markers.length > 0) {
+      allMarkers.push(...trip.markers);
+    }
+  });
+
   const myPolylines = [
     {
       polylines: [
@@ -48,24 +55,9 @@ function Trips() {
     },
   ];
 
-  const myMarkers = [
-    {
-      position: { lat: 32.61402777012159, lng: -8.656425489382625 },
-      title: "DETI",
-      address: "Universidade de Aveiro, 3810-193 Aveiro",
-      image: "https://lh3.googleusercontent.com/p/AF1QipNIoDTmCa7-LUb4p804W_pnaVl6vJOBrl7yFo7H=w408-h255-k-no",
-    },
-    {
-      position: { lat: 40.637322817325355, lng: -8.650697327204432 },
-      title: "Santos da Praça",
-      address: "Largo da Praça do Peixe 3, 3800-241 Aveiro",
-      image: "https://lh3.googleusercontent.com/p/AF1QipM5l6T80v1PyOOVb7PTDCOdp-oiF0BSwNnypcg=w426-h240-k-no",
-    }
-  ];
-
   return (
     <PageTemplate>
-      <div className="flex flex-col ">
+      <div className="flex flex-col">
         <div className="flex">
           <div className="w-4/7 p-8">
             <TabBar
@@ -84,7 +76,11 @@ function Trips() {
                   placeholder="Search..."
                 />
               </div>
-
+              {filteredTrips.length === 0 && (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">No trips created yet.</p>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-2 gap-y-5">
                 {filteredTrips.map((trip) => (
                   <TripCard
@@ -97,19 +93,13 @@ function Trips() {
                     date={trip.date}
                   />
                 ))}
-
-                {filteredTrips.length === 0 && (
-                  <div className="text-center py-10">
-                    <p className="text-gray-500">No trips found matching your search.</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
-          <div className="w-3/7 h-screen  overflow-hidden">
+          <div className="w-3/7 h-screen overflow-hidden">
             <Map
               polylines={myPolylines}
-              markers={myMarkers}
+              markers={allMarkers}
             />
           </div>
         </div>
@@ -117,5 +107,4 @@ function Trips() {
     </PageTemplate>
   );
 }
-
 export default Trips;
