@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Notification from "../Notification";
 
 const Step5ContentPP = ({
   currentQuestion,
   subQuestionIndex,
   onRatingSelect,
+  onValidationChange,
 }) => {
+  const [showError, setShowError] = useState(false);
+
   useEffect(() => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     const savedRating = savedRatings[subQuestionIndex];
@@ -14,10 +18,31 @@ const Step5ContentPP = ({
     }
   }, [subQuestionIndex, currentQuestion, onRatingSelect]);
 
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(!!currentQuestion?.answer);
+    }
+  }, [currentQuestion?.answer, onValidationChange]);
+
+  const handleRatingClick = (rating) => {
+    if (currentQuestion.answer === rating) {
+      onRatingSelect(null);
+    } else {
+      onRatingSelect(rating);
+    }
+  };
+
   if (!currentQuestion) return null;
 
   return (
     <div className="relative h-99 flex flex-col">
+      {showError && (
+        <Notification
+          type="error"
+          text="You must select an answer before proceeding"
+          onClose={() => setShowError(false)}
+        />
+      )}
       <div className="max-w-2xl mx-auto p-3 flex flex-col items-center">
         <div className="text-center h-40 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-2">{currentQuestion.question}</h2>
@@ -25,13 +50,11 @@ const Step5ContentPP = ({
         </div>
       </div>
 
-      <div
-        className="relative origin-center flex justify-center items-center"
-      >
+      <div className="relative origin-center flex justify-center items-center">
         {[1, 2, 3, 4, 5, 6, 7].map((rating) => (
           <div key={rating} className="flex flex-col items-center mx-5">
             <button
-              onClick={() => onRatingSelect(rating)}
+              onClick={() => handleRatingClick(rating)}
               className={`rounded-full border-2 border-primary/70 flex items-center justify-center transition-all duration-200 
                           ${currentQuestion.answer === rating
                               ? "bg-primary border-primary"
