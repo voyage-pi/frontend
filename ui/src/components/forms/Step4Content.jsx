@@ -139,7 +139,8 @@ const Step4Content = () => {
   return (
     <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
       {/* Left Column - Dates */}
-      <div className="flex-1 border-r border-primary/30 pr-24 ">
+      {/* <div className="flex-1 border-r border-primary/30 pr-24 "> */}
+      <div className="flex-1">
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
 
         {/* Start Date Picker */}
@@ -157,7 +158,7 @@ const Step4Content = () => {
               <div className="flex-1">
                 <button
                   ref={startButtonRef}
-                  className="input input-border"
+                  className="input input-border w-full"
                   onClick={toggleStartPopover}
                 >
                   {startDate}
@@ -221,7 +222,7 @@ const Step4Content = () => {
               <div className="flex-1">
                 <button
                   ref={endButtonRef}
-                  className="input input-border"
+                  className="input input-border w-full"
                   onClick={toggleEndPopover}
                 >
                   {endDate}
@@ -257,7 +258,7 @@ const Step4Content = () => {
       </div>
 
       {/* Right Column - Budget */}
-      <div className="flex-1 pl-24">
+      {/* <div className="flex-1 pl-24">
         <h2 className="text-2xl font-bold mb-6 text-center">Budget</h2>
 
         <div className="p-4">
@@ -277,7 +278,7 @@ const Step4Content = () => {
             valueClassName="text-error text-5xl font-bold mb-6"
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
