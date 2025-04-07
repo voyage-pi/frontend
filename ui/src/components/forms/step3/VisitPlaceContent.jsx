@@ -109,7 +109,7 @@ const VisitPlaceContent = () => {
       setSuggestionHovered(prev => (prev + 1) % suggestionsL)
     }
     else if (key === "ArrowUp") {
-      setSuggestionHovered(prev => (prev - 1) % suggestionsL)
+      setSuggestionHovered(prev => ((prev <= 0 ? suggestionsL : prev) - 1) % suggestionsL)
     }
     else if (key === "Enter") {
       let currentSelectedSuggestion = suggestionlist[suggestionHovered]
@@ -162,10 +162,10 @@ const VisitPlaceContent = () => {
           </div>
 
           <div className="space-y-3 text-center">
-            {!loading ? (
-              currentText === "" ? (
-                <div className="w-full text-primary opacity-50 text-center my-3">
-                  Insert a location that you would like to visit...
+            {currentText.length > 3 ? (
+              loading ? (
+                <div className=" flex justify-center">
+                  <LoadingAnimation width={"150px"} height={"150px"} />
                 </div>
               ) : (
                 suggestionlist.map((location, idx) => (
@@ -193,8 +193,9 @@ const VisitPlaceContent = () => {
                 ))
               )
             ) : (
-              <div className=" flex justify-center">
-                <LoadingAnimation width={"150px"} height={"150px"} />
+
+              <div className="w-full text-primary opacity-50 text-center my-3">
+                Insert a location that you would like to visit...
               </div>
             )}
           </div>
