@@ -106,7 +106,7 @@ function Itinerary() {
         return getPhotoUrl(place);
       }
       const photoUrl =
-        response.data?.uri || generatePlaceholderImage(place.name);
+        response.data?.uri;
       setPhotoCache((prev) => ({
         ...prev,
         [placeId]: photoUrl,
@@ -327,9 +327,9 @@ function Itinerary() {
         <div className="w-full md:w-1/2 pr-4 overflow-hidden  ">
           <div className="flex flex-row  mb-4 items-center gap-5">
             <h1 className="text-3xl font-bold">{itinerary.title}</h1>
-            <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
+            {/* <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
               <CiSaveDown1 className="text-white text-2xl" />
-            </div>
+            </div> */}
             {/* <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
                             <TfiReload className="text-primary text-xl" />
                         </div> */}
@@ -355,14 +355,14 @@ function Itinerary() {
                 </div>
               </div>
             </div>
-            <div className="rounded-full border-1 border-secondary/10">
+            {/* <div className="rounded-full border-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <TbMoneybag className="text-primary ml-1" />
                 <div className="mr-2">
                   <span className="font-bold"> {itinerary.budget} </span> €
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="rounded-full border-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <IoLocationOutline className="text-primary ml-1" />
