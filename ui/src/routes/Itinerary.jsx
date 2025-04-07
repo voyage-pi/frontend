@@ -74,7 +74,6 @@ function Itinerary() {
     };
 
     const processItineraryData = (data) => {
-        // Set the itinerary data from the new structure
         if (data.response && data.response.itinerary) {
             const responseItinerary = data.response.itinerary.itinerary || data.response.itinerary;
             console.log("Processing itinerary data:", responseItinerary);
@@ -157,21 +156,20 @@ function Itinerary() {
             const totalDays = responseItinerary.days ? responseItinerary.days.length : 0;
             
             // Extract location from first activity if available
-            let location = "Aveiro";
-            if (totalDays > 0 && responseItinerary.days[0].morning_activities && 
-                responseItinerary.days[0].morning_activities.length > 0) {
-                location = responseItinerary.days[0].morning_activities[0].place.name.split(',')[0];
-            }
-            
-            setItinerary({
-                title: `Trip to ${location}`,
-                totalDays: totalDays,
-                totalPeople: 1, 
-                budget: responseItinerary.budget || 0,
-                location: location,
-                calendar: calendar,
-            });
+      let locationTrip = "...";
+      if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
+        responseItinerary.days[0].morning_activities.length > 0) {
+        locationTrip = localStorage.getItem("Location")
+      }
 
+      setItinerary({
+        title: `Trip to ${locationTrip}`,
+        totalDays: totalDays,
+        totalPeople: 1,
+        budget: responseItinerary.budget || 0,
+        location: locationTrip,
+        calendar: calendar,
+      });
             setRoutes(routesData);
             setMarkers(markersData);
         }
