@@ -5,7 +5,7 @@ import StepContent from "../components/forms/StepContent"
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
 import questions from "../../public/questions.json"
 import { useNavigate } from "react-router-dom"
-import {axiosInstance } from "../utils/axiosInstance"
+import { axiosInstance } from "../utils/axiosInstance"
 import LoadingItinerary from "../components/LoadingItinerary"
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
@@ -122,12 +122,20 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
+    const tripType = localStorage.getItem("Trip Type")
+    let obj = {}
+    //add an object related to the trip type an append it to the sending data for the backend attributes
+    if (tripType === "zone") {
+      obj.radius = localStorage.getItem("radius")
+    }
 
     const formData = {
+      ...obj,
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       dateStart: formattedDate, // Formato correto: "2025-04-15T09:00:00Z"
       duration: parseInt(localStorage.getItem("Duration")) || 0,
-      tripType: localStorage.getItem("Trip Type") || "place",
+      tripType: tripType,
+
       users: ["user123"],
       place: {
         coordinates: {
@@ -150,7 +158,7 @@ function Forms() {
     try {
       const response = await axiosInstance.post("/trips", formData);
       console.log("Response:", response.data);
-      
+
       // Ensure we have the complete response data with the correct structure
       if (response.data && response.data.response && response.data.response.itinerary) {
         setItinerary(response.data);
@@ -207,33 +215,33 @@ function Forms() {
                 <button
                   onClick={() => handleLeave()}
                   className="btn btn-primary"
-                > 
+                >
                   <BsArrowLeftSquareFill className="text-white" /> Leave
                 </button>
-              )}  
+              )}
 
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"
                 >
-                  <TiArrowLeft className="mr-1"/> Back
+                  <TiArrowLeft className="mr-1" /> Back
                 </button>
               )}
 
-              {(currentStep >= 3 && currentStep < 5) || 
+              {(currentStep >= 3 && currentStep < 5) ||
                 (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
-                  <button
-                    onClick={handleNext}
-                    className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
-                  >
-                    Next <TiArrowRight className="ml-1"/>
-                  </button>
-                ) : currentStep === 5 ? (
-                  <button className="btn btn-primary" onClick={handleFinish}> 
-                    Finish
-                  </button>
-                ) : null}
+                <button
+                  onClick={handleNext}
+                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                >
+                  Next <TiArrowRight className="ml-1" />
+                </button>
+              ) : currentStep === 5 ? (
+                <button className="btn btn-primary" onClick={handleFinish}>
+                  Finish
+                </button>
+              ) : null}
             </div>
 
             {currentStep === 5 && (

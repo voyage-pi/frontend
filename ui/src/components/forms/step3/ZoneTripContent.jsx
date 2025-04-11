@@ -63,6 +63,7 @@ const ZoneTripContent = () => {
 
   const handleRadiusChange = (radius) => {
     setRadius(radius);
+    localStorage.setItem("radius", radius)
     if (circle.length !== 0) {
       setCircle([{ ...circle[0], "radius": radius }])
     }
@@ -116,7 +117,6 @@ const ZoneTripContent = () => {
   const handleSuggestionsSelection = (event) => {
     if (suggestionlist.length === 0)
       return
-    console.log(event)
     let key = event.key
     let suggestionsL = suggestionlist.length != 0 ? suggestionlist.length : 1
     if (key === "ArrowDown") {
@@ -127,7 +127,6 @@ const ZoneTripContent = () => {
     }
     else if (key === "Enter") {
       let currentSelectedSuggestion = suggestionlist[suggestionHovered]
-      console.log(currentSelectedSuggestion)
       handleSelectLocation(currentSelectedSuggestion.text)
     }
   }
