@@ -123,6 +123,7 @@ const VisitPlaceContent = () => {
     setSuggestionHovered(idx)
   }
 
+
   return (
     <div>
       <ToastContainer />
