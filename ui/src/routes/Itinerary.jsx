@@ -299,9 +299,9 @@ function Itinerary() {
             {/* <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
               <CiSaveDown1 className="text-white text-2xl" />
             </div> */}
-            {/* <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
-                            <TfiReload className="text-primary text-xl" />
-                        </div> */}
+            <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
+              <TfiReload className="text-primary text-xl" />
+            </div> 
           </div>
 
           <div className="flex flex-row gap-x-5 pb-5 ">
@@ -343,7 +343,7 @@ function Itinerary() {
           </div>
 
 
-          <div className="h-[40rem] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="h-[40rem] overflow-y-auto mr-10 custom-scrollbar">
             {loading ? (
               <div className="flex flex-col text-center justify-center p-3  ">
                 <div className="w-full h-[100px] skeleton"></div>
