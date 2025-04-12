@@ -37,7 +37,7 @@ function Register() {
 
   return (
     <div className="flex h-screen">
-      <div className="hidden md:flex md:w-1/2 bg-secondary/10 flex-col justify-center items-center">
+      <div className="hidden md:flex md:w-1/2 bg-primary/5 flex-col justify-center items-center">
           <div className="flex justify-center">
             <img src={RegisterIllustration} alt="Registration Illustration" className="mb-6" />
         </div>
