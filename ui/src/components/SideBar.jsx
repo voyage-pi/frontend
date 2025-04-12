@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { NavLink, useLocation } from "react-router-dom"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import {
     FaHeart,
     FaUsers,
@@ -14,10 +14,11 @@ import VoyageIconLogo from "../assets/voyage-logo.png"
 import userData from "../../public/user.json"
 import Notification from "./Notification"
 import { RiLoginCircleFill } from "react-icons/ri";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUserPlus, FaSignOutAlt } from "react-icons/fa";
 
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
+    const navigate = useNavigate();
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     
     const [isExpanded, setIsExpanded] = useState(() => {
@@ -82,6 +83,10 @@ function SideBar({ onToggle, onMenuItemClick }) {
     const handleBottomItemClick = (label) => {
         onMenuItemClick(label);
         
+        if (label === "Logout") {
+            // Perform logout logic here if needed (clear tokens, etc.)
+            navigate("/login");
+        }
     };
 
     return (
@@ -249,17 +254,30 @@ function SideBar({ onToggle, onMenuItemClick }) {
             <div className={`mb-4 text-lg text-secondary ${isExpanded ? "mx-10" : "ml-3"} transition-all duration-400 ease-in-out`}>
                 <ul className="p-0">
                     {!isGuest && (
-                        <li>
-                            <a 
-                                className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
-                                onClick={() => handleBottomItemClick("Share")}
-                            >
-                                <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
-                                    <FaShareNodes size={22} />
-                                </div>
-                                <span className={`transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>Share</span>
-                            </a>
-                        </li>
+                        <>
+                            <li>
+                                <a 
+                                    className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
+                                    onClick={() => handleBottomItemClick("Share")}
+                                >
+                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
+                                        <FaShareNodes size={22} />
+                                    </div>
+                                    <span className={`transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>Share</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a 
+                                    className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
+                                    onClick={() => handleBottomItemClick("Logout")}
+                                >
+                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
+                                        <FaSignOutAlt size={22} />
+                                    </div>
+                                    <span className={`transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>Logout</span>
+                                </a>
+                            </li>
+                        </>
                     )}
                     <li>
                         <a 
