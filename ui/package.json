@@ -19,6 +19,7 @@
     "cally": "^0.8.0",
     "classnames": "^2.5.1",
     "daisyui": "^5.0.3",
+    "motion": "^12.6.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-helmet": "^6.1.0",
