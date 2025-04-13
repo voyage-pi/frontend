@@ -4,6 +4,8 @@ import Saved from './routes/Saved';
 import Friends from './routes/Friends';
 import Forms from './routes/Forms';
 import Itinerary from './routes/Itinerary';
+import Login from './routes/Login';
+import Register from './routes/Register';
 
 export const routesList = [
     {
@@ -16,8 +18,8 @@ export const routesList = [
           <Trips />
         </>
       ),
-    },   
-
+    },
+    
     {
       path: "/saved",
       element: (
@@ -62,6 +64,30 @@ export const routesList = [
             <title>Voyage - Itinerary</title>
           </Helmet>
           <Itinerary />
+        </>
+      ),
+    },
+
+    {
+      path: "/login",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - Login</title>
+          </Helmet>
+          <Login />
+        </>
+      ),
+    },
+
+    {
+      path: "/register",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - Register</title>
+          </Helmet>
+          <Register />
         </>
       ),
     }
