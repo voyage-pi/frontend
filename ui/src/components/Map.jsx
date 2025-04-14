@@ -118,7 +118,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
       if (markers.length === 1) {
         mapInstance.setZoom(9);
       }
-    } else if (circles.length === 0) {
+    } else if (markers.length == 0 && polylines == 0 && circles.length === 0) {
       mapInstance.setCenter(defaultCenter);
       mapInstance.setZoom(defaultZoom);
     }
