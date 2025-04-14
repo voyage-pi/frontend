@@ -37,10 +37,11 @@ const VisitPlaceContent = () => {
       };
       localStorage.setItem("Longitude", response.data.longitude);
       localStorage.setItem("Latitude", response.data.latitude);
+      localStorage.setItem("place_name", location);
       setMarkers([m]);
     } catch (error) {
       setNotify({
-        type: 'error',
+        type: "error",
         text: `There was an error ${error}`,
         key: Date.now()
       })
@@ -71,7 +72,7 @@ const VisitPlaceContent = () => {
       // based on the API response
     } catch (error) {
       setNotify({
-        type: 'error',
+        type: "error",
         text: `There was an error ${error}`,
         key: Date.now()
       })
@@ -86,7 +87,7 @@ const VisitPlaceContent = () => {
     setCurrentText(value);
     if (value == "") {
       //to avoid making requests to the backend for a null string
-      return 0
+      return 0;
     }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -137,7 +138,7 @@ const VisitPlaceContent = () => {
           options={{
             position: "top-right",
             autoClose: 3000,
-            pauseOnHover: false
+            pauseOnHover: false,
           }}
         />
       )}

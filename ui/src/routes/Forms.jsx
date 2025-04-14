@@ -24,40 +24,44 @@ function Forms() {
   const [isStep5Valid, setIsStep5Valid] = useState(false)
   const [showError, setShowError] = useState(false)
 
+
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
-    const savedStep = parseInt(localStorage.getItem("currentStep")) || 1
-    const savedSubQuestionIndex = parseInt(localStorage.getItem("subQuestionIndex")) || 0
-    const savedAnswers = JSON.parse(localStorage.getItem("answers"))
+    const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
+    const savedSubQuestionIndex =
+      parseInt(localStorage.getItem("subQuestionIndex")) || 0;
+    const savedAnswers = JSON.parse(localStorage.getItem("answers"));
 
     if (savedStep) {
-      setCurrentStep(savedStep)
+      setCurrentStep(savedStep);
     }
 
     if (savedSubQuestionIndex) {
-      setSubQuestionIndex(savedSubQuestionIndex)
+      setSubQuestionIndex(savedSubQuestionIndex);
     }
 
     if (savedAnswers) {
-      setAnswers(savedAnswers)
+      setAnswers(savedAnswers);
     }
 
-    setIsInitialized(true)
-  }, [])
+    setIsInitialized(true);
+  }, []);
 
   // Salvar o progresso no localStorage sempre que mudar
   useEffect(() => {
     if (isInitialized) {
-      localStorage.setItem("currentStep", currentStep)
-      localStorage.setItem("subQuestionIndex", subQuestionIndex)
-      localStorage.setItem("answers", JSON.stringify(answers))
+      localStorage.setItem("currentStep", currentStep);
+      localStorage.setItem("subQuestionIndex", subQuestionIndex);
+      localStorage.setItem("answers", JSON.stringify(answers));
     }
-  }, [currentStep, subQuestionIndex, answers, isInitialized])
+  }, [currentStep, subQuestionIndex, answers, isInitialized]);
 
   // Calculate progress percentage for progress bar
+
   const progressPercentage = currentStep === 5
     ? Math.round(((subQuestionIndex) / totalSubQuestions) * 100)
     : 0;
+
 
   const handleNext = () => {
     if (currentStep === 5 && !isStep5Valid) {
@@ -66,56 +70,56 @@ function Forms() {
     }
 
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1)
-      return
+      setCurrentStep(currentStep + 1);
+      return;
     }
 
     if (currentStep === 5) {
       if (subQuestionIndex < totalSubQuestions - 1) {
-        setSubQuestionIndex(subQuestionIndex + 1)
+        setSubQuestionIndex(subQuestionIndex + 1);
       } else {
         if (currentStep < totalSteps) {
-          setCurrentStep(currentStep + 1)
+          setCurrentStep(currentStep + 1);
         } else {
-          console.log("All done with step 5 questions.")
+          console.log("All done with step 5 questions.");
         }
       }
     }
-  }
+  };
 
   const handleBack = () => {
-    if (currentStep === 1) return
+    if (currentStep === 1) return;
 
     if (currentStep < 5) {
-      setCurrentStep(currentStep - 1)
-      return
+      setCurrentStep(currentStep - 1);
+      return;
     }
 
     if (currentStep === 5) {
       if (subQuestionIndex > 0) {
-        setSubQuestionIndex(subQuestionIndex - 1)
+        setSubQuestionIndex(subQuestionIndex - 1);
       } else {
-        setCurrentStep(currentStep - 1)
+        setCurrentStep(currentStep - 1);
       }
     }
-  }
+  };
 
   const handleRatingSelect = (rating) => {
     setAnswers((prevAnswers) => {
-      const updated = [...prevAnswers]
-      updated[subQuestionIndex].answer = rating
-      return updated
-    })
-  }
+      const updated = [...prevAnswers];
+      updated[subQuestionIndex].answer = rating;
+      return updated;
+    });
+  };
 
   const handleLeave = () => {
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
 
-    setIsNavigating(true)
+    setIsNavigating(true);
 
     // Formatação da data para ISO string
     const startDate = new Date(localStorage.getItem("Start Date"));
@@ -140,27 +144,31 @@ function Forms() {
       place: {
         coordinates: {
           latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
-        }
+          longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+        },
+        place_name: localStorage.getItem("place_name") || "",
       },
       questions: {
-        "user123": userRatings.map((answer, index) => ({
+        user123: userRatings.map((answer, index) => ({
           question_id: index,
           value: parseInt(answer) || 0, // Garantindo que o valor seja número
-          type: "scale"
-        }))
-      }
+          type: "scale",
+        })),
+      },
     };
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
-
 
     try {
       const response = await axiosInstance.post("/trips", formData);
       console.log("Response:", response.data);
 
       // Ensure we have the complete response data with the correct structure
-      if (response.data && response.data.response && response.data.response.itinerary) {
+      if (
+        response.data &&
+        response.data.response &&
+        response.data.response.itinerary
+      ) {
         setItinerary(response.data);
         navigate("/itinerary", { state: { itineraryData: response.data } });
         localStorage.clear();
@@ -178,7 +186,7 @@ function Forms() {
   };
 
   if (!isInitialized || isNavigating) {
-    return <LoadingItinerary />
+    return <LoadingItinerary />;
   }
 
   return (
@@ -256,7 +264,8 @@ function Forms() {
         </div>
       </div>
     </PageTemplate>
-  )
+  );
 }
 
 export default Forms
+
