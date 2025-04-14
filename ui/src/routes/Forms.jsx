@@ -1,114 +1,115 @@
-import { useState, useEffect } from "react"
-import PageTemplate from "../components/PageTemplate"
-import StepIndicator from "../components/StepIndicator"
-import StepContent from "../components/forms/StepContent"
-import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
-import questions from "../../public/questions.json"
-import { useNavigate } from "react-router-dom"
-import {axiosInstance } from "../utils/axiosInstance"
-import LoadingItinerary from "../components/LoadingItinerary"
+import { useState, useEffect } from "react";
+import PageTemplate from "../components/PageTemplate";
+import StepIndicator from "../components/StepIndicator";
+import StepContent from "../components/forms/StepContent";
+import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
+import questions from "../../public/questions.json";
+import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../utils/axiosInstance";
+import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 
 function Forms() {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const totalSteps = 5
-  const [answers, setAnswers] = useState([...questions])
-  const [subQuestionIndex, setSubQuestionIndex] = useState(0)
-  const totalSubQuestions = answers.length
-  const navigate = useNavigate()
-  const [isNavigating, setIsNavigating] = useState(false)
-  const [itinerary, setItinerary] = useState(null)
-
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const totalSteps = 5;
+  const [answers, setAnswers] = useState([...questions]);
+  const [subQuestionIndex, setSubQuestionIndex] = useState(0);
+  const totalSubQuestions = answers.length;
+  const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [itinerary, setItinerary] = useState(null);
 
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
-    const savedStep = parseInt(localStorage.getItem("currentStep")) || 1
-    const savedSubQuestionIndex = parseInt(localStorage.getItem("subQuestionIndex")) || 0
-    const savedAnswers = JSON.parse(localStorage.getItem("answers"))
+    const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
+    const savedSubQuestionIndex =
+      parseInt(localStorage.getItem("subQuestionIndex")) || 0;
+    const savedAnswers = JSON.parse(localStorage.getItem("answers"));
 
     if (savedStep) {
-      setCurrentStep(savedStep)
+      setCurrentStep(savedStep);
     }
 
     if (savedSubQuestionIndex) {
-      setSubQuestionIndex(savedSubQuestionIndex)
+      setSubQuestionIndex(savedSubQuestionIndex);
     }
 
     if (savedAnswers) {
-      setAnswers(savedAnswers)
+      setAnswers(savedAnswers);
     }
 
-    setIsInitialized(true)
-  }, [])
+    setIsInitialized(true);
+  }, []);
 
   // Salvar o progresso no localStorage sempre que mudar
   useEffect(() => {
     if (isInitialized) {
-      localStorage.setItem("currentStep", currentStep)
-      localStorage.setItem("subQuestionIndex", subQuestionIndex)
-      localStorage.setItem("answers", JSON.stringify(answers))
+      localStorage.setItem("currentStep", currentStep);
+      localStorage.setItem("subQuestionIndex", subQuestionIndex);
+      localStorage.setItem("answers", JSON.stringify(answers));
     }
-  }, [currentStep, subQuestionIndex, answers, isInitialized])
+  }, [currentStep, subQuestionIndex, answers, isInitialized]);
 
   // Calculate progress percentage for progress bar
-  const progressPercentage = currentStep === 5
-    ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
-    : 0;
+  const progressPercentage =
+    currentStep === 5
+      ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
+      : 0;
 
   const handleNext = () => {
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1)
-      return
+      setCurrentStep(currentStep + 1);
+      return;
     }
 
     if (currentStep === 5) {
       if (subQuestionIndex < totalSubQuestions - 1) {
-        setSubQuestionIndex(subQuestionIndex + 1)
+        setSubQuestionIndex(subQuestionIndex + 1);
       } else {
         if (currentStep < totalSteps) {
-          setCurrentStep(currentStep + 1)
+          setCurrentStep(currentStep + 1);
         } else {
-          console.log("All done with step 5 questions.")
+          console.log("All done with step 5 questions.");
         }
       }
     }
-  }
+  };
 
   const handleBack = () => {
-    if (currentStep === 1) return
+    if (currentStep === 1) return;
 
     if (currentStep < 5) {
-      setCurrentStep(currentStep - 1)
-      return
+      setCurrentStep(currentStep - 1);
+      return;
     }
 
     if (currentStep === 5) {
       if (subQuestionIndex > 0) {
-        setSubQuestionIndex(subQuestionIndex - 1)
+        setSubQuestionIndex(subQuestionIndex - 1);
       } else {
-        setCurrentStep(currentStep - 1)
+        setCurrentStep(currentStep - 1);
       }
     }
-  }
+  };
 
   const handleRatingSelect = (rating) => {
     setAnswers((prevAnswers) => {
-      const updated = [...prevAnswers]
-      updated[subQuestionIndex].answer = rating
-      return updated
-    })
-  }
+      const updated = [...prevAnswers];
+      updated[subQuestionIndex].answer = rating;
+      return updated;
+    });
+  };
 
   const handleLeave = () => {
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
 
-    setIsNavigating(true)
+    setIsNavigating(true);
 
     // Formatação da data para ISO string
     const startDate = new Date(localStorage.getItem("Start Date"));
@@ -125,27 +126,31 @@ function Forms() {
       place: {
         coordinates: {
           latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
-        }
+          longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+        },
+        place_name: localStorage.getItem("place_name") || "",
       },
       questions: {
-        "user123": userRatings.map((answer, index) => ({
+        user123: userRatings.map((answer, index) => ({
           question_id: index,
           value: parseInt(answer) || 0, // Garantindo que o valor seja número
-          type: "scale"
-        }))
-      }
+          type: "scale",
+        })),
+      },
     };
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
-
     try {
       const response = await axiosInstance.post("/trips", formData);
       console.log("Response:", response.data);
-      
+
       // Ensure we have the complete response data with the correct structure
-      if (response.data && response.data.response && response.data.response.itinerary) {
+      if (
+        response.data &&
+        response.data.response &&
+        response.data.response.itinerary
+      ) {
         setItinerary(response.data);
         navigate("/itinerary", { state: { itineraryData: response.data } });
       } else {
@@ -162,7 +167,7 @@ function Forms() {
   };
 
   if (!isInitialized || isNavigating) {
-    return <LoadingItinerary />
+    return <LoadingItinerary />;
   }
 
   return (
@@ -190,33 +195,34 @@ function Forms() {
                 <button
                   onClick={() => handleLeave()}
                   className="btn btn-primary"
-                > 
+                >
                   <BsArrowLeftSquareFill className="text-white" /> Leave
                 </button>
-              )}  
+              )}
 
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"
                 >
-                  <TiArrowLeft className="mr-1"/> Back
+                  <TiArrowLeft className="mr-1" /> Back
                 </button>
               )}
 
-              {(currentStep >= 3 && currentStep < 5) || 
-                (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
-                  <button
-                    onClick={handleNext}
-                    className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
-                  >
-                    Next <TiArrowRight className="ml-1"/>
-                  </button>
-                ) : currentStep === 5 ? (
-                  <button className="btn btn-primary" onClick={handleFinish}> 
-                    Finish
-                  </button>
-                ) : null}
+              {(currentStep >= 3 && currentStep < 5) ||
+              (currentStep === 5 &&
+                subQuestionIndex < totalSubQuestions - 1) ? (
+                <button
+                  onClick={handleNext}
+                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                >
+                  Next <TiArrowRight className="ml-1" />
+                </button>
+              ) : currentStep === 5 ? (
+                <button className="btn btn-primary" onClick={handleFinish}>
+                  Finish
+                </button>
+              ) : null}
             </div>
 
             {currentStep === 5 && (
@@ -231,7 +237,7 @@ function Forms() {
         </div>
       </div>
     </PageTemplate>
-  )
+  );
 }
 
-export default Forms
+export default Forms;

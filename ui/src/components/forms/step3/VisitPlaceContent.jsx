@@ -12,7 +12,7 @@ const VisitPlaceContent = () => {
   const [suggestionlist, setSuggestionList] = useState([]);
   const [currentText, setCurrentText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [notify,setNotify] =useState()
+  const [notify, setNotify] = useState();
   const [markers, setMarkers] = useState([]);
   const timeoutRef = useRef(null);
 
@@ -37,13 +37,14 @@ const VisitPlaceContent = () => {
       console.log(m);
       localStorage.setItem("Longitude", response.data.longitude);
       localStorage.setItem("Latitude", response.data.latitude);
+      localStorage.setItem("place_name", location);
       setMarkers([m]);
     } catch (error) {
       setNotify({
-        type: 'error',
+        type: "error",
         text: `There was an error ${error}`,
-        key: Date.now() 
-      })
+        key: Date.now(),
+      });
       console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
@@ -71,10 +72,10 @@ const VisitPlaceContent = () => {
       // based on the API response
     } catch (error) {
       setNotify({
-        type: 'error',
+        type: "error",
         text: `There was an error ${error}`,
-        key: Date.now() 
-      })
+        key: Date.now(),
+      });
       console.error("Search error:", error);
     }
   };
@@ -82,12 +83,11 @@ const VisitPlaceContent = () => {
   // Handle input changes with debounce
   const handleInputChange = (e) => {
     const value = e.target.value;
-    setLoading(value!=="");
+    setLoading(value !== "");
     setCurrentText(value);
-    if(value=="")
-    {
+    if (value == "") {
       //to avoid making requests to the backend for a null string
-      return 0
+      return 0;
     }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -97,27 +97,27 @@ const VisitPlaceContent = () => {
       // Only search if there are at least 3 characters
       timeoutRef.current = setTimeout(() => {
         autocompleteSearch();
-      }, 1200); 
+      }, 1200);
     }
   };
 
   return (
     <div>
-       <ToastContainer />
-      
+      <ToastContainer />
+
       {notify && (
-        <Notification 
+        <Notification
           key={notify.key}
-          type={notify.type} 
+          type={notify.type}
           text={notify.text}
-          onClose={()=>setNotify(null)}
-          options={{ 
+          onClose={() => setNotify(null)}
+          options={{
             position: "top-right",
             autoClose: 3000,
-            pauseOnHover: false
+            pauseOnHover: false,
           }}
         />
-      )} 
+      )}
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Side - Location Selection */}
         <div className="flex-1">
