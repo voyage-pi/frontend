@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
+import { TfiReload } from "react-icons/tfi";
+import { HiOutlineTrash } from "react-icons/hi2";
+
 const PlaceCard = ({ id, place, time, transport, image }) => {
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);

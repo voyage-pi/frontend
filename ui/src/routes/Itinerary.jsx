@@ -8,7 +8,8 @@ import { IoLocationOutline } from "react-icons/io5";
 import Map from "../components/Map";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
-
+import { TfiReload } from "react-icons/tfi";
+import { HiOutlineTrash } from "react-icons/hi2";
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
@@ -217,8 +218,8 @@ function Itinerary() {
         calendar: calendar,
       });
 
-        setRoutes(AllroutesData);
-        setMarkers(AllmarkersData);
+      setRoutes(AllroutesData);
+      setMarkers(AllmarkersData);
     }
     setLoading(false);
   };
@@ -256,7 +257,7 @@ function Itinerary() {
             </div> */}
             <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
               <TfiReload className="text-primary text-xl" />
-            </div> 
+            </div>
           </div>
 
           <div className="flex flex-row gap-x-5 pb-5 ">
@@ -307,9 +308,8 @@ function Itinerary() {
             ) : (
               <>
                 <motion.div
-                  className={`w-full flex p-4 h-1/8 py-5 ${
-                    days.length > limitDays ? "" : "overflow-x-auto"
-                  } `}
+                  className={`w-full flex p-4 h-1/8 py-5 ${days.length > limitDays ? "" : "overflow-x-auto"
+                    } `}
                 >
                   {Object.keys(itinerary.calendar).map((day, index) => (
                     <motion.div
@@ -338,7 +338,7 @@ function Itinerary() {
                       key={`day-${selectedDay}`}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                    className="overflow-y-auto h-full"
+                      className="overflow-y-auto h-full"
                     >
                       {itinerary.calendar[selectedDay].map((item, idx) => (
                         <PlaceCard
