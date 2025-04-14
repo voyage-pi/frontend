@@ -1,41 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { axiosPlace } from "../utils/axiosInstance";
-import LoadingAnimation from "../components/LoadingAnimation";
-import {
-  DndContext,
-  closestCenter,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  KeyboardSensor,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { useLocation } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
-import SortableItem from "../components/SortableItem";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { GoPeople, GoClock } from "react-icons/go";
-import { TbMoneybag } from "react-icons/tb";
 import { IoLocationOutline } from "react-icons/io5";
-import { CiSaveDown1 } from "react-icons/ci";
-import { TfiReload } from "react-icons/tfi";
-import { IoChevronDown } from "react-icons/io5"; // Added chevron icon
 import Map from "../components/Map";
-
-const CustomScrollbarStyle = () => (
-  <style>{`
-    .custom-scrollbar {
-      scrollbar-width: thin;
-    }
-  `}</style>
-);
+import { motion, AnimatePresence } from "framer-motion";
+import PlaceCard from "../components/PlaceCard";
+import { TfiReload } from "react-icons/tfi";
+import { HiOutlineTrash } from "react-icons/hi2";
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
+  const [days, setDays] = useState({});
+  const [selectedDay, setSelectedDay] = useState(0);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [routes, setRoutes] = useState([]);
@@ -77,14 +56,6 @@ function Itinerary() {
     }
   }, [loading, itinerary.calendar]);
 
-  // Toggle function to open/close a day
-  const toggleDay = (day) => {
-    setOpenDays((prevState) => ({
-      ...prevState,
-      [day]: !prevState[day],
-    }));
-  };
-
   const getPhotoUrl = async (place) => {
     if (!place || !place.photos || !place.photos.length) {
       console.log("No photos available for", place?.name);
@@ -105,8 +76,7 @@ function Itinerary() {
       if (response.status == 429) {
         return getPhotoUrl(place);
       }
-      const photoUrl =
-        response.data?.uri;
+      const photoUrl = response.data?.uri;
       setPhotoCache((prev) => ({
         [placeId]: photoUrl,
       }));
@@ -127,47 +97,23 @@ function Itinerary() {
     )}/400/300`;
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
-  );
-
-  const handleDragEnd = (event, day) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    setItinerary((prevItinerary) => {
-      const items = prevItinerary.calendar[day];
-      const oldIndex = items.findIndex((item) => item.place === active.id);
-      const newIndex = items.findIndex((item) => item.place === over.id);
-      const newOrder = arrayMove(items, oldIndex, newIndex);
-
-      return {
-        ...prevItinerary,
-        calendar: {
-          ...prevItinerary.calendar,
-          [day]: newOrder,
-        },
-      };
-    });
-  };
-
   const processItineraryData = async (data) => {
     if (data.response && data.response.itinerary) {
       const responseItinerary =
         data.response.itinerary.itinerary || data.response.itinerary;
       console.log("Processing itinerary data:", responseItinerary);
 
-      const calendar = {};
-      const routesData = [];
-      const markersData = [];
+      const calendar = [];
+      const AllroutesData = [];
+      const AllmarkersData = [];
       const imagePromises = [];
 
       if (responseItinerary.days) {
+        setDays(responseItinerary.days);
         for (const day of responseItinerary.days) {
-          const dayIndex = responseItinerary.days.indexOf(day);
-          const dayKey = `Day ${dayIndex + 1}`;
           const dayActivities = [];
+          const routesData = [];
+          const markersData = [];
 
           if (day.morning_activities) {
             for (const activity of day.morning_activities) {
@@ -242,7 +188,9 @@ function Itinerary() {
             });
           }
 
-          calendar[dayKey] = dayActivities;
+          calendar.push(dayActivities);
+          AllroutesData.push(routesData);
+          AllmarkersData.push(markersData);
         }
       }
 
@@ -253,9 +201,12 @@ function Itinerary() {
         : 0;
 
       let locationTrip = "...";
-      if (totalDays > 0 && responseItinerary.days[0].morning_activities &&
-        responseItinerary.days[0].morning_activities.length > 0) {
-        locationTrip = localStorage.getItem("Location")
+      if (
+        totalDays > 0 &&
+        responseItinerary.days[0].morning_activities &&
+        responseItinerary.days[0].morning_activities.length > 0
+      ) {
+        locationTrip = localStorage.getItem("Location");
       }
 
       setItinerary({
@@ -267,8 +218,8 @@ function Itinerary() {
         calendar: calendar,
       });
 
-      setRoutes(routesData);
-      setMarkers(markersData);
+      setRoutes(AllroutesData);
+      setMarkers(AllmarkersData);
     }
     setLoading(false);
   };
@@ -281,10 +232,15 @@ function Itinerary() {
 
   console.log("itinerary", itinerary);
   console.log("openDays", openDays);
+  const limitDays = 5;
 
+  const handleSelectedDay = (dayIndex) => {
+    console.log(routes)
+    setSelectedDay(dayIndex);
+    console.log(routes[selectedDay])
+  };
   return (
     <PageTemplate>
-      <CustomScrollbarStyle />
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
         <div className="mb-4">
           <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
@@ -301,7 +257,7 @@ function Itinerary() {
             </div> */}
             <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
               <TfiReload className="text-primary text-xl" />
-            </div> 
+            </div>
           </div>
 
           <div className="flex flex-row gap-x-5 pb-5 ">
@@ -342,72 +298,68 @@ function Itinerary() {
             </div>
           </div>
 
-
-          <div className="h-[40rem] overflow-y-auto mr-10 custom-scrollbar">
+          <div className="h-[40rem] pr-2 ">
             {loading ? (
               <div className="flex flex-col text-center justify-center p-3  ">
-                <div className="w-full h-[100px] skeleton"></div>
-                <div className="w-full h-[100px] skeleton"></div>
-                <div className="w-full h-[100px] skeleton"></div>
+                <div className="w-full h-[100px] my-2 skeleton"></div>
+                <div className="w-full h-[100px] my-2 skeleton"></div>
+                <div className="w-full h-[100px] my-2 skeleton"></div>
               </div>
             ) : (
-              Object.keys(itinerary.calendar).map((day, index) => (
-                <div
-                  key={index}
-                  className={`collapse mb-6 -ml-4  ${openDays[day] ? "collapse-open" : "collapse-close"
-                    }`}
+              <>
+                <motion.div
+                  className={`w-full flex p-4 h-1/8 py-5 ${days.length > limitDays ? "" : "overflow-x-auto"
+                    } `}
                 >
-                  <div
-                    className="collapse-title font-semibold text-xl bg-base-100 flex items-center justify-between cursor-pointer"
-                    onClick={() => toggleDay(day)}
-                  >
-                    <span>{day}</span>
-                    <IoChevronDown
-                      className={`text-xl transition-transform duration-300 ${openDays[day] ? "rotate-180" : "rotate-0"
-                        }`}
-                    />
-                  </div>
-                  <div className="collapse-content bg-base-100">
-                    {itinerary.calendar[day].length > 0 ? (
-                      <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={(event) => handleDragEnd(event, day)}
-                      >
-                        <SortableContext
-                          items={itinerary.calendar[day].map((item) => item.place)}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          {itinerary.calendar[day].map((item, idx) => (
-                            <SortableItem
-                              key={idx}
-                              id={item.place}
-                              place={item.place}
-                              time={item.time}
-                              transport={item.transport}
-                              image={item.image}
-                            />
-                          ))}
-                        </SortableContext>
-                      </DndContext>
-                    ) : (
-                      <p className="text-gray-500 italic p-4 text-center">
-                        No itinerary items for this day
-                      </p>
-                    )}
-                  </div>
+                  {Object.keys(itinerary.calendar).map((day, index) => (
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        boxShadow:
+                          selectedDay == index
+                            ? "0px 0px 20px 3px rgba(0, 0, 0, 0.1)"
+                            : "0px 0px 20px 0px rgba(0, 0, 0, 0.0)",
+                        color: selectedDay == index ? "#fe385c" : "black",
+                      }}
+                      exit={{
+                        boxShadow: "0px 0px 20px 30px rgba(0, 0, 0, 0.1)",
+                      }}
+                      key={index}
+                      className={`p-2 relative rounded-full w-full  shadow-2xs text-center cursor-pointer`}
+                      onClick={() => handleSelectedDay(index)}
+                    >
+                      Day {index + 1}
+                    </motion.div>
+                  ))}
+                </motion.div>
+                <div className="w-full rounded-b-2xl h-4/5 p-3 ">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`day-${selectedDay}`}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="overflow-y-auto h-full"
+                    >
+                      {itinerary.calendar[selectedDay].map((item, idx) => (
+                        <PlaceCard
+                          key={idx}
+                          id={idx}
+                          place={item.place}
+                          time={item.time}
+                          transport={item.transport}
+                          image={item.image}
+                        />
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
-              ))
+              </>
             )}
-
           </div>
         </div>
         {/* Right Side */}
         <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
-          <Map
-            polylines={routes}
-            markers={markers}
-          />
+          <Map polylines={routes[selectedDay]} markers={markers[selectedDay]} />
         </div>
       </div>
     </PageTemplate>
