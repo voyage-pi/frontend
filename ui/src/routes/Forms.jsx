@@ -127,22 +127,26 @@ function Forms() {
     //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
       obj.radius = localStorage.getItem("radius")
+      obj.center ={
+          latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
+          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
+      }
+    }
+    else if (tripType == "place")
+    {
+      obj.coordinates={
+          latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
+          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
+      }
     }
 
     const formData = {
-      ...obj,
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
-      dateStart: formattedDate, // Formato correto: "2025-04-15T09:00:00Z"
+      dateStart: formattedDate, 
       duration: parseInt(localStorage.getItem("Duration")) || 0,
       tripType: tripType,
-
       users: ["user123"],
-      place: {
-        coordinates: {
-          latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
-        }
-      },
+      data_type: obj,
       questions: {
         "user123": userRatings.map((answer, index) => ({
           question_id: index,

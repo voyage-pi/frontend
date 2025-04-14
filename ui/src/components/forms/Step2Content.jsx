@@ -72,7 +72,7 @@ const Step2Content = ({ setCurrentStep }) => {
       title: 'Zone Trip',
       iconInBox: true,
       text: "Ideal for exploring everything within a specific radius of your current location. Simply set your current position and specify how far you're willing to travel, and discover all the attractions and experiences available nearby. Great for making the most of unexpected free time or exploring your immediate surroundings.",
-      implemented: false,
+      implemented: true,
     },
   ];
 
