@@ -1,25 +1,29 @@
-import { useState, useEffect } from "react";
-import PageTemplate from "../components/PageTemplate";
-import StepIndicator from "../components/StepIndicator";
-import StepContent from "../components/forms/StepContent";
-import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
-import questions from "../../public/questions.json";
-import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../utils/axiosInstance";
-import LoadingItinerary from "../components/LoadingItinerary";
+import { useState, useEffect } from "react"
+import PageTemplate from "../components/PageTemplate"
+import StepIndicator from "../components/StepIndicator"
+import StepContent from "../components/forms/StepContent"
+import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
+import questions from "../../public/questions.json"
+import { useNavigate } from "react-router-dom"
+import { axiosInstance } from "../utils/axiosInstance"
+import LoadingItinerary from "../components/LoadingItinerary"
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
+import Notification from "../components/Notification";
 
 function Forms() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const totalSteps = 5;
-  const [answers, setAnswers] = useState([...questions]);
-  const [subQuestionIndex, setSubQuestionIndex] = useState(0);
-  const totalSubQuestions = answers.length;
-  const navigate = useNavigate();
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [itinerary, setItinerary] = useState(null);
+  const [currentStep, setCurrentStep] = useState(1)
+  const [isInitialized, setIsInitialized] = useState(false)
+  const totalSteps = 5
+  const [answers, setAnswers] = useState([...questions])
+  const [subQuestionIndex, setSubQuestionIndex] = useState(0)
+  const totalSubQuestions = answers.length
+  const navigate = useNavigate()
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [itinerary, setItinerary] = useState(null)
+  const [isStep5Valid, setIsStep5Valid] = useState(false)
+  const [showError, setShowError] = useState(false)
+
 
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
@@ -53,12 +57,18 @@ function Forms() {
   }, [currentStep, subQuestionIndex, answers, isInitialized]);
 
   // Calculate progress percentage for progress bar
-  const progressPercentage =
-    currentStep === 5
-      ? Math.round(((subQuestionIndex + 1) / totalSubQuestions) * 100)
-      : 0;
+
+  const progressPercentage = currentStep === 5
+    ? Math.round(((subQuestionIndex) / totalSubQuestions) * 100)
+    : 0;
+
 
   const handleNext = () => {
+    if (currentStep === 5 && !isStep5Valid) {
+      setShowError(true);
+      return;
+    }
+
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
       return;
@@ -116,12 +126,20 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
+    const tripType = localStorage.getItem("Trip Type")
+    let obj = {}
+    //add an object related to the trip type an append it to the sending data for the backend attributes
+    if (tripType === "zone") {
+      obj.radius = localStorage.getItem("radius")
+    }
 
     const formData = {
+      ...obj,
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       dateStart: formattedDate, // Formato correto: "2025-04-15T09:00:00Z"
       duration: parseInt(localStorage.getItem("Duration")) || 0,
-      tripType: localStorage.getItem("Trip Type") || "place",
+      tripType: tripType,
+
       users: ["user123"],
       place: {
         coordinates: {
@@ -153,6 +171,7 @@ function Forms() {
       ) {
         setItinerary(response.data);
         navigate("/itinerary", { state: { itineraryData: response.data } });
+        localStorage.clear();
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -188,7 +207,16 @@ function Forms() {
               totalSubQuestions={totalSubQuestions}
               answers={answers}
               onRatingSelect={handleRatingSelect}
+              onValidationChange={setIsStep5Valid}
             />
+
+            {showError && (
+              <Notification
+                type="error"
+                text="You must select an answer before proceeding"
+                onClose={() => setShowError(false)}
+              />
+            )}
 
             <div className="flex justify-between mt-8">
               {currentStep === 1 && (
@@ -210,8 +238,7 @@ function Forms() {
               )}
 
               {(currentStep >= 3 && currentStep < 5) ||
-              (currentStep === 5 &&
-                subQuestionIndex < totalSubQuestions - 1) ? (
+                (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
                 <button
                   onClick={handleNext}
                   className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
@@ -240,4 +267,5 @@ function Forms() {
   );
 }
 
-export default Forms;
+export default Forms
+

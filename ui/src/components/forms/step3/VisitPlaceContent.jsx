@@ -8,11 +8,12 @@ import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 
 const VisitPlaceContent = () => {
-  const [selectedLocation, setSelectedLocation] = useState("Barcelona");
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [suggestionlist, setSuggestionList] = useState([]);
   const [currentText, setCurrentText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [notify, setNotify] = useState();
+  const [suggestionHovered, setSuggestionHovered] = useState(-1);
+  const [notify, setNotify] = useState()
   const [markers, setMarkers] = useState([]);
   const timeoutRef = useRef(null);
 
@@ -34,7 +35,6 @@ const VisitPlaceContent = () => {
         address: "",
         image: "",
       };
-      console.log(m);
       localStorage.setItem("Longitude", response.data.longitude);
       localStorage.setItem("Latitude", response.data.latitude);
       localStorage.setItem("place_name", location);
@@ -43,8 +43,8 @@ const VisitPlaceContent = () => {
       setNotify({
         type: "error",
         text: `There was an error ${error}`,
-        key: Date.now(),
-      });
+        key: Date.now()
+      })
       console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
@@ -74,8 +74,8 @@ const VisitPlaceContent = () => {
       setNotify({
         type: "error",
         text: `There was an error ${error}`,
-        key: Date.now(),
-      });
+        key: Date.now()
+      })
       console.error("Search error:", error);
     }
   };
@@ -94,12 +94,36 @@ const VisitPlaceContent = () => {
     }
 
     if (value.length > 2) {
-      // Only search if there are at least 3 characters
       timeoutRef.current = setTimeout(() => {
         autocompleteSearch();
       }, 1200);
     }
   };
+
+  const handleSuggestionsSelection = (event) => {
+    if (suggestionlist.length === 0)
+      return
+    console.log(event)
+    let key = event.key
+    let suggestionsL = suggestionlist.length != 0 ? suggestionlist.length : 1
+    if (key === "ArrowDown") {
+      setSuggestionHovered(prev => (prev + 1) % suggestionsL)
+    }
+    else if (key === "ArrowUp") {
+      setSuggestionHovered(prev => ((prev <= 0 ? suggestionsL : prev) - 1) % suggestionsL)
+    }
+    else if (key === "Enter") {
+      let currentSelectedSuggestion = suggestionlist[suggestionHovered]
+      console.log(currentSelectedSuggestion)
+      handleSelectLocation(currentSelectedSuggestion.text)
+    }
+  }
+
+  const MouseHover = (idx) => {
+
+    setSuggestionHovered(idx)
+  }
+
 
   return (
     <div>
@@ -130,6 +154,7 @@ const VisitPlaceContent = () => {
               <FaSistrix className="text-gray-400 text-xl" />
             </div>
             <input
+              onKeyDown={handleSuggestionsSelection}
               onChange={handleInputChange}
               value={currentText}
               type="text"
@@ -139,36 +164,40 @@ const VisitPlaceContent = () => {
           </div>
 
           <div className="space-y-3 text-center">
-            {!loading ? (
-              currentText === "" ? (
-                <div className="w-full text-primary opacity-50 text-center my-3">
-                  Insert a location that you would like to visit...
+            {currentText.length > 3 ? (
+              loading ? (
+                <div className=" flex justify-center">
+                  <LoadingAnimation width={"150px"} height={"150px"} />
                 </div>
               ) : (
-                suggestionlist.map((location) => (
+                suggestionlist.map((location, idx) => (
                   <div
+                    onMouseEnter={() => MouseHover(idx)}
+                    onMouseLeave={() => setSuggestionHovered(-1)}
                     key={location.place_id}
-                    className={`flex items-center p-3 rounded-lg text-lg cursor-pointer ${
-                      location.text === selectedLocation
-                        ? "bg-primary text-white"
-                        : "bg-gray-50"
-                    }`}
+                    className={`transition-all ease-in-out flex items-center p-3 rounded-lg text-lg cursor-pointer ${location.text === selectedLocation
+                      ? "bg-primary text-white"
+                      : "bg-gray-50"
+                      }
+                     ${suggestionHovered === idx && selectedLocation != location ? "translate-x-2 border-primary border-1" : ""} 
+                      
+`}
                     onClick={() => handleSelectLocation(location.text)}
                   >
                     <FaMapMarkerAlt
-                      className={`mr-3 ${
-                        location.text === selectedLocation
-                          ? "text-white"
-                          : "text-primary"
-                      }`}
+                      className={`mr-3 ${location.text === selectedLocation
+                        ? "text-white"
+                        : "text-primary"
+                        }`}
                     />
                     <span>{location.text}</span>
                   </div>
                 ))
               )
             ) : (
-              <div className=" flex justify-center">
-                <LoadingAnimation width={"150px"} height={"150px"} />
+
+              <div className="w-full text-primary opacity-50 text-center my-3">
+                Insert a location that you would like to visit...
               </div>
             )}
           </div>

@@ -5,12 +5,12 @@ import { PiMapPinAreaFill } from "react-icons/pi";
 import FormCard from './FormCard.jsx';
 import Notification from '../Notification';
 
-const Step2Content = ({setCurrentStep}) => {
+const Step2Content = ({ setCurrentStep }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [notification, setNotification] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
 
-  useEffect(() =>{
+  useEffect(() => {
     const savedSelection = localStorage.getItem("Trip Type");
     if (savedSelection) {
       setSelectedCard(savedSelection);
@@ -24,7 +24,7 @@ const Step2Content = ({setCurrentStep}) => {
 
   const handleCardClick = (cardId) => {
     const card = cardData.find(c => c.id === cardId);
-    
+
     if (lastNotificationId === cardId) {
       return;
     }
@@ -34,7 +34,7 @@ const Step2Content = ({setCurrentStep}) => {
         <Notification
           type="info"
           text="Road Trip is coming soon!"
-          onClose={closeNotification} 
+          onClose={closeNotification}
         />
       );
       setLastNotificationId(cardId);
@@ -64,7 +64,7 @@ const Step2Content = ({setCurrentStep}) => {
       title: 'Road Trip',
       iconInBox: true,
       text: "An adventure that takes you from one destination to another, with the journey being just as important as the destinations. Perfect for travelers who enjoy the freedom of the open road and the excitement of unexpected discoveries along your route.",
-      implemented: false, 
+      implemented: false,
     },
     {
       id: 'zone',
@@ -72,7 +72,7 @@ const Step2Content = ({setCurrentStep}) => {
       title: 'Zone Trip',
       iconInBox: true,
       text: "Ideal for exploring everything within a specific radius of your current location. Simply set your current position and specify how far you're willing to travel, and discover all the attractions and experiences available nearby. Great for making the most of unexpected free time or exploring your immediate surroundings.",
-      implemented: true,
+      implemented: false,
     },
   ];
 

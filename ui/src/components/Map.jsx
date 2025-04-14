@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { GoogleMap, Polyline, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
+import React, { useCallback, useEffect, useState,useRef } from 'react';
+import { GoogleMap, Polyline, Marker, InfoWindow, useJsApiLoader, Circle } from '@react-google-maps/api';
 import MarkerIcon from '../assets/marker2.png';
 import MapStyle from '../assets/map-style.json';
 
@@ -8,58 +8,96 @@ const containerStyle = {
   height: '100%',
 };
 
-// Default center and zoom for Europe view
 const defaultCenter = {
-  lat: 48.8566, // Paris latitude (roughly center of Europe)
-  lng: 9.3517   // Adjusted longitude to center Europe in the view
+  lat: 48.8566,
+  lng: 9.3517
 };
-const defaultZoom = 4;
+const defaultZoom = 5;
 
-const MapComponent = ({ polylines=[], markers=[] }) => {
+const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [hasElements, setHasElements] = useState(false);
+  const polylineInstancesRef = useRef([]);
+  const [previousMarkers, setPreviousMarkers] = useState(markers)
+  const [previousPoly, setPreviousPoly] = useState(polylines)
 
   const { isLoaded } = useJsApiLoader({
     id: '2430af244ef47a1f',
     googleMapsApiKey: key,
     libraries: ['geometry', 'places'],
   });
-  
+
   useEffect(() => {
     setHasElements(markers.length > 0 || polylines.length > 0);
   }, [markers, polylines]);
 
+  // Clear all polylines
+  const clearPolylines = useCallback(() => {
+    if (polylineInstancesRef.current.length > 0) {
+      polylineInstancesRef.current.forEach(polyline => {
+        polyline.setMap(null);
+      });
+      polylineInstancesRef.current = [];
+    }
+  }, []);
+
+  // Add polylines to the map
+  const addPolylinesToMap = useCallback(() => {
+    if (!mapInstance || !window.google || !polylines.length) return;
+    
+    clearPolylines();
+    
+    polylines.forEach(polylineGroup => {
+      if (!polylineGroup.polylines) return;
+      
+      polylineGroup.polylines.forEach(polyline => {
+        if (!polyline.polylineEncoded) return;
+        
+        const path = window.google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
+        const polylineInstance = new window.google.maps.Polyline({
+          path: path,
+          strokeColor: "#FE385C",
+          strokeWeight: 4,
+          map: mapInstance
+        });
+        
+        polylineInstancesRef.current.push(polylineInstance);
+      });
+    });
+  }, [mapInstance, polylines, clearPolylines]);
+
+  // Handle map bounds
   useEffect(() => {
     if (!mapInstance || !window.google) return;
-    
-    // If no elements, just set default view and return early
+
     if (!hasElements) {
       mapInstance.setCenter(defaultCenter);
       mapInstance.setZoom(defaultZoom);
       return;
     }
-    
-    // If we have elements, calculate bounds
+
+    // Calculate bounds
     const bounds = new window.google.maps.LatLngBounds();
     let hasValidBounds = false;
 
     // Add markers to bounds
-    if (markers.length > 0) {
+    if (markers.length > 0 && markers != previousMarkers) {
+      setPreviousMarkers(markers)
       markers.forEach(marker => {
         if (marker.position && marker.position.lat && marker.position.lng) {
           bounds.extend(new window.google.maps.LatLng(
-            marker.position.lat, 
+            marker.position.lat,
             marker.position.lng
           ));
           hasValidBounds = true;
         }
       });
     }
-
     // Add polylines to bounds
-    if (polylines.length > 0) {
+    if (polylines.length > 0 && polylines != previousPoly) {
+      setPreviousPoly(polylines)
       polylines.forEach(polylineGroup => {
         if (polylineGroup.polylines) {
           polylineGroup.polylines.forEach(polyline => {
@@ -75,25 +113,37 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
       });
     }
 
-    // If we found valid bounds, fit the map to them
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
-      // Optional: adjust zoom after fitting bounds
-      mapInstance.setZoom(Math.min(mapInstance.getZoom(), 8));
-    } else {
-      // Fallback to default view if we have elements but couldn't calculate bounds
+      if (markers.length === 1) {
+        mapInstance.setZoom(9);
+      }
+    } else if (markers.length == 0 && polylines == 0 && circles.length === 0) {
       mapInstance.setCenter(defaultCenter);
       mapInstance.setZoom(defaultZoom);
     }
-  }, [mapInstance, markers, polylines, hasElements]);
+    
+    // Update polylines
+    addPolylinesToMap();
+    
+  }, [mapInstance, markers, polylines, hasElements, addPolylinesToMap]);
+
+  // Clean up polylines when component unmounts
+  useEffect(() => {
+    return () => {
+      clearPolylines();
+    };
+  }, [clearPolylines]);
 
   const onLoad = useCallback(function callback(map) {
+    console.log("LoadingAgain")
     setMapInstance(map);
   }, []);
 
   const onUnmount = useCallback(function callback() {
+    clearPolylines();
     setMapInstance(null);
-  }, []);
+  }, [clearPolylines]);
 
   const handleMarkerClick = (marker) => {
     setSelectedMarker(marker);
@@ -103,44 +153,31 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
     setSelectedMarker(null);
   };
 
-  const renderPolylines = () => {
-    return polylines.length!==0 ? polylines.map((polylineGroup, groupIndex) => {
-      return polylineGroup.polylines.map((polyline, polylineIndex) => {
-        const path = window.google.maps.geometry.encoding.decodePath(polyline.polylineEncoded);
+  const circle_options =
+  {
+    "strokeColor": "#FF4F7A",         // Soft brand pink for borders
+    "strokeOpacity": 0.9,
+    "strokeWeight": 2,
+    "fillColor": "#FF4F7A",           // Match stroke but softened with opacity
+    "fillOpacity": 0.2,
+    "draggable": false,
+    "editable": false,
+    "visible": true,
+    "zIndex": 2
+  }
 
-        return (
-          <Polyline
-            key={`polyline-${groupIndex}-${polylineIndex}`}
-            path={path}
-            options={{
-              strokeColor: "#FE385C",
-              strokeWeight: 4,
-            }}
-          />
-        );
-      });
-    }) : <></>;
-  };
-
-  const renderMarkers = () => {
-    return markers.length!==0 ? markers.map((marker, index) => (
-      <Marker
-        key={`marker-${index}`}
-        position={marker.position}
-        title={marker.title}
-        icon={{
-          url: MarkerIcon,
-          scaledSize: new window.google.maps.Size(100, 100),
-        }}
-        onClick={() => handleMarkerClick(marker)}
+  const renderCircles = () => {
+    return circles.length !== 0 ? circles.map((circle, index) => (
+      <Circle
+        center={circle.center}
+        options={{ ...circle_options, "radius": circle.radius }}
       />
-    )): <></>;
-  };
-
+    )) : <></>
+  }
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={defaultCenter}  // Always provide a default center
+      center={defaultCenter}
       options={{
         disableDefaultUI: true,
         zoomControl: true,
@@ -149,12 +186,24 @@ const MapComponent = ({ polylines=[], markers=[] }) => {
         fullscreenControl: true,
         styles: MapStyle
       }}
-      zoom={defaultZoom}  // Always provide a default zoom
+      zoom={defaultZoom}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
-      {renderPolylines()}
-      {renderMarkers()}
+      {/* Render only markers using React components */}
+      {markers.length !== 0 && markers.map((marker, index) => (
+        <Marker
+          key={`marker-${index}`}
+          position={marker.position}
+          title={marker.title}
+          icon={{
+            url: MarkerIcon,
+            scaledSize: new window.google.maps.Size(100, 100),
+          }}
+          onClick={() => handleMarkerClick(marker)}
+        />
+      ))}
+      {renderCircles()}
 
       {selectedMarker && (
         <InfoWindow
