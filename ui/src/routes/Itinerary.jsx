@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { axiosPlace } from "../utils/axiosInstance";
-import { useLocation, useViewTransitionState } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { GoPeople, GoClock } from "react-icons/go";
 import { IoLocationOutline } from "react-icons/io5";
 import Map from "../components/Map";
-import dummyItenerario from "../../public/itinerary.json";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
 
-const CustomScrollbarStyle = () => (
-  <style>{`
-    .custom-scrollbar {
-      scrollbar-width: thin;
-    }
-  `}</style>
-);
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
@@ -248,7 +240,6 @@ function Itinerary() {
   };
   return (
     <PageTemplate>
-      {/* <CustomScrollbarStyle /> */}
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
         <div className="mb-4">
           <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
@@ -263,9 +254,9 @@ function Itinerary() {
             {/* <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
               <CiSaveDown1 className="text-white text-2xl" />
             </div> */}
-            {/* <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
-                            <TfiReload className="text-primary text-xl" />
-                        </div> */}
+            <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
+              <TfiReload className="text-primary text-xl" />
+            </div> 
           </div>
 
           <div className="flex flex-row gap-x-5 pb-5 ">

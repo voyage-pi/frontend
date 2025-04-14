@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { GoogleMap, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
+import React, { useCallback, useEffect, useState,useRef } from 'react';
+import { GoogleMap, Polyline, Marker, InfoWindow, useJsApiLoader, Circle } from '@react-google-maps/api';
 import MarkerIcon from '../assets/marker2.png';
 import MapStyle from '../assets/map-style.json';
 
@@ -12,14 +12,16 @@ const defaultCenter = {
   lat: 48.8566,
   lng: 9.3517
 };
-const defaultZoom = 4;
+const defaultZoom = 5;
 
-const MapComponent = ({ polylines = [], markers = [] }) => {
+const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [hasElements, setHasElements] = useState(false);
   const polylineInstancesRef = useRef([]);
+  const [previousMarkers, setPreviousMarkers] = useState(markers)
+  const [previousPoly, setPreviousPoly] = useState(polylines)
 
   const { isLoaded } = useJsApiLoader({
     id: '2430af244ef47a1f',
@@ -81,7 +83,8 @@ const MapComponent = ({ polylines = [], markers = [] }) => {
     let hasValidBounds = false;
 
     // Add markers to bounds
-    if (markers.length > 0) {
+    if (markers.length > 0 && markers != previousMarkers) {
+      setPreviousMarkers(markers)
       markers.forEach(marker => {
         if (marker.position && marker.position.lat && marker.position.lng) {
           bounds.extend(new window.google.maps.LatLng(
@@ -92,9 +95,9 @@ const MapComponent = ({ polylines = [], markers = [] }) => {
         }
       });
     }
-
     // Add polylines to bounds
-    if (polylines.length > 0) {
+    if (polylines.length > 0 && polylines != previousPoly) {
+      setPreviousPoly(polylines)
       polylines.forEach(polylineGroup => {
         if (polylineGroup.polylines) {
           polylineGroup.polylines.forEach(polyline => {
@@ -110,13 +113,12 @@ const MapComponent = ({ polylines = [], markers = [] }) => {
       });
     }
 
-    // Fit bounds if valid
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
       if (markers.length === 1) {
-        mapInstance.setZoom(8);
+        mapInstance.setZoom(9);
       }
-    } else {
+    } else if (markers.length == 0 && polylines == 0 && circles.length === 0) {
       mapInstance.setCenter(defaultCenter);
       mapInstance.setZoom(defaultZoom);
     }
@@ -134,6 +136,7 @@ const MapComponent = ({ polylines = [], markers = [] }) => {
   }, [clearPolylines]);
 
   const onLoad = useCallback(function callback(map) {
+    console.log("LoadingAgain")
     setMapInstance(map);
   }, []);
 
@@ -150,6 +153,27 @@ const MapComponent = ({ polylines = [], markers = [] }) => {
     setSelectedMarker(null);
   };
 
+  const circle_options =
+  {
+    "strokeColor": "#FF4F7A",         // Soft brand pink for borders
+    "strokeOpacity": 0.9,
+    "strokeWeight": 2,
+    "fillColor": "#FF4F7A",           // Match stroke but softened with opacity
+    "fillOpacity": 0.2,
+    "draggable": false,
+    "editable": false,
+    "visible": true,
+    "zIndex": 2
+  }
+
+  const renderCircles = () => {
+    return circles.length !== 0 ? circles.map((circle, index) => (
+      <Circle
+        center={circle.center}
+        options={{ ...circle_options, "radius": circle.radius }}
+      />
+    )) : <></>
+  }
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
@@ -179,6 +203,7 @@ const MapComponent = ({ polylines = [], markers = [] }) => {
           onClick={() => handleMarkerClick(marker)}
         />
       ))}
+      {renderCircles()}
 
       {selectedMarker && (
         <InfoWindow

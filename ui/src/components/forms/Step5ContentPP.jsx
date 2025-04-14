@@ -12,7 +12,7 @@ const Step5ContentPP = ({
   useEffect(() => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     const savedRating = savedRatings[subQuestionIndex];
-    
+
     if (savedRating && currentQuestion && currentQuestion.answer !== savedRating) {
       onRatingSelect(savedRating);
     }
@@ -57,23 +57,23 @@ const Step5ContentPP = ({
               onClick={() => handleRatingClick(rating)}
               className={`rounded-full border-2 border-primary/70 flex items-center justify-center transition-all duration-200 
                           ${currentQuestion.answer === rating
-                              ? "bg-primary border-primary"
-                              : "bg-white hover:bg-primary/20"
-                          }
+                  ? "bg-primary border-primary"
+                  : "bg-white hover:bg-primary/20"
+                }
                           ${rating === 1
-                              ? "w-18 h-18"
-                              : rating === 2
-                              ? "w-16 h-16"
-                              : rating === 3
-                              ? "w-14 h-14"
-                              : rating === 4
-                              ? "w-12 h-12"
-                              : rating === 5
-                              ? "w-14 h-14"
-                              : rating === 6
-                              ? "w-16 h-16"
-                              : "w-18 h-18"
-                          }
+                  ? "w-18 h-18"
+                  : rating === 2
+                    ? "w-16 h-16"
+                    : rating === 3
+                      ? "w-14 h-14"
+                      : rating === 4
+                        ? "w-12 h-12"
+                        : rating === 5
+                          ? "w-14 h-14"
+                          : rating === 6
+                            ? "w-16 h-16"
+                            : "w-18 h-18"
+                }
                         `}
             >
               {currentQuestion.answer === rating && (
