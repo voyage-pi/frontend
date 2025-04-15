@@ -1,5 +1,6 @@
 import { useState } from "react";
 import RegisterIllustration from "../assets/register.svg";
+import { axiosUser } from "../utils/axiosInstance";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ function Register() {
     confirmPassword: ""
   });
   const [passwordError, setPasswordError] = useState("");
+  const [registerStatus, setRegisterStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,22 +20,39 @@ function Register() {
       [name]: value
     }));
     
-    // Clear error when either password field changes
     if (name === "password" || name === "confirmPassword") {
       setPasswordError("");
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
     }
     
-    console.log("Form submitted:", formData);
+    try {
+      setIsLoading(true);
+      setRegisterStatus(null);
+      
+      const response = await axiosUser.post('/register', {
+        username: formData.username,
+        password: formData.password
+      });
+      
+      setRegisterStatus({ type: 'success', message: response.data.message || 'Registration successful!' });
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    } catch (error) {
+      console.error('Error during registration:', error);
+      const errorMessage = error.response?.data?.message || 'An error occurred. Please try again later.';
+      setRegisterStatus({ type: 'error', message: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -50,6 +70,12 @@ function Register() {
             <h1 className="text-3xl font-medium text-secondary">Create an Account</h1>
             <p className="text-gray-500 mt-2">Join Voyage and start planning your next adventure</p>
           </div>
+          
+          {registerStatus && (
+            <div className={`mb-4 p-3 rounded-md ${registerStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              {registerStatus.message}
+            </div>
+          )}
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <fieldset className="fieldset">
@@ -113,9 +139,10 @@ function Register() {
             
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-200"
+              disabled={isLoading}
+              className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-200 disabled:bg-opacity-70 disabled:cursor-not-allowed"
             >
-              Create Account
+              {isLoading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
           

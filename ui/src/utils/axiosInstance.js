@@ -15,3 +15,11 @@ export const axiosPlace = axios.create({
     'Content-Type': 'application/json'
   }
 });
+
+export const axiosUser = axios.create({
+  baseURL: "/api/v1/user-management", 
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
