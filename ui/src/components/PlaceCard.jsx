@@ -30,18 +30,18 @@ const PlaceCard = ({ id, place, time, transport, image }) => {
       setImgError(true);
     }
   }, [image]);
-  const delayCard=0.2
+  const delayCard = 0.2
 
   return (
     <motion.div
-    initial={{ y: 100, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    exit={{ y: -100, opacity: 0 }}
-    transition={{ 
-      delay: typeof id === 'number' ? delayCard * id : 0,
-      duration: 0.5, 
-      ease: "easeOut" 
-    }}
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 100, opacity: 0 }}
+      transition={{
+        delay: typeof id === 'number' ? delayCard * id : 0,
+        duration: 0.5,
+        ease: "easeOut"
+      }}
       className="flex flex-col"
     >
       <div className="flex flex-row items-center">
@@ -78,13 +78,13 @@ const PlaceCard = ({ id, place, time, transport, image }) => {
           </div>
         </div>
         <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
-              <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
-                  <TfiReload className="text-primary text-lg" />
-              </div>
-              <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
-                  <HiOutlineTrash className="text-primary text-xl" />
-              </div>
-          </div> 
+          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+            <TfiReload className="text-primary text-lg" />
+          </div>
+          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+            <HiOutlineTrash className="text-primary text-xl" />
+          </div>
+        </div>
       </div>
       {transport && transport.type && transport.duration ? (
         <p className="text-xs text-gray-400">
