@@ -12,6 +12,12 @@ function Register() {
   const [passwordError, setPasswordError] = useState("");
   const [registerStatus, setRegisterStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [placeholders, setPlaceholders] = useState({
+    username: "John Doe",
+    email: "john.doe@example.com",
+    password: "••••••••",
+    confirmPassword: "••••••••"
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +28,18 @@ function Register() {
     
     if (name === "password" || name === "confirmPassword") {
       setPasswordError("");
+    }
+  };
+
+  const handleFocus = (e) => {
+    const { name } = e.target;
+    e.target.placeholder = "";
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (!value) {
+      e.target.placeholder = placeholders[name];
     }
   };
 
@@ -86,9 +104,11 @@ function Register() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="John Doe"
+                placeholder={placeholders.username}
               />
             </fieldset>
             
@@ -100,9 +120,11 @@ function Register() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="john.doe@example.com"
+                placeholder={placeholders.email}
               />
             </fieldset>
             
@@ -114,9 +136,11 @@ function Register() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="••••••••"
+                placeholder={placeholders.password}
               />
             </fieldset>
             
@@ -128,9 +152,11 @@ function Register() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className={`input w-full px-3 py-2 border ${passwordError ? "border-red-500" : "border-slate-300"} rounded-md focus:outline-none focus:ring-1 focus:ring-primary`}
-                placeholder="••••••••"
+                placeholder={placeholders.confirmPassword}
               />
               {passwordError && (
                 <p className="mt-1 text-sm text-red-500">{passwordError}</p>
