@@ -174,8 +174,16 @@ function Forms() {
         response.data.response.itinerary
       ) {
         setItinerary(response.data);
-        navigate("/itinerary", { state: { itineraryData: response.data } });
+        const tripId = response.data.response.itinerary.id;
+        navigate(`/itinerary/${tripId}`, { state: { itineraryData: response.data } });
         localStorage.clear();
+        answers.forEach(answer => {
+          answer.answer = null;
+        });
+        setAnswers([...answers]);
+        setCurrentStep(1);
+        setSubQuestionIndex(0);
+        
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);

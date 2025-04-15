@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { axiosPlace } from "../utils/axiosInstance";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { GoPeople, GoClock } from "react-icons/go";
@@ -16,7 +16,8 @@ function Itinerary() {
   const [days, setDays] = useState({});
   const [selectedDay, setSelectedDay] = useState(0);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
+  const location = useLocation();  
+  const {tripId} = useParams();
   const [routes, setRoutes] = useState([]);
   const [markers, setMarkers] = useState([]);
   // State to track which days are open
@@ -30,7 +31,16 @@ function Itinerary() {
       const responseData = location.state.itineraryData;
       console.log("Received itinerary data from Forms:", responseData);
       processItineraryData(responseData);
-    } else {
+    } else if (tripId) {
+      // Fetch itinerary data using the trip ID
+      fetch(`/api/v1/trip-management/api/trips/${tripId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Loaded itinerary data from API:", data);
+          processItineraryData(data);
+        })
+        .catch((error) => console.error("Error loading itinerary:", error));
+      } else {
       // Fallback to fetching from JSON file if no state data exists
       fetch("/trip_management_resp.json")
         .then((response) => response.json())
@@ -40,7 +50,7 @@ function Itinerary() {
         })
         .catch((error) => console.error("Error loading itinerary:", error));
     }
-  }, [location]);
+  }, [location, tripId]);
 
   useEffect(() => {
     // Initialize first day as open when itinerary is loaded
