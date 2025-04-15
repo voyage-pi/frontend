@@ -5,21 +5,5 @@ services:
     build: ./ui
     container_name: ${CONTAINER_NAME}
     volumes:
-      - ./ui:/app
-      - /app/node_modules
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_HOST=0.0.0.0
-      - CHOKIDAR_USEPOLLING=true
-    develop:
-      watch:
-        - action: sync
-          path: ./ui/src
-          target: /app/src
-          ignore:
-            - node_modules/
-            - .git/
-        - action: rebuild
-          path: ./ui/package.json
- 
+      - .:/ui
+      - /ui/node_modules
