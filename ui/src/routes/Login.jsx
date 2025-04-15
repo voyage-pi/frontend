@@ -1,16 +1,17 @@
 import { useState } from "react";
 import LoginIllustration from "../assets/login.svg";
 import { axiosUser } from "../utils/axiosInstance";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: ""
   });
   const [loginStatus, setLoginStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [placeholders, setPlaceholders] = useState({
-    email: "john.doe@example.com",
+    username: "johndoe",
     password: "••••••••"
   });
   
@@ -34,6 +35,8 @@ function Login() {
     }
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -41,8 +44,8 @@ function Login() {
       setIsLoading(true);
       setLoginStatus(null);
       
-      const response = await axiosUser.post('/login', {
-        email: formData.email,
+      const response = await axiosUser.post('/user/login', {
+        username: formData.username,
         password: formData.password
       });
       
@@ -53,7 +56,7 @@ function Login() {
       }
       
       setTimeout(() => {
-        window.location.href = '/trips';
+        navigate('/');
       }, 1000);
     } catch (error) {
       console.error('Error during login:', error);
@@ -88,18 +91,18 @@ function Login() {
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <fieldset className="fieldset">
-              <legend className="fieldset-legend block text-sm font-medium text-secondary">Email Address</legend>
+              <legend className="fieldset-legend block text-sm font-medium text-secondary">Username</legend>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder={placeholders.email}
+                placeholder={placeholders.username}
               />
             </fieldset>
             
@@ -148,9 +151,9 @@ function Login() {
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               Don't have an account?{" "}
-              <a href="/register" className="text-primary font-medium hover:underline">
+              <Link to="/register" className="text-primary font-medium hover:underline">
                 Create account
-              </a>
+              </Link>
             </p>
           </div>
           

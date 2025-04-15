@@ -1,6 +1,7 @@
 import { useState } from "react";
 import RegisterIllustration from "../assets/register.svg";
 import { axiosUser } from "../utils/axiosInstance";
+import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,8 @@ function Register() {
     password: "••••••••",
     confirmPassword: "••••••••"
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,14 +58,14 @@ function Register() {
       setIsLoading(true);
       setRegisterStatus(null);
       
-      const response = await axiosUser.post('/register', {
+      const response = await axiosUser.post('/user/register', {
         username: formData.username,
         password: formData.password
       });
       
       setRegisterStatus({ type: 'success', message: response.data.message || 'Registration successful!' });
       setTimeout(() => {
-        window.location.href = '/login';
+        navigate('/login');
       }, 2000);
     } catch (error) {
       console.error('Error during registration:', error);
@@ -175,9 +178,9 @@ function Register() {
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               Already have an account?{" "}
-              <a href="/login" className="text-primary font-medium hover:underline">
+              <Link to="/login" className="text-primary font-medium hover:underline">
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
           
