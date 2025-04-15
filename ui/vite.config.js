@@ -7,10 +7,6 @@ export default defineConfig({
   server: {
     port: 5173,
     host: "0.0.0.0", // Add this to allow connections from outside the container
-    watch: {
-      usePolling: true,
-      interval: 500,
-    },
   },
   plugins: [react(), tailwindcss()],
 });
