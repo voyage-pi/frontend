@@ -131,25 +131,26 @@ function Forms() {
     //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
       obj.radius = localStorage.getItem("radius")
-      obj.center ={
-          latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
+      obj.center = {
+        latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
+        longitude: parseFloat(localStorage.getItem("Longitude")) || 0
       }
     }
-    else if (tripType == "place")
-    {
-      obj.coordinates={
-          latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-          longitude: parseFloat(localStorage.getItem("Longitude")) || 0
+    else if (tripType == "place") {
+      obj.coordinates = {
+        latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
+        longitude: parseFloat(localStorage.getItem("Longitude")) || 0
       }
+      obj.place_name = localStorage.getItem("Location")
     }
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
-      dateStart: formattedDate, 
+      dateStart: formattedDate,
       duration: parseInt(localStorage.getItem("Duration")) || 0,
       tripType: tripType,
       users: ["user123"],
+      display_name: localStorage.getItem("Location"),
       data_type: obj,
       questions: {
         user123: userRatings.map((answer, index) => ({
