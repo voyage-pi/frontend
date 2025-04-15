@@ -1,5 +1,7 @@
 import { useState } from "react";
 import RegisterIllustration from "../assets/register.svg";
+import { axiosUser } from "../utils/axiosInstance";
+import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -9,6 +11,16 @@ function Register() {
     confirmPassword: ""
   });
   const [passwordError, setPasswordError] = useState("");
+  const [registerStatus, setRegisterStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [placeholders, setPlaceholders] = useState({
+    username: "John Doe",
+    email: "john.doe@example.com",
+    password: "••••••••",
+    confirmPassword: "••••••••"
+  });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,22 +29,51 @@ function Register() {
       [name]: value
     }));
     
-    // Clear error when either password field changes
     if (name === "password" || name === "confirmPassword") {
       setPasswordError("");
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleFocus = (e) => {
+    const { name } = e.target;
+    e.target.placeholder = "";
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (!value) {
+      e.target.placeholder = placeholders[name];
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
     }
     
-    console.log("Form submitted:", formData);
+    try {
+      setIsLoading(true);
+      setRegisterStatus(null);
+      
+      const response = await axiosUser.post('/user/register', {
+        username: formData.username,
+        password: formData.password
+      });
+      
+      setRegisterStatus({ type: 'success', message: response.data.message || 'Registration successful!' });
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      console.error('Error during registration:', error);
+      const errorMessage = error.response?.data?.message || 'An error occurred. Please try again later.';
+      setRegisterStatus({ type: 'error', message: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -51,6 +92,12 @@ function Register() {
             <p className="text-gray-500 mt-2">Join Voyage and start planning your next adventure</p>
           </div>
           
+          {registerStatus && (
+            <div className={`mb-4 p-3 rounded-md ${registerStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              {registerStatus.message}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             <fieldset className="fieldset">
               <legend className="fieldset-legend block text-sm font-medium text-secondary">Username</legend>
@@ -60,9 +107,11 @@ function Register() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="John Doe"
+                placeholder={placeholders.username}
               />
             </fieldset>
             
@@ -74,9 +123,11 @@ function Register() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="john.doe@example.com"
+                placeholder={placeholders.email}
               />
             </fieldset>
             
@@ -88,9 +139,11 @@ function Register() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="••••••••"
+                placeholder={placeholders.password}
               />
             </fieldset>
             
@@ -102,9 +155,11 @@ function Register() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className={`input w-full px-3 py-2 border ${passwordError ? "border-red-500" : "border-slate-300"} rounded-md focus:outline-none focus:ring-1 focus:ring-primary`}
-                placeholder="••••••••"
+                placeholder={placeholders.confirmPassword}
               />
               {passwordError && (
                 <p className="mt-1 text-sm text-red-500">{passwordError}</p>
@@ -113,18 +168,19 @@ function Register() {
             
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-200"
+              disabled={isLoading}
+              className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-200 disabled:bg-opacity-70 disabled:cursor-not-allowed"
             >
-              Create Account
+              {isLoading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
           
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               Already have an account?{" "}
-              <a href="/login" className="text-primary font-medium hover:underline">
+              <Link to="/login" className="text-primary font-medium hover:underline">
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
           

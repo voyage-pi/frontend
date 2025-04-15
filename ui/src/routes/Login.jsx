@@ -1,10 +1,18 @@
 import { useState } from "react";
 import LoginIllustration from "../assets/login.svg";
+import { axiosUser } from "../utils/axiosInstance";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: ""
+  });
+  const [loginStatus, setLoginStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [placeholders, setPlaceholders] = useState({
+    username: "johndoe",
+    password: "••••••••"
   });
   
   const handleChange = (e) => {
@@ -15,9 +23,48 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleFocus = (e) => {
+    const { name } = e.target;
+    e.target.placeholder = "";
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (!value) {
+      e.target.placeholder = placeholders[name];
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login form submitted:", formData);
+    
+    try {
+      setIsLoading(true);
+      setLoginStatus(null);
+      
+      const response = await axiosUser.post('/user/login', {
+        username: formData.username,
+        password: formData.password
+      });
+      
+      setLoginStatus({ type: 'success', message: 'Login successful!' });
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    } catch (error) {
+      console.error('Error during login:', error);
+      const errorMessage = error.response?.data?.message || 'Invalid credentials. Please try again.';
+      setLoginStatus({ type: 'error', message: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,18 +83,26 @@ function Login() {
             <p className="text-gray-500 mt-2">Sign in to continue your journey with Voyage</p>
           </div>
           
+          {loginStatus && (
+            <div className={`mb-4 p-3 rounded-md ${loginStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              {loginStatus.message}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             <fieldset className="fieldset">
-              <legend className="fieldset-legend block text-sm font-medium text-secondary">Email Address</legend>
+              <legend className="fieldset-legend block text-sm font-medium text-secondary">Username</legend>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="john.doe@example.com"
+                placeholder={placeholders.username}
               />
             </fieldset>
             
@@ -59,9 +114,11 @@ function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="••••••••"
+                placeholder={placeholders.password}
               />
             </fieldset>
             
@@ -84,18 +141,19 @@ function Login() {
             
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-200"
+              disabled={isLoading}
+              className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-200 disabled:bg-opacity-70 disabled:cursor-not-allowed"
             >
-              Sign In
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </form>
           
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               Don't have an account?{" "}
-              <a href="/register" className="text-primary font-medium hover:underline">
+              <Link to="/register" className="text-primary font-medium hover:underline">
                 Create account
-              </a>
+              </Link>
             </p>
           </div>
           
