@@ -57,7 +57,7 @@ export const routesList = [
     },
 
     {
-      path:"/itinerary",
+      path:"/itinerary/:tripId",
       element: (
         <>
           <Helmet>
