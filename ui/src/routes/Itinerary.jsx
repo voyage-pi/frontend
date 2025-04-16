@@ -216,7 +216,7 @@ function Itinerary() {
         responseItinerary.days[0].morning_activities &&
         responseItinerary.days[0].morning_activities.length > 0
       ) {
-        locationTrip = localStorage.getItem("Location");
+        locationTrip = data.response.name
       }
 
       setItinerary({
