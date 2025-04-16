@@ -25,30 +25,6 @@ const Step1Content = ({ setCurrentStep }) => {
       return;
     }
 
-    if (card.id === selectedCard && card.implemented === false) {
-      setNotification(
-        <Notification
-          type="info"
-          text="Group Trip is comming soon!"
-          onClose={closeNotification} 
-        />
-      );
-      setLastNotificationId(card.id);
-      return;
-    }
-
-    if (card.implemented === false) {
-      setNotification(
-        <Notification
-          type="info"
-          text="Group Trip is comming soon!"
-          onClose={closeNotification} 
-        />
-      );
-      setLastNotificationId(card.id);
-      return;
-    }
-
     setSelectedCard(card.id); 
     localStorage.setItem("Trip Dimension", card.id);
   
@@ -70,7 +46,7 @@ const Step1Content = ({ setCurrentStep }) => {
       icon: FaUserGroup,
       title: 'Group Trip',
       text: "Ideal for traveling with friends, family, or colleagues. You'll be able to customize your itinerary to accommodate everyone's interests and needs, creating a collaborative travel experience that strengthens bonds and creates lasting memories together.",
-      implemented: false,
+      implemented: true,
     },
   ];
 
