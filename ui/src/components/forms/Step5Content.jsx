@@ -82,12 +82,14 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
         icon: FaUser,
         title: 'Singular Taste Profile',
         onClick: handleSingularTasteClick,
+        text: 'Create a single preference profile for the entire group based on one person\'s choices. This is useful when one person is making decisions for the group or when the group has similar preferences.'
       },
       {
         id: 'combined',
         icon: FaUserGroup,
         title: 'Combined Group Preferences',
         onClick: handleCombinedGroupClick,
+        text: 'Create a combined profile that takes into account preferences from all group members. This option is ideal for groups with diverse tastes, ensuring that recommendations satisfy the majority of the group.'
       },
     ];
 
@@ -103,6 +105,8 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
               onClick={card.onClick}
               iconSize={100}
               infoSize={25}
+              text={card.text}
+              id={card.id}
             />
           ))}
         </div>
@@ -137,6 +141,8 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
             onClick={card.onClick || (() => { })} 
             iconSize={100}
             infoSize={25}
+            text={card.text}
+            id={card.id}
           />
         ))}
       </div>
