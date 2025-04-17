@@ -9,6 +9,11 @@ const friendsData = [
   { id: 3, name: 'Henrique T.', tag: '@HT', image: 'https://i.pinimg.com/736x/97/70/be/9770bee8dae261fbf16eaf952aa1e409.jpg', selected: false },
   { id: 4, name: 'João Roldão', tag: '@JR', image: 'https://i.pinimg.com/736x/60/9a/bd/609abdf28dc534359867cc8b790b708d.jpg', selected: false },
   { id: 5, name: 'Gui Rosa', tag: '@GR', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
+  { id: 6, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
+  { id: 7, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
+  { id: 8, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
+  { id: 9, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
+    
 ];
 
 const FriendsInviteComponent = ({ onNext, onBack }) => {
@@ -43,7 +48,7 @@ const FriendsInviteComponent = ({ onNext, onBack }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleAddTag();
     }
@@ -66,7 +71,7 @@ const FriendsInviteComponent = ({ onNext, onBack }) => {
       <div className="flex justify-between">
         <div className="w-1/2 pr-10 border-r">
           <h3 className="text-lg font-bold mb-6">Your Friends</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {friends.map(friend => (
               <div key={friend.id} className="flex flex-col items-center">
                 <div className="relative mb-2">
@@ -99,7 +104,7 @@ const FriendsInviteComponent = ({ onNext, onBack }) => {
                 className="w-full py-2 pl-8 pr-4 border border-gray-300 rounded-full"
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
               />
             </div>
             <button 
