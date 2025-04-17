@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
-import Notification from '../Notification';
-import FriendsInviteComponent from './FriendsInviteComponent';
+import FriendsInviteComponent from './FriendsInvite';
 
 const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
   const [selectedCard, setSelectedCard] = useState(null);
