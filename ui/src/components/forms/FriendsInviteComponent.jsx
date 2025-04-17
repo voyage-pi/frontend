@@ -99,7 +99,7 @@ const FriendsInviteComponent = ({ onNext, onBack }) => {
 
   return (
     <div className="text-center p-6 -mb-10 flex flex-col min-h-[600px] relative">
-      <h2 className="text-3xl font-bold mb-10">Add a friends to your trips</h2>
+      <h2 className="text-3xl font-bold mb-10">Add friends to the trip</h2>
       
       <div className="flex justify-between mb-14">
         <div className="w-1/2 pr-0" style={{ position: 'relative' }}>
