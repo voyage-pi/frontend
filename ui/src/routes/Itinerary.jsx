@@ -216,6 +216,7 @@ function Itinerary() {
         responseItinerary.days[0].morning_activities.length > 0
       ) {
         locationTrip = responseItinerary.name 
+
       }
 
       setItinerary({
