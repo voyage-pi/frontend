@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPlus, FaCheck } from 'react-icons/fa';
+import { FaPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa6';
 
 // Mock data for friends - in a real app this would come from an API
@@ -47,6 +47,16 @@ const FriendsInviteComponent = ({ onNext, onBack }) => {
     if (e.key === 'Enter') {
       handleAddTag();
     }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    // Remove from addedTags
+    setAddedTags(addedTags.filter(tag => tag !== tagToRemove));
+    
+    // Update selected status in friends array
+    setFriends(friends.map(friend => 
+      friend.tag === tagToRemove ? { ...friend, selected: false } : friend
+    ));
   };
 
   return (
@@ -107,8 +117,15 @@ const FriendsInviteComponent = ({ onNext, onBack }) => {
                 <span className="text-gray-400">No friends added yet</span>
               ) : (
                 addedTags.map((tag, index) => (
-                  <span key={index} className="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-sm">
+                  <span key={index} className="bg-rose-100 text-primary px-3 py-1 rounded-full text-sm flex items-center">
                     {tag}
+                    <button 
+                      onClick={() => handleRemoveTag(tag)} 
+                      className="ml-2 hover:text-rose-800 focus:outline-none"
+                      aria-label="Remove friend"
+                    >
+                      <FaTimes className='text-secondary/30 ' size={12} />
+                    </button>
                   </span>
                 ))
               )}
