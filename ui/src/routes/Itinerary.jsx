@@ -109,8 +109,7 @@ function Itinerary() {
 
   const processItineraryData = async (data) => {
     if (data.response && data.response.itinerary) {
-      const responseItinerary =
-        data.response.itinerary.itinerary || data.response.itinerary;
+      const responseItinerary =data.response.itinerary 
       console.log("Processing itinerary data:", responseItinerary);
 
       const calendar = [];
@@ -216,7 +215,7 @@ function Itinerary() {
         responseItinerary.days[0].morning_activities &&
         responseItinerary.days[0].morning_activities.length > 0
       ) {
-        locationTrip = localStorage.getItem("Location");
+        locationTrip = responseItinerary.name 
       }
 
       setItinerary({

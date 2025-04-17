@@ -174,7 +174,7 @@ function Forms() {
         response.data.response.itinerary
       ) {
         setItinerary(response.data);
-        const tripId = response.data.response.itinerary.id;
+        const tripId = response.data.response.tripId;
         navigate(`/itinerary/${tripId}`, { state: { itineraryData: response.data } });
         localStorage.clear();
         answers.forEach(answer => {
