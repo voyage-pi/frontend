@@ -4,9 +4,8 @@ import FormCard from './FormCard';
 import Notification from '../Notification';
 import FriendsInviteComponent from './FriendsInviteComponent';
 
-const Step1Content = ({ setCurrentStep }) => {
+const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
   const [selectedCard, setSelectedCard] = useState(null);
-  const [notification, setNotification] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
   const [showFriendsInvite, setShowFriendsInvite] = useState(false);
 
@@ -16,14 +15,14 @@ const Step1Content = ({ setCurrentStep }) => {
       setSelectedCard(savedSelection);
       if (savedSelection === 'group') {
         setShowFriendsInvite(true);
+        setShowLeaveButton(false);
+      } else {
+        setShowLeaveButton(true);
       }
+    } else {
+      setShowLeaveButton(true);
     }
-  }, []);
-
-  const closeNotification = () => {
-    setNotification(null);
-    setLastNotificationId(null);
-  };
+  }, [setShowLeaveButton]);
 
   const handleCardClick = (card) => {
     if (lastNotificationId === card.id) {
@@ -35,7 +34,9 @@ const Step1Content = ({ setCurrentStep }) => {
   
     if (card.id === 'group') {
       setShowFriendsInvite(true);
+      setShowLeaveButton(false);
     } else {
+      setShowLeaveButton(true);
       setTimeout(() => {
         setCurrentStep(2);
       }, 300);
@@ -44,12 +45,14 @@ const Step1Content = ({ setCurrentStep }) => {
   
   const handleFriendsInviteNext = () => {
     setCurrentStep(2);
+    setShowLeaveButton(true);
   };
   
   const handleFriendsInviteBack = () => {
     setShowFriendsInvite(false);
     setSelectedCard(null);
     localStorage.removeItem("Trip Dimension");
+    setShowLeaveButton(true);
   };
   
   const cardData = [
@@ -88,7 +91,6 @@ const Step1Content = ({ setCurrentStep }) => {
           />
         ))}
       </div>
-      {notification && <div className="notification-container">{notification}</div>}
     </div>
   );
 };

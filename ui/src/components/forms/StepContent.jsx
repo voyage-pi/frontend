@@ -12,11 +12,12 @@ const StepContent = ({
   totalSubQuestions,
   answers,
   onRatingSelect,
-  onValidationChange
+  onValidationChange,
+  setShowLeaveButton
 }) => {
   switch (currentStep) {
     case 1:
-      return <Step1 setCurrentStep={setCurrentStep} />
+      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} />
     case 2:
       return <Step2 setCurrentStep={setCurrentStep} />
     case 3:

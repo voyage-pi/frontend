@@ -23,6 +23,7 @@ function Forms() {
   const [itinerary, setItinerary] = useState(null)
   const [isStep5Valid, setIsStep5Valid] = useState(false)
   const [showError, setShowError] = useState(false)
+  const [showLeaveButton, setShowLeaveButton] = useState(true)
 
 
   // Carregar o progresso do localStorage quando o componente for montado
@@ -220,6 +221,7 @@ function Forms() {
               answers={answers}
               onRatingSelect={handleRatingSelect}
               onValidationChange={setIsStep5Valid}
+              setShowLeaveButton={setShowLeaveButton}
             />
 
             {showError && (
@@ -231,7 +233,7 @@ function Forms() {
             )}
 
             <div className="flex justify-between mt-8">
-              {currentStep === 1 && (
+              {currentStep === 1 && showLeaveButton && (
                 <button
                   onClick={() => handleLeave()}
                   className="btn btn-primary"
