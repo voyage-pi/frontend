@@ -1,0 +1,66 @@
+import React from "react";
+import { FaMapMarkerAlt, FaGlobeAmericas, FaPlane } from "react-icons/fa";
+
+const FriendCard = ({ friend, onClick, selected }) => {
+  return (
+    <div 
+      className={`w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-102 ${selected ? 'border-1 border-primary/30' : 'border border-gray-100'}`}
+      onClick={() => onClick(friend)}
+    >
+      {/* Cover Photo */}
+      <div className="h-24 bg-gray-200 w-full overflow-hidden">
+        <img 
+          src={friend.coverImage || "https://images.unsplash.com/photo-1476067897447-d0c5df27b5df?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"} 
+          alt="Cover" 
+          className="w-full h-full object-cover"
+        />
+      </div>
+      
+      <div className="px-4 pb-4 relative">
+        {/* Profile Photo */}
+        <div className="absolute -top-12 left-4 border-4 border-white rounded-full overflow-hidden shadow-sm transition-transform duration-300">
+          <img 
+            src={friend.image} 
+            alt={friend.name} 
+            className="w-20 h-20 object-cover"
+          />
+        </div>
+        
+        {/* Content */}
+        <div className="pt-12 pb-2">
+          <h3 className="font-bold text-lg">{friend.name}</h3>
+          <p className="text-gray-500 text-sm mb-3">{friend.username}</p>
+          
+          <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-2">
+            <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
+              <FaPlane className="text-primary" />
+              <span>{friend.trips || 0} trips</span>
+            </div>
+            <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
+              <FaGlobeAmericas className="text-primary" />
+              <span>{friend.countries || 0} countries</span>
+            </div>
+            <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
+              <FaMapMarkerAlt className="text-primary" />
+              <span>{friend.cities || 0} cities</span>
+            </div>
+          </div>
+          
+          {friend.lastTrip ? (
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-gray-500">Last trip together:</p>
+              <p className="text-sm font-medium">{friend.lastTrip}</p>
+            </div>
+          ) : (
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-gray-500">Last trip together:</p>
+              <p className="text-sm text-gray-400 italic">You still don't have trips together</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FriendCard; 
