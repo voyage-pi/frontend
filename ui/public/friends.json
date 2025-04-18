@@ -4,11 +4,14 @@
     "name": "Ronaldo",
     "username": "@CR",
     "image": "https://i.pinimg.com/736x/1e/69/d6/1e69d69083d98c4ac2b37fcd3a21c978.jpg",
+    "coverImage": "https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+    "bio": "Adventure seeker and beach lover. Always up for a new journey!",
     "trips": 12,
     "countries": 31,
     "cities": 71,
     "months": 4,
     "days": 6,
+    "lastTrip": "Bahamas, August 2023",
     "trips_data": [
       {
         "id": 1,
@@ -35,11 +38,14 @@
     "name": "Henrique",
     "username": "@HF",
     "image": "https://i.pinimg.com/736x/6b/f7/56/6bf756672824e2f961d661809649f0b7.jpg",
+    "coverImage": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+    "bio": "Outdoor enthusiast and hiking lover. Following the trails less traveled.",
     "trips": 8,
     "countries": 12,
     "cities": 28,
     "months": 3,
     "days": 0,
+    "lastTrip": "Santiago, May 2023",
     "trips_data": [
       {
         "id": 1,
@@ -57,11 +63,14 @@
     "name": "João Roldão",
     "username": "@JR",
     "image": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1974&auto=format&fit=crop",
+    "coverImage": "https://images.unsplash.com/photo-1519677100203-a0e668c92439?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+    "bio": "Travel photographer and culture explorer. Capturing moments across the globe.",
     "trips": 15,
     "countries": 22,
     "cities": 45,
     "months": 6,
     "days": 23,
+    "lastTrip": "Bahamas, August 2023",
     "trips_data": [
       {
         "id": 1,
@@ -88,11 +97,14 @@
     "name": "Guilherme",
     "username": "@G",
     "image": "https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg",
+    "coverImage": "https://images.unsplash.com/photo-1534445867128-763d3401a017?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+    "bio": "Food and architecture enthusiast. Finding beauty in cities around the world.",
     "trips": 6,
     "countries": 8,
     "cities": 15,
     "months": 1,
     "days": 12,
+    "lastTrip": null,
     "trips_data": []
   }
 ] 
