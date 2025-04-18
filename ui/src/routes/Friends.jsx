@@ -44,14 +44,14 @@ function Friends() {
               {filteredFriends.map(friend => (
                 <div 
                   key={friend.id} 
-                  className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity mb-6"
+                  className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity mb-6 group pt-2"
                   onClick={() => handleFriendClick(friend)}
                 >
-                  <div className="relative mb-2">
+                  <div className="relative mb-2 overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105">
                     <img 
                       src={friend.image} 
                       alt={friend.name} 
-                      className="w-32 h-32 rounded-full object-cover"
+                      className="w-32 h-32 rounded-full object-cover transition-transform duration-300 ease-in-out"
                     />
                   </div>
                   <span className="text-base font-medium">{friend.name}</span>
@@ -66,7 +66,7 @@ function Friends() {
         {selectedFriend && (
           <div className="w-2/5 bg-white animate-slideIn flex flex-col h-screen max-h-screen overflow-hidden">
             <div className="p-6 flex items-center border-b border-gray-100">
-              <div className="relative mr-4">
+              <div className="relative mr-4 transition-transform duration-300 ease-in-out hover:scale-110">
                 <img 
                   src={selectedFriend.image} 
                   alt={selectedFriend.name} 
