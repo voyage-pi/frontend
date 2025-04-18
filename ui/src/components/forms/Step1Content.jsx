@@ -1,60 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
-import Notification from '../Notification';
+import FriendsInviteComponent from './FriendsInvite';
 
-const Step1Content = ({ setCurrentStep }) => {
+const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
   const [selectedCard, setSelectedCard] = useState(null);
-  const [notification, setNotification] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
+  const [showFriendsInvite, setShowFriendsInvite] = useState(false);
 
   useEffect(() => {
     const savedSelection = localStorage.getItem("Trip Dimension");
     if (savedSelection) {
       setSelectedCard(savedSelection);
+      if (savedSelection === 'group') {
+        setShowFriendsInvite(true);
+        setShowLeaveButton(false);
+      } else {
+        setShowLeaveButton(true);
+      }
+    } else {
+      setShowLeaveButton(true);
     }
-  }, []);
-
-  const closeNotification = () => {
-    setNotification(null);
-    setLastNotificationId(null);
-  };
+  }, [setShowLeaveButton]);
 
   const handleCardClick = (card) => {
     if (lastNotificationId === card.id) {
       return;
     }
 
-    if (card.id === selectedCard && card.implemented === false) {
-      setNotification(
-        <Notification
-          type="info"
-          text="Group Trip is comming soon!"
-          onClose={closeNotification} 
-        />
-      );
-      setLastNotificationId(card.id);
-      return;
-    }
-
-    if (card.implemented === false) {
-      setNotification(
-        <Notification
-          type="info"
-          text="Group Trip is comming soon!"
-          onClose={closeNotification} 
-        />
-      );
-      setLastNotificationId(card.id);
-      return;
-    }
-
     setSelectedCard(card.id); 
     localStorage.setItem("Trip Dimension", card.id);
   
-    setTimeout(() => {
-      setCurrentStep(2);
-    }, 300);
+    if (card.id === 'group') {
+      setShowFriendsInvite(true);
+      setShowLeaveButton(false);
+    } else {
+      setShowLeaveButton(true);
+      setTimeout(() => {
+        setCurrentStep(2);
+      }, 300);
+    }
+  };
+  
+  const handleFriendsInviteNext = () => {
+    setCurrentStep(2);
+    setShowLeaveButton(true);
+  };
+  
+  const handleFriendsInviteBack = () => {
+    setShowFriendsInvite(false);
+    setSelectedCard(null);
+    localStorage.removeItem("Trip Dimension");
+    setShowLeaveButton(true);
   };
   
   const cardData = [
@@ -70,9 +67,13 @@ const Step1Content = ({ setCurrentStep }) => {
       icon: FaUserGroup,
       title: 'Group Trip',
       text: "Ideal for traveling with friends, family, or colleagues. You'll be able to customize your itinerary to accommodate everyone's interests and needs, creating a collaborative travel experience that strengthens bonds and creates lasting memories together.",
-      implemented: false,
+      implemented: true,
     },
   ];
+
+  if (showFriendsInvite) {
+    return <FriendsInviteComponent onNext={handleFriendsInviteNext} onBack={handleFriendsInviteBack} />;
+  }
 
   return (
     <div className="text-center p-6 -mb-10">
@@ -89,7 +90,6 @@ const Step1Content = ({ setCurrentStep }) => {
           />
         ))}
       </div>
-      {notification && <div className="notification-container">{notification}</div>}
     </div>
   );
 };

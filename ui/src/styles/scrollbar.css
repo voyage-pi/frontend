@@ -1,0 +1,44 @@
+.friends-scroll::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+.scrollbar-container {
+  position: relative;
+}
+
+.scrollbar-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #e5e7eb;
+  z-index: 10;
+  border-radius: 9999px;
+}
+
+.friends-scroll {
+  scrollbar-width: none; /* For Firefox */
+}
+
+.scrollbar-container::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 2px;
+  background-color: #b0b5b0;
+  z-index: 20;
+  
+  /* Adjusted thumb styling */
+  opacity: 1;
+  height: var(--scroll-thumb-height, 30%);
+  top: var(--scroll-thumb-top, 0);
+  transition: top 0.05s ease-out;
+  border-radius: 9999px;
+}
+
+.friends-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+} 
