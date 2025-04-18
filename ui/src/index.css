@@ -89,6 +89,21 @@
 100% { transform: translateY(50px) translateX(-100px); opacity: 0;} 
 }
 
+@keyframes slideIn {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
 #plane {
 width: 50%;
 animation: shake-vertical-normal 5s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0s infinite normal none; 

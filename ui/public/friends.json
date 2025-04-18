@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Ronaldo",
+    "username": "@CR",
+    "image": "https://i.pinimg.com/736x/1e/69/d6/1e69d69083d98c4ac2b37fcd3a21c978.jpg",
+    "trips": 12,
+    "countries": 31,
+    "cities": 71,
+    "months": 4,
+    "days": 6,
+    "trips_data": [
+      {
+        "id": 1,
+        "name": "Bahamas with friends",
+        "date": "August 12 - August 20",
+        "image": "https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=2064&auto=format&fit=crop",
+        "days": 8,
+        "people": 5,
+        "destinations": 3
+      },
+      {
+        "id": 2,
+        "name": "Exploring Oporto",
+        "date": "June 20 - June 24",
+        "image": "https://images.unsplash.com/photo-1580323956606-607687f156d5?q=80&w=2070&auto=format&fit=crop",
+        "days": 4,
+        "people": 3, 
+        "destinations": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Henrique",
+    "username": "@HF",
+    "image": "https://i.pinimg.com/736x/6b/f7/56/6bf756672824e2f961d661809649f0b7.jpg",
+    "trips": 8,
+    "countries": 12,
+    "cities": 28,
+    "months": 3,
+    "days": 0,
+    "trips_data": [
+      {
+        "id": 1,
+        "name": "Caminhos de Santiago",
+        "date": "May 1 - May 15",
+        "image": "https://images.unsplash.com/photo-1486505669578-902f7e01c9c6?q=80&w=2070&auto=format&fit=crop",
+        "days": 14,
+        "people": 2,
+        "destinations": 8
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "João Roldão",
+    "username": "@JR",
+    "image": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1974&auto=format&fit=crop",
+    "trips": 15,
+    "countries": 22,
+    "cities": 45,
+    "months": 6,
+    "days": 23,
+    "trips_data": [
+      {
+        "id": 1,
+        "name": "Bahamas with friends",
+        "date": "August 12 - August 20",
+        "image": "https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=2064&auto=format&fit=crop",
+        "days": 8,
+        "people": 5,
+        "destinations": 3
+      },
+      {
+        "id": 2,
+        "name": "Exploring Oporto",
+        "date": "June 20 - June 24",
+        "image": "https://images.unsplash.com/photo-1580323956606-607687f156d5?q=80&w=2070&auto=format&fit=crop",
+        "days": 4,
+        "people": 3, 
+        "destinations": 1
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Guilherme",
+    "username": "@G",
+    "image": "https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg",
+    "trips": 6,
+    "countries": 8,
+    "cities": 15,
+    "months": 1,
+    "days": 12,
+    "trips_data": []
+  }
+] 

@@ -3,22 +3,16 @@ import { FaPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa6';
 import { TiArrowLeft, TiArrowRight } from 'react-icons/ti';
 import '../../../src/styles/scrollbar.css';
-
-
-const friendsData = [
-  { id: 1, name: 'Ronaldo', tag: '@CR', image: 'https://i.pinimg.com/736x/1e/69/d6/1e69d69083d98c4ac2b37fcd3a21c978.jpg', selected: false },
-  { id: 2, name: 'Henrique F.', tag: '@HF', image: 'https://i.pinimg.com/736x/6b/f7/56/6bf756672824e2f961d661809649f0b7.jpg', selected: false },
-  { id: 3, name: 'Henrique T.', tag: '@HT', image: 'https://i.pinimg.com/736x/97/70/be/9770bee8dae261fbf16eaf952aa1e409.jpg', selected: false },
-  { id: 4, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
-  { id: 5, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
-  { id: 6, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
-  { id: 7, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
-  { id: 8, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
-  { id: 9, name: 'Guilherme', tag: '@G', image: 'https://i.pinimg.com/736x/16/ab/4c/16ab4c80a0d1da9650a43892c7103627.jpg', selected: false },
-];
+import friendsData from '../../../public/friends.json';
 
 const FriendsInvite = ({ onNext, onBack }) => {
-  const [friends, setFriends] = useState(friendsData);
+  const [friends, setFriends] = useState(friendsData.map(friend => ({
+    id: friend.id,
+    name: friend.name,
+    tag: friend.username,
+    image: friend.image,
+    selected: false
+  })));
   const [tag, setTag] = useState('');
   const [addedTags, setAddedTags] = useState([]);
   const friendsContainerRef = useRef(null);
