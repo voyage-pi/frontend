@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
 
-const PlaceCard = ({ id, place, time, transport, image }) => {
+const PlaceCard = ({ id, place, time, transport, image, onRefresh }) => {
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
 
@@ -30,7 +30,7 @@ const PlaceCard = ({ id, place, time, transport, image }) => {
       setImgError(true);
     }
   }, [image]);
-  const delayCard = 0.2
+  const delayCard = 0.2;
 
   return (
     <motion.div
@@ -38,9 +38,9 @@ const PlaceCard = ({ id, place, time, transport, image }) => {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 100, opacity: 0 }}
       transition={{
-        delay: typeof id === 'number' ? delayCard * id : 0,
+        delay: typeof id === "number" ? delayCard * id : 0,
         duration: 0.5,
-        ease: "easeOut"
+        ease: "easeOut",
       }}
       className="flex flex-col"
     >
@@ -78,7 +78,10 @@ const PlaceCard = ({ id, place, time, transport, image }) => {
           </div>
         </div>
         <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
-          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+          <div
+            className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
+            onClick={() => onRefresh(id)}
+          >
             <TfiReload className="text-primary text-lg" />
           </div>
           <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">

@@ -10,20 +10,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
+import { axiosRecommendation } from "../utils/axiosInstance";
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
   const [days, setDays] = useState({});
   const [selectedDay, setSelectedDay] = useState(0);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();  
-  const {tripId} = useParams();
+  const location = useLocation();
+  const { tripId } = useParams();
   const [routes, setRoutes] = useState([]);
   const [markers, setMarkers] = useState([]);
   // State to track which days are open
   const [openDays, setOpenDays] = useState({});
   // Cache for photo URLs
   const [photoCache, setPhotoCache] = useState({});
+  const [refreshingActivity, setRefreshingActivity] = useState(null);
 
   useEffect(() => {
     if (location.state?.itineraryData) {
@@ -40,7 +42,7 @@ function Itinerary() {
           processItineraryData(data);
         })
         .catch((error) => console.error("Error loading itinerary:", error));
-      } else {
+    } else {
       // Fallback to fetching from JSON file if no state data exists
       fetch("/trip_management_resp.json")
         .then((response) => response.json())
@@ -109,7 +111,7 @@ function Itinerary() {
 
   const processItineraryData = async (data) => {
     if (data.response && data.response.itinerary) {
-      const responseItinerary =data.response.itinerary 
+      const responseItinerary = data.response.itinerary;
       console.log("Processing itinerary data:", responseItinerary);
 
       const calendar = [];
@@ -128,7 +130,10 @@ function Itinerary() {
             for (const activity of day.morning_activities) {
               const photoPromise = getPhotoUrl(activity.place).then(
                 (imageUrl) => {
+                  console.log("ACTIVITY");
+                  console.log("activity", activity);
                   dayActivities.push({
+                    id: activity.id,
                     place: activity.place.name,
                     time: `${formatTime(activity.start_time)} - ${formatTime(
                       activity.end_time
@@ -160,6 +165,7 @@ function Itinerary() {
               const photoPromise = getPhotoUrl(activity.place).then(
                 (imageUrl) => {
                   dayActivities.push({
+                    id: activity.id,
                     place: activity.place.name,
                     time: `${formatTime(activity.start_time)} - ${formatTime(
                       activity.end_time
@@ -215,8 +221,7 @@ function Itinerary() {
         responseItinerary.days[0].morning_activities &&
         responseItinerary.days[0].morning_activities.length > 0
       ) {
-        locationTrip = responseItinerary.name 
-
+        locationTrip = responseItinerary.name;
       }
 
       setItinerary({
@@ -245,10 +250,38 @@ function Itinerary() {
   const limitDays = 5;
 
   const handleSelectedDay = (dayIndex) => {
-    console.log(routes)
+    console.log(routes);
     setSelectedDay(dayIndex);
-    console.log(routes[selectedDay])
+    console.log(routes[selectedDay]);
   };
+
+  const handleRefreshActivity = async (activityId) => {
+    setRefreshingActivity(activityId);
+    try {
+      const response = await axiosRecommendation.post(
+        `/trip/${tripId}/regenerate-activity`,
+        {
+          activityId: activityId,
+        }
+      );
+
+      if (
+        response.data &&
+        response.data.response &&
+        response.data.response.itinerary
+      ) {
+        const newItineraryData = response.data;
+        await processItineraryData(newItineraryData);
+      } else {
+        console.error("Invalid response structure:", response.data);
+      }
+    } catch (error) {
+      console.error("Error refreshing activity:", error);
+    } finally {
+      setRefreshingActivity(null);
+    }
+  };
+
   return (
     <PageTemplate>
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
@@ -318,8 +351,9 @@ function Itinerary() {
             ) : (
               <>
                 <motion.div
-                  className={`w-full flex p-4 h-1/8 py-5 ${days.length > limitDays ? "" : "overflow-x-auto"
-                    } `}
+                  className={`w-full flex p-4 h-1/8 py-5 ${
+                    days.length > limitDays ? "" : "overflow-x-auto"
+                  } `}
                 >
                   {Object.keys(itinerary.calendar).map((day, index) => (
                     <motion.div
@@ -350,16 +384,58 @@ function Itinerary() {
                       exit={{ opacity: 0 }}
                       className="overflow-y-auto h-full"
                     >
-                      {itinerary.calendar[selectedDay].map((item, idx) => (
-                        <PlaceCard
-                          key={idx}
-                          id={idx}
-                          place={item.place}
-                          time={item.time}
-                          transport={item.transport}
-                          image={item.image}
-                        />
-                      ))}
+                      {itinerary.calendar[selectedDay]
+                        .sort((a, b) => a.id - b.id)
+                        .map((item) =>
+                          refreshingActivity === item.id ? (
+                            <div key={item.id} className="flex flex-col">
+                              <div className="flex flex-row items-center">
+                                <div className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 bg-white shadow-md w-full">
+                                  <div className="flex items-center">
+                                    <div className="flex flex-col gap-1">
+                                      {[0, 1, 2].map((row) => (
+                                        <div
+                                          key={`row-${row}`}
+                                          className="flex gap-1"
+                                        >
+                                          {[0, 1].map((col) => (
+                                            <div
+                                              key={`dot-${row}-${col}`}
+                                              className="w-1 h-1 rounded-full bg-primary/80"
+                                            />
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <div className="w-20 h-20 rounded-lg mr-4 ml-4 skeleton"></div>
+                                    <div className="flex-1">
+                                      <div className="h-4 w-32 skeleton mb-2"></div>
+                                      <div className="h-3 w-24 skeleton"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
+                                  <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+                                    <TfiReload className="text-primary text-lg" />
+                                  </div>
+                                  <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+                                    <HiOutlineTrash className="text-primary text-xl" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <PlaceCard
+                              key={item.id}
+                              id={item.id}
+                              place={item.place}
+                              time={item.time}
+                              transport={item.transport}
+                              image={item.image}
+                              onRefresh={() => handleRefreshActivity(item.id)}
+                            />
+                          )
+                        )}
                     </motion.div>
                   </AnimatePresence>
                 </div>
