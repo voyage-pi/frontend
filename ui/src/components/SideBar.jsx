@@ -15,11 +15,13 @@ import userData from "../../public/user.json"
 import Notification from "./Notification"
 import { RiLoginCircleFill } from "react-icons/ri";
 import { FaUserPlus, FaSignOutAlt } from "react-icons/fa";
+import { useFriendRequests } from "../context/FriendRequestContext";
 
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
     const navigate = useNavigate();
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
+    const { requestCount } = useFriendRequests();
     
     const [isExpanded, setIsExpanded] = useState(() => {
         const storedState = JSON.parse(localStorage.getItem("sidebarState"));
@@ -70,7 +72,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
     const menuItems = [
         { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/", blockNavigation: false },
         { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved", blockNavigation: isGuest },
-        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends", blockNavigation: isGuest },
+        { icon: FaUsers, label: "Friends", count: requestCount > 0 ? `${userData.stats.friends}` : userData.stats.friends, path: "/friends", blockNavigation: isGuest, hasNotification: requestCount > 0 },
     ]
     
     const handleMenuItemClick = (item, blockNavigation, e) => {
@@ -208,7 +210,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
                             <nav className="w-full mt-10 transition-all duration-400 ease-in-out">
                                 <ul className="w-full">
-                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation }, index) => (
+                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification }, index) => (
                                         <li key={index} className="w-full">
                                             {blockNavigation ? (
                                                 <div
@@ -217,6 +219,11 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                                 >
                                                     <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
                                                         <Icon className="text-secondary" size={22}/>
+                                                        {hasNotification && (
+                                                            <span className="absolute -top-1 -right-1 bg-primary text-white text-xs flex items-center justify-center rounded-full">
+                                                                {requestCount}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
                                                         <span className="text-lg whitespace-nowrap">{label}</span>
@@ -231,8 +238,13 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                                 >
                                                     {({ isActive }) => (
                                                         <>
-                                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
+                                                            <div className={`relative flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
                                                                 <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
+                                                                {hasNotification && (
+                                                                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                                                                        {requestCount}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
                                                                 <span className="text-lg whitespace-nowrap">{label}</span>
