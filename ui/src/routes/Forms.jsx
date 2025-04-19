@@ -65,7 +65,7 @@ function Forms() {
 
 
   const handleNext = () => {
-    if (currentStep === 5 && !isStep5Valid) {
+    if (currentStep === 5 && subQuestionIndex === totalSubQuestions - 1 && !isStep5Valid) {
       setShowError(true);
       return;
     }
@@ -222,6 +222,7 @@ function Forms() {
               onRatingSelect={handleRatingSelect}
               onValidationChange={setIsStep5Valid}
               setShowLeaveButton={setShowLeaveButton}
+              handleNext={handleNext}
             />
 
             {showError && (

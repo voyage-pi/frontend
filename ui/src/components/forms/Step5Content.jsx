@@ -4,7 +4,7 @@ import { FaUser, FaUserGroup } from "react-icons/fa6";
 import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
 
-function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect,setCurrentStep,onValidationChange}) {
+function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSelect, setCurrentStep, onValidationChange, handleNext}) {
   const [showNewPreferences, setShowNewPreferences] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const [tripDimension, setTripDimension] = useState('individual');
@@ -69,6 +69,7 @@ function Step5Content({subQuestionIndex,totalSubQuestions,answers,onRatingSelect
           totalSubQuestions={totalSubQuestions}
           onRatingSelect={handleRatingSelect}
           onValidationChange={handleValidationChange}
+          handleNext={handleNext}
         />
       </div>
     );

@@ -6,6 +6,8 @@ const Step5ContentPP = ({
   subQuestionIndex,
   onRatingSelect,
   onValidationChange,
+  handleNext,
+  totalSubQuestions
 }) => {
   const [showError, setShowError] = useState(false);
 
@@ -29,6 +31,16 @@ const Step5ContentPP = ({
       onRatingSelect(null);
     } else {
       onRatingSelect(rating);
+      
+      if (onValidationChange) {
+        onValidationChange(true);
+      }
+      
+      if (handleNext && subQuestionIndex < totalSubQuestions - 1) {
+        setTimeout(() => {
+          handleNext();
+        }, 300);
+      }
     }
   };
 
