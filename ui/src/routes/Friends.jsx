@@ -20,7 +20,7 @@ function Friends() {
   // Get friend request state from context
   const { pendingRequests, addRequest, removeRequest, requestCount } = useFriendRequests();
   
-  // Initial sample data loading (in a real app, this would be from an API)
+  // Initial sample data loading 
   useEffect(() => {
     // Only load sample data if no requests exist yet
     if (pendingRequests.length === 0) {
@@ -104,7 +104,7 @@ function Friends() {
                   <FaEnvelope className="text-gray-600 mr-2" />
                   <span className="text-gray-600 font-medium">Inbox</span>
                   {requestCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                       {requestCount}
                     </span>
                   )}
@@ -252,7 +252,7 @@ function Friends() {
           {showInvites && (
             <div className="pt-3 w-full md:w-2/5 lg:w-1/3 bg-white border-l border-gray-200 flex flex-col h-screen overflow-hidden">
               <div className="py-4 px-6 flex items-center justify-between border-b border-gray-100 bg-white z-10">
-                <div className="flex items-center">
+                <div className="flex items-center mb-3">
                   <FaBell className="text-primary text-xl mr-3" />
                   <h2 className="font-bold text-lg">Friend Requests</h2>
                 </div>
@@ -313,7 +313,7 @@ function Friends() {
           {showAddFriend && (
             <div className="pt-3 w-full md:w-2/5 lg:w-1/3 bg-white border-l border-gray-200 flex flex-col h-screen overflow-hidden">
               <div className="py-4 px-6 flex items-center justify-between border-b border-gray-100 bg-white z-10">
-                <div className="flex items-center">
+                <div className="flex items-center mb-3">
                   <FaUserPlus className="text-primary text-xl mr-3" />
                   <h2 className="font-bold text-lg">Add Friend</h2>
                 </div>
