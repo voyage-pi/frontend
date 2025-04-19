@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PageTemplate from "../components/PageTemplate";
 import SearchBar from "../components/SearchBar";
 import TripCard from "../components/TripCard";
 import FriendCard from "../components/FriendCard";
 import { FaTimes, FaUserFriends, FaEnvelope, FaUserPlus, FaCheck, FaTimes as FaTimesIcon, FaBell } from "react-icons/fa";
 import friendsData from "../../public/friends.json";
+import { useFriendRequests } from "../context/FriendRequestContext";
 
 
 function Friends() {
@@ -16,23 +17,33 @@ function Friends() {
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [friendEmail, setFriendEmail] = useState("");
   
-  // Sample data for pending invites
-  const [pendingInvites, setPendingInvites] = useState([
-    {
-      id: 101,
-      name: "Emma Thompson",
-      username: "@emma_travels",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      date: "2 days ago"
-    },
-    {
-      id: 102,
-      name: "Marcus Kim",
-      username: "@world_explorer",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      date: "5 days ago"
+  // Get friend request state from context
+  const { pendingRequests, addRequest, removeRequest, requestCount } = useFriendRequests();
+  
+  // Initial sample data loading (in a real app, this would be from an API)
+  useEffect(() => {
+    // Only load sample data if no requests exist yet
+    if (pendingRequests.length === 0) {
+      const sampleInvites = [
+        {
+          id: 101,
+          name: "Emma Thompson",
+          username: "@emma_travels",
+          image: "https://randomuser.me/api/portraits/women/44.jpg",
+          date: "2 days ago"
+        },
+        {
+          id: 102,
+          name: "Marcus Kim",
+          username: "@world_explorer",
+          image: "https://randomuser.me/api/portraits/men/32.jpg",
+          date: "5 days ago"
+        }
+      ];
+      
+      sampleInvites.forEach(invite => addRequest(invite));
     }
-  ]);
+  }, []);
 
   const filteredFriends = friendsData.filter(friend => 
     friend.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,13 +76,13 @@ function Friends() {
   
   const handleAcceptInvite = (inviteId) => {
     // api call to accept invite
-    setPendingInvites(pendingInvites.filter(invite => invite.id !== inviteId));
+    removeRequest(inviteId);
     alert("Friend request accepted!");
   };
   
   const handleRejectInvite = (inviteId) => {
     // api call to reject invite
-    setPendingInvites(pendingInvites.filter(invite => invite.id !== inviteId));
+    removeRequest(inviteId);
     alert("Friend request declined");
   };
 
@@ -91,9 +102,9 @@ function Friends() {
                   onClick={handleShowInvites}
                 >
                   <FaEnvelope className="text-gray-600" />
-                  {pendingInvites.length > 0 && (
+                  {requestCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                      {pendingInvites.length}
+                      {requestCount}
                     </span>
                   )}
                 </button>
@@ -253,9 +264,9 @@ function Friends() {
               </div>
               
               <div className="flex-1 overflow-auto p-4 bg-gray-50">
-                {pendingInvites.length > 0 ? (
+                {pendingRequests.length > 0 ? (
                   <div className="space-y-4">
-                    {pendingInvites.map(invite => (
+                    {pendingRequests.map(invite => (
                       <div key={invite.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
                         <div className="flex items-center">
                           <img 
