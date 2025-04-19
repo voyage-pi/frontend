@@ -3,7 +3,7 @@ import PageTemplate from "../components/PageTemplate";
 import SearchBar from "../components/SearchBar";
 import TripCard from "../components/TripCard";
 import FriendCard from "../components/FriendCard";
-import { FaTimes, FaUserFriends, FaEnvelope, FaUserPlus, FaCheck, FaTimes as FaTimesIcon, FaBell } from "react-icons/fa";
+import { FaTimes, FaUserFriends, FaEnvelope, FaUserPlus, FaCheck, FaTimes as FaTimesIcon, FaBell, FaClock } from "react-icons/fa";
 import friendsData from "../../public/friends.json";
 import { useFriendRequests } from "../context/FriendRequestContext";
 import Notification from "../components/Notification";
@@ -20,6 +20,7 @@ function Friends() {
   const [inviteSent, setInviteSent] = useState(false);
   const [sentToEmail, setSentToEmail] = useState("");
   const [notification, setNotification] = useState(null);
+  const [sentInvitations, setSentInvitations] = useState([]);
   
   // Get friend request state from context
   const { pendingRequests, addRequest, removeRequest, requestCount } = useFriendRequests();
@@ -87,16 +88,25 @@ function Friends() {
   const handleSendInvite = () => {
     if (!friendEmail.trim()) return;
     
-    // In a real app, this would be an API call
+    // api call to send invite
     setSentToEmail(friendEmail);
     setInviteSent(true);
+    
+    // Add to sent invitations
+    const newInvitation = {
+      id: Date.now(),
+      email: friendEmail,
+      name: friendEmail.split('@')[0],
+      date: "Just now"
+    };
+    
+    setSentInvitations([newInvitation, ...sentInvitations]);
     setFriendEmail("");
   };
   
   const handleAcceptInvite = (inviteId, name) => {
     // api call to accept invite
     removeRequest(inviteId);
-    // Show notification instead of alert
     setNotification({
       type: 'success',
       text: `You are now friends with ${name}!`,
@@ -107,7 +117,6 @@ function Friends() {
   const handleRejectInvite = (inviteId, name) => {
     // api call to reject invite
     removeRequest(inviteId);
-    // Show notification instead of alert
     setNotification({
       type: 'info',
       text: `Friend request from ${name} declined`,
@@ -371,7 +380,7 @@ function Friends() {
                   </div>
                 )}
               
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-4">
                   <h3 className="font-medium text-lg mb-4">Send Friend Invitation</h3>
                   
                   <div className="mb-4">
@@ -393,29 +402,60 @@ function Friends() {
                   >
                     Send Invitation
                   </button>
+                </div>
+                
+                {/* Sent Invitations Section */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-4">
+                  <h3 className="font-medium text-lg mb-4">Sent Invitations</h3>
                   
-                  <div className="mt-8">
-                    <h4 className="font-medium mb-3">Suggested Friends</h4>
+                  {sentInvitations.length > 0 ? (
                     <div className="space-y-3">
-                      {[1, 2, 3].map(id => (
-                        <div key={id} className="flex items-center justify-between p-3 border border-gray-100 rounded-md">
+                      {sentInvitations.map(invitation => (
+                        <div key={invitation.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-md">
                           <div className="flex items-center">
-                            <img 
-                              src={`https://randomuser.me/api/portraits/${id % 2 === 0 ? 'women' : 'men'}/${20 + id}.jpg`} 
-                              alt="Suggested friend" 
-                              className="w-10 h-10 rounded-full object-cover mr-3" 
-                            />
+                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                              <span className="text-gray-500 font-medium">{invitation.name.charAt(0).toUpperCase()}</span>
+                            </div>
                             <div>
-                              <p className="font-medium">Suggested Friend {id}</p>
-                              <p className="text-gray-500 text-xs">@suggested_{id}</p>
+                              <p className="font-medium">{invitation.email}</p>
+                              <div className="flex items-center">
+                                <FaClock className="text-gray-400 text-xs mr-1" />
+                                <p className="text-gray-500 text-xs">Sent {invitation.date}</p>
+                              </div>
                             </div>
                           </div>
-                          <button className="text-primary hover:text-primary-dark">
-                            <FaUserPlus />
-                          </button>
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Pending</span>
                         </div>
                       ))}
                     </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">No pending invitations sent</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                  <h4 className="font-medium mb-3">Suggested Friends</h4>
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(id => (
+                      <div key={id} className="flex items-center justify-between p-3 border border-gray-100 rounded-md">
+                        <div className="flex items-center">
+                          <img 
+                            src={`https://randomuser.me/api/portraits/${id % 2 === 0 ? 'women' : 'men'}/${20 + id}.jpg`} 
+                            alt="Suggested friend" 
+                            className="w-10 h-10 rounded-full object-cover mr-3" 
+                          />
+                          <div>
+                            <p className="font-medium">Suggested Friend {id}</p>
+                            <p className="text-gray-500 text-xs">@suggested_{id}</p>
+                          </div>
+                        </div>
+                        <button className="text-primary hover:text-primary-dark">
+                          <FaUserPlus />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -424,7 +464,6 @@ function Friends() {
         </div>
       </div>
       
-      {/* Toast Notification */}
       {notification && (
         <Notification 
           key={notification.key}
