@@ -16,6 +16,8 @@ function Friends() {
   const [showInvites, setShowInvites] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [friendEmail, setFriendEmail] = useState("");
+  const [inviteSent, setInviteSent] = useState(false);
+  const [sentToEmail, setSentToEmail] = useState("");
   
   // Get friend request state from context
   const { pendingRequests, addRequest, removeRequest, requestCount } = useFriendRequests();
@@ -45,6 +47,17 @@ function Friends() {
     }
   }, []);
 
+  // Auto-hide the invitation success message after 5 seconds
+  useEffect(() => {
+    let timer;
+    if (inviteSent) {
+      timer = setTimeout(() => {
+        setInviteSent(false);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [inviteSent]);
+
   const filteredFriends = friendsData.filter(friend => 
     friend.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     friend.username.toLowerCase().includes(searchTerm.toLowerCase())
@@ -60,6 +73,7 @@ function Friends() {
     setShowAddFriend(true);
     setSelectedFriend(null);
     setShowInvites(false);
+    setInviteSent(false);
   };
   
   const handleShowInvites = () => {
@@ -70,7 +84,10 @@ function Friends() {
   
   const handleSendInvite = () => {
     if (!friendEmail.trim()) return;
-    alert(`Friend invitation sent to ${friendEmail}`);
+    
+    // In a real app, this would be an API call
+    setSentToEmail(friendEmail);
+    setInviteSent(true);
     setFriendEmail("");
   };
   
@@ -300,7 +317,6 @@ function Friends() {
                   </div>
                 ) : (
                   <div className="text-center py-12 bg-white rounded-lg border border-gray-100">
-                    <div className="text-gray-400 text-6xl mb-3">📬</div>
                     <h3 className="text-lg font-medium text-gray-700 mb-1">No pending invites</h3>
                     <p className="text-sm text-gray-500 mb-4">You don't have any friend requests at the moment</p>
                   </div>
@@ -326,6 +342,19 @@ function Friends() {
               </div>
               
               <div className="flex-1 overflow-auto p-4 bg-gray-50">
+                {/* Success Message */}
+                {inviteSent && (
+                  <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start">
+                    <div className="bg-green-100 rounded-full p-2 mr-3">
+                      <FaCheck className="text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-green-700">Invitation Sent!</h3>
+                      <p className="text-green-600 text-sm">We've sent a friend request to {sentToEmail}.</p>
+                    </div>
+                  </div>
+                )}
+              
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                   <h3 className="font-medium text-lg mb-4">Send Friend Invitation</h3>
                   
