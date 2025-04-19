@@ -6,6 +6,7 @@ import FriendCard from "../components/FriendCard";
 import { FaTimes, FaUserFriends, FaEnvelope, FaUserPlus, FaCheck, FaTimes as FaTimesIcon, FaBell } from "react-icons/fa";
 import friendsData from "../../public/friends.json";
 import { useFriendRequests } from "../context/FriendRequestContext";
+import Notification from "../components/Notification";
 
 
 function Friends() {
@@ -18,6 +19,7 @@ function Friends() {
   const [friendEmail, setFriendEmail] = useState("");
   const [inviteSent, setInviteSent] = useState(false);
   const [sentToEmail, setSentToEmail] = useState("");
+  const [notification, setNotification] = useState(null);
   
   // Get friend request state from context
   const { pendingRequests, addRequest, removeRequest, requestCount } = useFriendRequests();
@@ -91,16 +93,30 @@ function Friends() {
     setFriendEmail("");
   };
   
-  const handleAcceptInvite = (inviteId) => {
+  const handleAcceptInvite = (inviteId, name) => {
     // api call to accept invite
     removeRequest(inviteId);
-    alert("Friend request accepted!");
+    // Show notification instead of alert
+    setNotification({
+      type: 'success',
+      text: `You are now friends with ${name}!`,
+      key: Date.now()
+    });
   };
   
-  const handleRejectInvite = (inviteId) => {
+  const handleRejectInvite = (inviteId, name) => {
     // api call to reject invite
     removeRequest(inviteId);
-    alert("Friend request declined");
+    // Show notification instead of alert
+    setNotification({
+      type: 'info',
+      text: `Friend request from ${name} declined`,
+      key: Date.now()
+    });
+  };
+  
+  const handleNotificationClose = () => {
+    setNotification(null);
   };
 
   return (
@@ -300,13 +316,13 @@ function Friends() {
                         </div>
                         <div className="flex">
                           <button 
-                            onClick={() => handleAcceptInvite(invite.id)}
+                            onClick={() => handleAcceptInvite(invite.id, invite.name)}
                             className="p-2 bg-primary text-white rounded-full mr-2 hover:bg-primary-dark"
                           >
                             <FaCheck />
                           </button>
                           <button 
-                            onClick={() => handleRejectInvite(invite.id)}
+                            onClick={() => handleRejectInvite(invite.id, invite.name)}
                             className="p-2 bg-gray-200 text-gray-600 rounded-full hover:bg-gray-300"
                           >
                             <FaTimesIcon />
@@ -407,6 +423,16 @@ function Friends() {
           )}
         </div>
       </div>
+      
+      {/* Toast Notification */}
+      {notification && (
+        <Notification 
+          key={notification.key}
+          type={notification.type} 
+          text={notification.text}
+          onClose={handleNotificationClose}
+        />
+      )}
     </PageTemplate>
   );
 }
