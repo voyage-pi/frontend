@@ -65,9 +65,16 @@ function Forms() {
 
 
   const handleNext = () => {
-    if (currentStep === 5 && subQuestionIndex === totalSubQuestions - 1 && !isStep5Valid) {
-      setShowError(true);
-      return;
+    // For Step 5, check if the current question has an answer before allowing to proceed
+    if (currentStep === 5) {
+      // Check if current question has an answer
+      const currentQuestionHasAnswer = answers[subQuestionIndex]?.answer !== undefined;
+      
+      // If trying to proceed without an answer, show error
+      if (!currentQuestionHasAnswer) {
+        setShowError(true);
+        return;
+      }
     }
 
     if (currentStep < 5) {
@@ -256,7 +263,8 @@ function Forms() {
                 (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
                 <button
                   onClick={handleNext}
-                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                  className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${currentStep === 5 && !answers[subQuestionIndex]?.answer ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={currentStep === 5 && !answers[subQuestionIndex]?.answer}
                 >
                   Next <TiArrowRight className="ml-1" />
                 </button>
