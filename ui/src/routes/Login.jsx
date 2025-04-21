@@ -5,13 +5,13 @@ import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: ""
   });
   const [loginStatus, setLoginStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [placeholders, setPlaceholders] = useState({
-    username: "johndoe",
+    email: "voyage@gmail.com",
     password: "••••••••"
   });
   
@@ -45,22 +45,20 @@ function Login() {
       setLoginStatus(null);
       
       const response = await axiosUser.post('/user/login', {
-        username: formData.username,
+        email: formData.email,
         password: formData.password
       });
       
+      console.log('Login response:', response);
       setLoginStatus({ type: 'success', message: 'Login successful!' });
       
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-      }
       
       setTimeout(() => {
         navigate('/');
       }, 1000);
     } catch (error) {
       console.error('Error during login:', error);
-      const errorMessage = error.response?.data?.message || 'Invalid credentials. Please try again.';
+      const errorMessage = error.response?.data?.message || 'Invalid credentials . Please try again.';
       setLoginStatus({ type: 'error', message: errorMessage });
     } finally {
       setIsLoading(false);
@@ -91,18 +89,18 @@ function Login() {
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <fieldset className="fieldset">
-              <legend className="fieldset-legend block text-sm font-medium text-secondary">Username</legend>
+              <legend className="fieldset-legend block text-sm font-medium text-secondary">Email</legend>
               <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 required
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder={placeholders.username}
+                placeholder={placeholders.email}
               />
             </fieldset>
             
