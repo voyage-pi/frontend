@@ -11,6 +11,8 @@ import PlaceCard from "../components/PlaceCard";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { axiosRecommendation } from "../utils/axiosInstance";
+import PreferencesSidebar from "../components/PreferencesSidebar";
+import PreferencesButton from "../components/PreferencesButton";
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
@@ -26,6 +28,8 @@ function Itinerary() {
   // Cache for photo URLs
   const [photoCache, setPhotoCache] = useState({});
   const [refreshingActivity, setRefreshingActivity] = useState(null);
+  // State for preferences sidebar
+  const [isPreferencesSidebarOpen, setIsPreferencesSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (location.state?.itineraryData) {
@@ -282,8 +286,32 @@ function Itinerary() {
     }
   };
 
+  const handlePreferencesUpdated = async (newItineraryData) => {
+    try {
+      console.log("Received updated itinerary data:", newItineraryData);
+      setLoading(true);
+      await processItineraryData(newItineraryData);
+      // Show some kind of success notification if desired
+    } catch (error) {
+      console.error("Error processing updated itinerary:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <PageTemplate>
+      {/* Preferences Button */}
+      <PreferencesButton onClick={() => setIsPreferencesSidebarOpen(true)} />
+      
+      {/* Preferences Sidebar */}
+      <PreferencesSidebar 
+        isOpen={isPreferencesSidebarOpen} 
+        onClose={() => setIsPreferencesSidebarOpen(false)} 
+        tripId={tripId}
+        onPreferencesUpdated={handlePreferencesUpdated}
+      />
+      
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
         <div className="mb-4">
           <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
