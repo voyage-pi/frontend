@@ -36,6 +36,13 @@ function Itinerary() {
       // Use data passed from Forms component
       const responseData = location.state.itineraryData;
       console.log("Received itinerary data from Forms:", responseData);
+      
+      // Save user ratings when coming from the form
+      if (location.state.userRatings) {
+        localStorage.setItem("userRatings", JSON.stringify(location.state.userRatings));
+        console.log("Saved user ratings to localStorage:", location.state.userRatings);
+      }
+      
       processItineraryData(responseData);
     } else if (tripId) {
       // Fetch itinerary data using the trip ID
@@ -43,6 +50,17 @@ function Itinerary() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Loaded itinerary data from API:", data);
+          
+          // Check if we need to load user ratings from API
+          if (data.questions && data.questions.user123) {
+            const userQuestions = data.questions.user123;
+            const ratings = userQuestions.map(q => q.value);
+            if (ratings.length > 0) {
+              localStorage.setItem("userRatings", JSON.stringify(ratings));
+              console.log("Loaded user ratings from API:", ratings);
+            }
+          }
+          
           processItineraryData(data);
         })
         .catch((error) => console.error("Error loading itinerary:", error));

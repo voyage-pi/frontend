@@ -113,11 +113,18 @@ function Forms() {
   };
 
   const handleRatingSelect = (rating) => {
+    // Update the answers state
     setAnswers((prevAnswers) => {
       const updated = [...prevAnswers];
       updated[subQuestionIndex].answer = rating;
       return updated;
     });
+    
+    // Also save to localStorage for persistence and to be used in Itinerary
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    savedRatings[subQuestionIndex] = rating;
+    localStorage.setItem("userRatings", JSON.stringify(savedRatings));
+    console.log("Updated userRatings in localStorage:", savedRatings);
   };
 
   const handleLeave = () => {
@@ -183,8 +190,23 @@ function Forms() {
       ) {
         setItinerary(response.data);
         const tripId = response.data.response.tripId;
-        navigate(`/itinerary/${tripId}`, { state: { itineraryData: response.data } });
-        localStorage.clear();
+        navigate(`/itinerary/${tripId}`, { 
+          state: { 
+            itineraryData: response.data,
+            userRatings: userRatings 
+          } 
+        });
+        
+        // Instead of clearing all localStorage, just remove specific keys
+        // but keep userRatings for the preference sidebar
+        const keysToRemove = [
+          "currentStep", "subQuestionIndex", "answers", 
+          "Start Date", "Trip Type", "radius", "Latitude", 
+          "Longitude", "Location", "Budget", "Duration"
+        ];
+        
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
         answers.forEach(answer => {
           answer.answer = null;
         });
