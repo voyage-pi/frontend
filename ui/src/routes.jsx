@@ -6,6 +6,7 @@ import Forms from './routes/Forms';
 import Itinerary from './routes/Itinerary';
 import Login from './routes/Login';
 import Register from './routes/Register';
+import { AuthProvider } from './context/AuthContext';
 
 export const routesList = [
     {
@@ -15,7 +16,12 @@ export const routesList = [
           <Helmet>
             <title>Voyage - Trips</title>
           </Helmet>
-          <Trips />
+          {/* AuthProvider is used to provide authentication context to the Trips component */}
+          {/* This allows the Trips component to access the authentication state and user information */}
+          {/* The AuthProvider component wraps the Trips component, allowing it to access the authentication context */}
+          <AuthProvider>
+            <Trips />
+          </AuthProvider>
         </>
       ),
     },

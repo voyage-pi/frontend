@@ -59,7 +59,8 @@ function Register() {
       setRegisterStatus(null);
       
       const response = await axiosUser.post('/user/register', {
-        username: formData.username,
+        name: formData.username,
+        email: formData.email,
         password: formData.password
       });
       
