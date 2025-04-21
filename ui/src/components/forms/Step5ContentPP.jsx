@@ -6,30 +6,65 @@ const Step5ContentPP = ({
   subQuestionIndex,
   onRatingSelect,
   onValidationChange,
+  handleNext,
+  totalSubQuestions
 }) => {
   const [showError, setShowError] = useState(false);
+  const [showLastQuestionInfo, setShowLastQuestionInfo] = useState(false);
+  const isLastQuestion = subQuestionIndex === totalSubQuestions - 1;
 
   useEffect(() => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     const savedRating = savedRatings[subQuestionIndex];
 
-    if (savedRating && currentQuestion && currentQuestion.answer !== savedRating) {
+    if (savedRating !== undefined && currentQuestion && currentQuestion.answer !== savedRating) {
       onRatingSelect(savedRating);
     }
   }, [subQuestionIndex, currentQuestion, onRatingSelect]);
 
   useEffect(() => {
     if (onValidationChange) {
-      onValidationChange(!!currentQuestion?.answer);
+      onValidationChange(currentQuestion?.answer !== undefined);
     }
   }, [currentQuestion?.answer, onValidationChange]);
 
   const handleRatingClick = (rating) => {
     if (currentQuestion.answer === rating) {
-      onRatingSelect(null);
+      onRatingSelect(undefined);
+      if (onValidationChange) {
+        onValidationChange(false);
+      }
     } else {
       onRatingSelect(rating);
+      
+      if (onValidationChange) {
+        onValidationChange(true);
+      }
+      
+      if (handleNext && !isLastQuestion) {
+        setTimeout(() => {
+          handleNext();
+        }, 300);
+      } else if (isLastQuestion) {
+        // Show message that the user needs to press Finish
+        setShowLastQuestionInfo(true);
+        setTimeout(() => {
+          setShowLastQuestionInfo(false);
+        }, 3000);
+      }
     }
+  };
+
+  // Local handler for Next button click in case user tries to use it
+  const validateBeforeNext = () => {
+    if (!currentQuestion?.answer) {
+      setShowError(true);
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+      return false;
+    }
+    return true;
   };
 
   if (!currentQuestion) return null;
@@ -41,6 +76,13 @@ const Step5ContentPP = ({
           type="error"
           text="You must select an answer before proceeding"
           onClose={() => setShowError(false)}
+        />
+      )}
+      {showLastQuestionInfo && (
+        <Notification
+          type="info"
+          text="This is the last question. Please press the Finish button to complete your trip."
+          onClose={() => setShowLastQuestionInfo(false)}
         />
       )}
       <div className="max-w-2xl mx-auto p-3 flex flex-col items-center">

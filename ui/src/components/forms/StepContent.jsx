@@ -13,7 +13,8 @@ const StepContent = ({
   answers,
   onRatingSelect,
   onValidationChange,
-  setShowLeaveButton
+  setShowLeaveButton,
+  handleNext
 }) => {
   switch (currentStep) {
     case 1:
@@ -32,6 +33,7 @@ const StepContent = ({
           answers={answers}
           onRatingSelect={onRatingSelect}
           onValidationChange={onValidationChange}
+          handleNext={handleNext}
         />
       )
     default:
