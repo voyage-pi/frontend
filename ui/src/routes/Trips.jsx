@@ -5,6 +5,7 @@ import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
 import Map from "../components/Map";
+import { FaEarthAmericas } from "react-icons/fa6";
 import { axiosInstance, axiosUser, axiosPlace } from "../utils/axiosInstance";
 
 function Trips() {
@@ -284,7 +285,14 @@ function Trips() {
     <PageTemplate>
       <div className="flex flex-col">
         <div className="flex">
-          <div className="w-4/7 p-8">
+          <div className="w-4/7 ">
+            <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-4 pb-9">
+              <div className="flex items-center">
+                <FaEarthAmericas className="text-primary text-xl mr-3" />
+                <h1 className="text-2xl font-bold">Trips</h1>
+              </div>
+            </div>
+            
             <TabBar
               activeTab={activeTab}
               setActiveTab={setActiveTab}
