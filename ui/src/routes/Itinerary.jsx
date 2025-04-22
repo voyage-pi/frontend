@@ -319,7 +319,6 @@ function Itinerary() {
 
   return (
     <PageTemplate>
-      {/* Preferences Sidebar */}
       <PreferencesSidebar 
         isOpen={isPreferencesSidebarOpen} 
         onClose={() => setIsPreferencesSidebarOpen(false)} 

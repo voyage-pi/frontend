@@ -2,72 +2,37 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import questions from "../../public/questions.json";
-import { axiosRecommendation } from "../utils/axiosInstance";
 
 const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated }) => {
   const [userPreferences, setUserPreferences] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [averageRating, setAverageRating] = useState(0);
 
-  // Load saved preferences from localStorage or use defaults from questions.json
   useEffect(() => {
     if (isOpen) {
       const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
       
       if (savedRatings && savedRatings.length > 0 && savedRatings.some(rating => Number(rating) > 0)) {
-        // If we have saved ratings with at least one non-zero rating, use them
         const preferences = questions.map((q, index) => ({
           ...q,
           answer: Number(savedRatings[index] || 0)
         }));
         
         setUserPreferences(preferences);
-        
-        // Calculate average rating
-        const validRatings = savedRatings.filter(rating => Number(rating) > 0).map(Number);
-        if (validRatings.length > 0) {
-          const sum = validRatings.reduce((acc, rating) => acc + rating, 0);
-          setAverageRating((sum / validRatings.length).toFixed(1));
-        }
-      } else {
-        // Otherwise, use the default questions with answers set to 0
-        setUserPreferences(
-          questions.map(q => ({ ...q, answer: 0 }))
-        );
-        setAverageRating(0);
       }
     }
   }, [isOpen]);
   
-  // Use a memoized handler to prevent re-creation on every render
   const handleRatingChange = useCallback((questionIndex, rating) => {
     setUserPreferences(prevPreferences => {
-      // Deep clone the array to ensure we're not mutating the previous state
       const updatedPreferences = JSON.parse(JSON.stringify(prevPreferences));
-      
-      // Make sure we're comparing numbers, not strings
       const currentAnswer = Number(updatedPreferences[questionIndex].answer);
       
-      // Toggle rating off if clicking the same rating again
       if (currentAnswer === rating) {
         updatedPreferences[questionIndex].answer = 0;
       } else {
         updatedPreferences[questionIndex].answer = Number(rating);
       }
       
-      // Recalculate average rating
-      const validRatings = updatedPreferences
-        .map(pref => Number(pref.answer))
-        .filter(r => r > 0);
-      
-      if (validRatings.length > 0) {
-        const sum = validRatings.reduce((acc, r) => acc + r, 0);
-        setAverageRating((sum / validRatings.length).toFixed(1));
-      } else {
-        setAverageRating(0);
-      }
-      
-      // Immediately save to localStorage
       const ratings = updatedPreferences.map(q => Number(q.answer));
       localStorage.setItem("userRatings", JSON.stringify(ratings));
       
@@ -76,35 +41,18 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated }) =
   }, []);
 
   const handleSavePreferences = async () => {
-    // Save to localStorage
     const ratings = userPreferences.map(q => Number(q.answer));
     localStorage.setItem("userRatings", JSON.stringify(ratings));
 
     if (tripId && onPreferencesUpdated) {
       setIsLoading(true);
       try {
-        // Format the preferences for the API
-        const formattedPreferences = {
-          tripId: tripId,
-          questions: {
-            user123: userPreferences.map((pref) => ({
-              question_id: pref.id,
-              value: Number(pref.answer) || 0,
-              type: "scale",
-            })),
-          }
-        };
-
-        // Send to API to regenerate itinerary
-        const response = await axiosRecommendation.post(
-          `/trip/${tripId}/regenerate-trip`, 
-          formattedPreferences
-        );
-
+        // format payload
+        // make the api call
+        
         if (response.data && response.data.response) {
-          // Call the callback to update the itinerary
           onPreferencesUpdated(response.data);
-          onClose(); // Close the sidebar after successful update
+          onClose(); 
         }
       } catch (error) {
         console.error("Error updating preferences:", error);
@@ -112,7 +60,7 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated }) =
         setIsLoading(false);
       }
     } else {
-      onClose(); // Just close the sidebar if we don't have a tripId
+      onClose(); 
     }
   };
 
