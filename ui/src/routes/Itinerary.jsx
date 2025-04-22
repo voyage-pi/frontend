@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { axiosPlace } from "../utils/axiosInstance";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { GoPeople, GoClock } from "react-icons/go";
@@ -21,6 +21,7 @@ function Itinerary() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { tripId } = useParams();
+  const navigate = useNavigate();
   const [routes, setRoutes] = useState([]);
   const [markers, setMarkers] = useState([]);
   // State to track which days are open
@@ -317,6 +318,10 @@ function Itinerary() {
     }
   };
 
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   return (
     <PageTemplate>
       <PreferencesSidebar 
@@ -328,7 +333,12 @@ function Itinerary() {
       
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
         <div className="mb-4">
-          <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
+          <img 
+            src={VoyageLogo} 
+            alt="Voyage Logo" 
+            className="h-30 cursor-pointer" 
+            onClick={handleLogoClick}
+          />
         </div>
       </div>
 
