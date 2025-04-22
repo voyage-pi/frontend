@@ -14,6 +14,8 @@ import { axiosRecommendation } from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import Notification from "../components/Notification";
 import { ToastContainer } from "react-toastify";
+import PreferencesSidebar from "../components/PreferencesSidebar";
+import PreferencesButton from "../components/PreferencesButton";
 
 function Itinerary() {
   // Check if the user is authenticated
