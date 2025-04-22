@@ -292,14 +292,14 @@ function Trips() {
                 <h1 className="text-2xl font-bold">Trips</h1>
               </div>
             </div>
-            
+            <div className="ml-4">
             <TabBar
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               tabs={tabs}
             />
-
-            <div className="p-4 overflow-y-auto">
+            </div>
+            <div className="px-6 pt-4 overflow-y-auto">
               <div className="mb-4">
                 <SearchHeader
                   searchTerm={searchTerm}
