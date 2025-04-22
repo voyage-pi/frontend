@@ -41,8 +41,10 @@ function Forms() {
       setSubQuestionIndex(savedSubQuestionIndex);
     }
 
-    if (savedAnswers) {
+    if (savedAnswers && Array.isArray(savedAnswers) && savedAnswers.length > 0) {
       setAnswers(savedAnswers);
+    }else{
+      setAnswers(answers);
     }
 
     setIsInitialized(true);

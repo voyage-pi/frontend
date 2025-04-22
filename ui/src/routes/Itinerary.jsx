@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { axiosPlace } from "../utils/axiosInstance";
+import { axiosPlace,axiosInstance } from "../utils/axiosInstance";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
@@ -8,22 +8,35 @@ import { IoLocationOutline } from "react-icons/io5";
 import Map from "../components/Map";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
-import { TfiReload } from "react-icons/tfi";
+import { FaRegFloppyDisk } from "react-icons/fa6";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { axiosRecommendation } from "../utils/axiosInstance";
+import { useAuth } from "../context/AuthContext";
+import Notification from "../components/Notification";
+import { ToastContainer } from "react-toastify";
 import PreferencesSidebar from "../components/PreferencesSidebar";
 import PreferencesButton from "../components/PreferencesButton";
 
 function Itinerary() {
+  // Check if the user is authenticated
+  const { isAuthenticated } = useAuth();
+
   const [itinerary, setItinerary] = useState({});
+  const [title, setTitle] = useState("");
+  const [totalDays, setTotalDays] = useState(0);
+  const [totalPeople, setTotalPeople] = useState(0);
+  const [budget, setBudget] = useState(0);
+  const [locationName, setLocation] = useState("");
+  const [calendar, setCalendar] = useState([]);
   const [days, setDays] = useState({});
+  const location = useLocation();
   const [selectedDay, setSelectedDay] = useState(0);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
   const { tripId } = useParams();
   const navigate = useNavigate();
   const [routes, setRoutes] = useState([]);
   const [markers, setMarkers] = useState([]);
+  const [notification, setNotification] = useState(null);
   // State to track which days are open
   const [openDays, setOpenDays] = useState({});
   // Cache for photo URLs
@@ -136,7 +149,8 @@ function Itinerary() {
     if (data.response && data.response.itinerary) {
       const responseItinerary = data.response.itinerary;
       console.log("Processing itinerary data:", responseItinerary);
-
+      setItinerary(responseItinerary);
+      console.log("itinerary", responseItinerary);
       const calendar = [];
       const AllroutesData = [];
       const AllmarkersData = [];
@@ -153,8 +167,6 @@ function Itinerary() {
             for (const activity of day.morning_activities) {
               const photoPromise = getPhotoUrl(activity.place).then(
                 (imageUrl) => {
-                  console.log("ACTIVITY");
-                  console.log("activity", activity);
                   dayActivities.push({
                     id: activity.id,
                     place: activity.place.name,
@@ -247,14 +259,12 @@ function Itinerary() {
         locationTrip = responseItinerary.name;
       }
 
-      setItinerary({
-        title: `Trip to ${locationTrip}`,
-        totalDays: totalDays,
-        totalPeople: 1,
-        budget: responseItinerary.budget || 0,
-        location: locationTrip,
-        calendar: calendar,
-      });
+      setTitle(responseItinerary.name);
+      setTotalDays(totalDays);
+      setTotalPeople(responseItinerary.total_people || 1);
+      setBudget(responseItinerary.budget || 0);
+      setLocation(locationTrip);
+      setCalendar(calendar);
 
       setRoutes(AllroutesData);
       setMarkers(AllmarkersData);
@@ -322,6 +332,40 @@ function Itinerary() {
     navigate('/');
   };
 
+  const handleSaveTrip = async () => {
+    try {
+      if (!isAuthenticated) {
+        console.error("User is not authenticated");
+        setNotification({
+          type: "error",
+          text: "You need to be LogIn to save the itinerary.",
+          key: Date.now(),
+        });
+        return;
+      }
+      const response = await axiosInstance.post("/save", {
+        id: tripId,
+        itinerary: itinerary,
+      });
+
+      if (response.status === 200) {
+        console.log("Trip saved successfully");
+        setNotification({
+          type: "success",
+          text: response.data.message,
+          key: Date.now(),
+        });
+      } 
+    } catch (error) {
+      console.error("Error saving trip:", error);
+      setNotification({
+        type: "info",
+        text: "Are you sure you are logged in?",
+        key: Date.now(),
+      });
+    }
+  };
+
   return (
     <PageTemplate>
       <PreferencesSidebar 
@@ -342,16 +386,34 @@ function Itinerary() {
         </div>
       </div>
 
+      <ToastContainer />
+
+      {notification && (
+        <Notification
+          key={notification.key}
+          type={notification.type}
+          text={notification.text}
+          onClose={() => setNotification(null)}
+          options={{
+            position: "top-right",
+            autoClose: 3000,
+            pauseOnHover: false,
+          }}
+        />
+      )}
       <div className="flex flex-col md:flex-row h-min-screen p-10 -mt-10">
         {/* Left Side */}
         <div className="w-full md:w-1/2 pr-4 overflow-hidden  ">
           <div className="flex flex-row  mb-4 items-center gap-5">
-            <h1 className="text-3xl font-bold">{itinerary.title}</h1>
+            <h1 className="text-3xl font-bold">{title}</h1>
             {/* <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
               <CiSaveDown1 className="text-white text-2xl" />
             </div> */}
-            <div className="btn btn-md btn-white rounded-full btn-circle shadow-sm">
-              <TfiReload className="text-primary text-xl" />
+            <div
+              className="btn btn-md btn-white rounded-full btn-circle shadow-sm"
+              onClick={() => handleSaveTrip()}
+            >
+              <FaRegFloppyDisk className="text-primary text-xl" />
             </div>
           </div>
 
@@ -361,8 +423,8 @@ function Itinerary() {
                 <div className="flex flex-row items-center gap-x-3 m-1">
                   <GoClock className="text-primary ml-1" />
                   <div className="mr-2">
-                    <span className="font-bold"> {itinerary.totalDays} </span>
-                    {itinerary.totalDays === 1 ? "day" : "days"}
+                    <span className="font-bold"> {totalDays} </span>
+                    {totalDays === 1 ? "day" : "days"}
                   </div>
                 </div>
               </div>
@@ -371,8 +433,8 @@ function Itinerary() {
                 <div className="flex flex-row items-center gap-x-3 m-1">
                   <GoPeople className="text-primary ml-1" />
                   <div className="mr-2">
-                    <span className="font-bold"> {itinerary.totalPeople} </span>
-                    {itinerary.totalPeople === 1 ? "person" : "people"}
+                    <span className="font-bold"> {totalPeople} </span>
+                    {totalPeople === 1 ? "person" : "people"}
                   </div>
                 </div>
               </div>
@@ -388,7 +450,7 @@ function Itinerary() {
                 <div className="flex flex-row items-center gap-x-3 m-1">
                   <IoLocationOutline className="text-primary ml-1" />
                   <div className="mr-2">
-                    <span> {itinerary.location} </span>
+                    <span> {locationName} </span>
                   </div>
                 </div>
               </div>
@@ -414,7 +476,7 @@ function Itinerary() {
                     days.length > limitDays ? "" : "overflow-x-auto"
                   } `}
                 >
-                  {Object.keys(itinerary.calendar).map((day, index) => (
+                  {Object.keys(calendar).map((day, index) => (
                     <motion.div
                       initial={false}
                       animate={{
@@ -443,58 +505,20 @@ function Itinerary() {
                       exit={{ opacity: 0 }}
                       className="overflow-y-auto h-full"
                     >
-                      {itinerary.calendar[selectedDay]
+                      {calendar[selectedDay]
                         .sort((a, b) => a.id - b.id)
-                        .map((item) =>
-                          refreshingActivity === item.id ? (
-                            <div key={item.id} className="flex flex-col">
-                              <div className="flex flex-row items-center">
-                                <div className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 bg-white shadow-md w-full">
-                                  <div className="flex items-center">
-                                    <div className="flex flex-col gap-1">
-                                      {[0, 1, 2].map((row) => (
-                                        <div
-                                          key={`row-${row}`}
-                                          className="flex gap-1"
-                                        >
-                                          {[0, 1].map((col) => (
-                                            <div
-                                              key={`dot-${row}-${col}`}
-                                              className="w-1 h-1 rounded-full bg-primary/80"
-                                            />
-                                          ))}
-                                        </div>
-                                      ))}
-                                    </div>
-                                    <div className="w-20 h-20 rounded-lg mr-4 ml-4 skeleton"></div>
-                                    <div className="flex-1">
-                                      <div className="h-4 w-32 skeleton mb-2"></div>
-                                      <div className="h-3 w-24 skeleton"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
-                                  <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
-                                    <TfiReload className="text-primary text-lg" />
-                                  </div>
-                                  <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
-                                    <HiOutlineTrash className="text-primary text-xl" />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            <PlaceCard
-                              key={item.id}
-                              id={item.id}
-                              place={item.place}
-                              time={item.time}
-                              transport={item.transport}
-                              image={item.image}
-                              onRefresh={() => handleRefreshActivity(item.id)}
-                            />
-                          )
-                        )}
+                        .map((item) => (
+                          <PlaceCard
+                            key={item.id}
+                            id={item.id}
+                            place={item.place}
+                            time={item.time}
+                            transport={item.transport}
+                            image={item.image}
+                            onRefresh={() => handleRefreshActivity(item.id)}
+                            refreshing={refreshingActivity === item.id}
+                          />
+                        ))}
                     </motion.div>
                   </AnimatePresence>
                 </div>

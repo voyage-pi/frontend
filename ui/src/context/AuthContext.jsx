@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
                 setUser(response.data)
                 setIsAuthenticated(true)
                 setIsUserLoading(false)
-                navigate('/')
             } catch (error) {
                 console.log('API call error:', error);
                 //401 error enters has guest or not logged in
