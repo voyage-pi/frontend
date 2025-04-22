@@ -11,6 +11,8 @@ import PlaceCard from "../components/PlaceCard";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { axiosRecommendation } from "../utils/axiosInstance";
+import PreferencesSidebar from "../components/PreferencesSidebar";
+import PreferencesButton from "../components/PreferencesButton";
 
 function Itinerary() {
   const [itinerary, setItinerary] = useState({});
@@ -26,12 +28,21 @@ function Itinerary() {
   // Cache for photo URLs
   const [photoCache, setPhotoCache] = useState({});
   const [refreshingActivity, setRefreshingActivity] = useState(null);
+  // State for preferences sidebar
+  const [isPreferencesSidebarOpen, setIsPreferencesSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (location.state?.itineraryData) {
       // Use data passed from Forms component
       const responseData = location.state.itineraryData;
       console.log("Received itinerary data from Forms:", responseData);
+      
+      // Save user ratings when coming from the form
+      if (location.state.userRatings) {
+        localStorage.setItem("userRatings", JSON.stringify(location.state.userRatings));
+        console.log("Saved user ratings to localStorage:", location.state.userRatings);
+      }
+      
       processItineraryData(responseData);
     } else if (tripId) {
       // Fetch itinerary data using the trip ID
@@ -39,6 +50,17 @@ function Itinerary() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Loaded itinerary data from API:", data);
+          
+          // Check if we need to load user ratings from API
+          if (data.questions && data.questions.user123) {
+            const userQuestions = data.questions.user123;
+            const ratings = userQuestions.map(q => q.value);
+            if (ratings.length > 0) {
+              localStorage.setItem("userRatings", JSON.stringify(ratings));
+              console.log("Loaded user ratings from API:", ratings);
+            }
+          }
+          
           processItineraryData(data);
         })
         .catch((error) => console.error("Error loading itinerary:", error));
@@ -282,8 +304,28 @@ function Itinerary() {
     }
   };
 
+  const handlePreferencesUpdated = async (newItineraryData) => {
+    try {
+      console.log("Received updated itinerary data:", newItineraryData);
+      setLoading(true);
+      await processItineraryData(newItineraryData);
+      // Show some kind of success notification if desired
+    } catch (error) {
+      console.error("Error processing updated itinerary:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <PageTemplate>
+      <PreferencesSidebar 
+        isOpen={isPreferencesSidebarOpen} 
+        onClose={() => setIsPreferencesSidebarOpen(false)} 
+        tripId={tripId}
+        onPreferencesUpdated={handlePreferencesUpdated}
+      />
+      
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
         <div className="mb-4">
           <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
@@ -303,45 +345,52 @@ function Itinerary() {
             </div>
           </div>
 
-          <div className="flex flex-row gap-x-5 pb-5 ">
-            <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <GoClock className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span className="font-bold"> {itinerary.totalDays} </span>
-                  {itinerary.totalDays === 1 ? "day" : "days"}
+          <div className="flex flex-row items-center justify-between pb-5">
+            <div className="flex flex-row gap-x-5">
+              <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <GoClock className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span className="font-bold"> {itinerary.totalDays} </span>
+                    {itinerary.totalDays === 1 ? "day" : "days"}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <GoPeople className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span className="font-bold"> {itinerary.totalPeople} </span>
-                  {itinerary.totalPeople === 1 ? "person" : "people"}
+              <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <GoPeople className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span className="font-bold"> {itinerary.totalPeople} </span>
+                    {itinerary.totalPeople === 1 ? "person" : "people"}
+                  </div>
+                </div>
+              </div>
+              {/* <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <TbMoneybag className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span className="font-bold"> {itinerary.budget} </span> €
+                  </div>
+                </div>
+              </div> */}
+              <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <IoLocationOutline className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span> {itinerary.location} </span>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <TbMoneybag className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span className="font-bold"> {itinerary.budget} </span> €
-                </div>
-              </div>
-            </div> */}
-            <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <IoLocationOutline className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span> {itinerary.location} </span>
-                </div>
-              </div>
+            
+            {/* Preferences Button - now inline with the tags */}
+            <div className="pr-2">
+              <PreferencesButton onClick={() => setIsPreferencesSidebarOpen(true)} />
             </div>
           </div>
 
-          <div className="h-[40rem] pr-2 ">
+          <div className="h-[40rem] pr-2">
             {loading ? (
               <div className="flex flex-col text-center justify-center p-3  ">
                 <div className="w-full h-[100px] my-2 skeleton"></div>
