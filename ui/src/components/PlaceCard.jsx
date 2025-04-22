@@ -3,7 +3,15 @@ import { motion } from "motion/react";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
 
-const PlaceCard = ({ id, place, time, transport, image, onRefresh }) => {
+const PlaceCard = ({
+  id,
+  place,
+  time,
+  transport,
+  image,
+  onRefresh,
+  refreshing = false,
+}) => {
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
 
@@ -36,10 +44,9 @@ const PlaceCard = ({ id, place, time, transport, image, onRefresh }) => {
     <motion.div
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 100, opacity: 0 }}
       transition={{
         delay: typeof id === "number" ? delayCard * id : 0,
-        duration: 0.5,
+        duration: 0.3,
         ease: "easeOut",
       }}
       className="flex flex-col"
@@ -59,22 +66,34 @@ const PlaceCard = ({ id, place, time, transport, image, onRefresh }) => {
                 </div>
               ))}
             </div>
-            <img
-              src={imgError ? fallbackImage : imgSrc}
-              referrerPolicy="no-referrer"
-              alt={place}
-              className="w-20 h-20 object-cover rounded-lg mr-4 ml-4"
-              onError={() => setImgError(true)}
-            />
-            <div className="flex-1">
-              <h3 className="font-semibold">{place}</h3>
-              <p className="text-sm text-gray-500">{time}</p>
-              {transport && transport.type && transport.duration && (
-                <p className="text-xs text-gray-400">
-                  {transport.type} - {transport.duration}
-                </p>
-              )}
-            </div>
+            {refreshing ? (
+              <>
+                <div className="w-20 h-20 rounded-lg mr-4 ml-4 skeleton"></div>
+                <div className="flex-1">
+                  <div className="h-4 w-32 skeleton mb-2"></div>
+                  <div className="h-3 w-24 skeleton"></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <img
+                  src={imgError ? fallbackImage : imgSrc}
+                  referrerPolicy="no-referrer"
+                  alt={place}
+                  className="w-20 h-20 object-cover rounded-lg mr-4 ml-4"
+                  onError={() => setImgError(true)}
+                />
+                <div className="flex-1">
+                  <h3 className="font-semibold">{place}</h3>
+                  <p className="text-sm text-gray-500">{time}</p>
+                  {transport && transport.type && transport.duration && (
+                    <p className="text-xs text-gray-400">
+                      {transport.type} - {transport.duration}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
