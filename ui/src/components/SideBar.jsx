@@ -91,6 +91,10 @@ function SideBar({ onToggle, onMenuItemClick }) {
         }
     };
 
+    const handleLogoClick = () => {
+        navigate('/');
+    };
+
     return (
         <div className={`bg-base-300 h-full fixed top-0 left-0 transition-all duration-400 ease-in-out flex flex-col justify-between ${isExpanded ? "w-64" : "w-16"}`}>
             <div className="flex flex-col">
@@ -101,6 +105,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                         >
                             <div
                                 className="-ml-10 flex items-center transition-all duration-400 ease-in-out"
+                                onClick={handleLogoClick}
                             >
                                 <img 
                                     src={VoyageCompleteLogo} 
