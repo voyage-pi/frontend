@@ -110,7 +110,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <img 
                                     src={VoyageCompleteLogo} 
                                     alt="Voyage Logo" 
-                                    className="max-w-48 transition-all duration-400 ease-in-out" 
+                                    className="max-w-48 transition-all duration-400 ease-in-out cursor-pointer" 
                                 />
                             </div>
                             <button

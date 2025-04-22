@@ -236,7 +236,12 @@ function Forms() {
       <div className="flex justify-center w-full">
         <div className="flex justify-center items-center flex-col w-full px-4">
           <div className="mb-4">
-            <img src={VoyageLogo} alt="Voyage Logo" className="h-30" />
+            <img 
+              src={VoyageLogo} 
+              alt="Voyage Logo" 
+              className="h-30 cursor-pointer" 
+              onClick={handleLeave}
+            />
           </div>
 
           <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
