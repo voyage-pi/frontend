@@ -1,16 +1,20 @@
 import React from "react";
-import { IoSettingsOutline } from "react-icons/io5";
+import { MdEditSquare } from "react-icons/md";
 
 const PreferencesButton = ({ onClick }) => {
   return (
-    <div
+    <button
       onClick={onClick}
-      className="fixed right-8 top-28 z-40 btn btn-md btn-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors px-4 py-2"
+      className="rounded-full border-1 border-secondary/10 flex items-center cursor-pointer hover:bg-gray-50 transition-colors"
       title="Edit Preference Profile"
     >
-      <IoSettingsOutline className="text-white text-xl" />
-      <span className="ml-2 text-white text-sm font-medium">Preferences</span>
-    </div>
+      <div className="flex flex-row items-center gap-x-3 m-1">
+        <MdEditSquare className="text-primary ml-1" />
+        <div className="mr-2">
+          <span className="text-primary">Preferences</span>
+        </div>
+      </div>
+    </button>
   );
 };
 

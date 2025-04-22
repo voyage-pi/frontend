@@ -319,9 +319,6 @@ function Itinerary() {
 
   return (
     <PageTemplate>
-      {/* Preferences Button */}
-      <PreferencesButton onClick={() => setIsPreferencesSidebarOpen(true)} />
-      
       {/* Preferences Sidebar */}
       <PreferencesSidebar 
         isOpen={isPreferencesSidebarOpen} 
@@ -349,45 +346,52 @@ function Itinerary() {
             </div>
           </div>
 
-          <div className="flex flex-row gap-x-5 pb-5 ">
-            <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <GoClock className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span className="font-bold"> {itinerary.totalDays} </span>
-                  {itinerary.totalDays === 1 ? "day" : "days"}
+          <div className="flex flex-row items-center justify-between pb-5">
+            <div className="flex flex-row gap-x-5">
+              <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <GoClock className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span className="font-bold"> {itinerary.totalDays} </span>
+                    {itinerary.totalDays === 1 ? "day" : "days"}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <GoPeople className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span className="font-bold"> {itinerary.totalPeople} </span>
-                  {itinerary.totalPeople === 1 ? "person" : "people"}
+              <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <GoPeople className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span className="font-bold"> {itinerary.totalPeople} </span>
+                    {itinerary.totalPeople === 1 ? "person" : "people"}
+                  </div>
+                </div>
+              </div>
+              {/* <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <TbMoneybag className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span className="font-bold"> {itinerary.budget} </span> €
+                  </div>
+                </div>
+              </div> */}
+              <div className="rounded-full border-1 border-secondary/10">
+                <div className="flex flex-row items-center gap-x-3 m-1">
+                  <IoLocationOutline className="text-primary ml-1" />
+                  <div className="mr-2">
+                    <span> {itinerary.location} </span>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <TbMoneybag className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span className="font-bold"> {itinerary.budget} </span> €
-                </div>
-              </div>
-            </div> */}
-            <div className="rounded-full border-1 border-secondary/10">
-              <div className="flex flex-row items-center gap-x-3 m-1">
-                <IoLocationOutline className="text-primary ml-1" />
-                <div className="mr-2">
-                  <span> {itinerary.location} </span>
-                </div>
-              </div>
+            
+            {/* Preferences Button - now inline with the tags */}
+            <div className="pr-2">
+              <PreferencesButton onClick={() => setIsPreferencesSidebarOpen(true)} />
             </div>
           </div>
 
-          <div className="h-[40rem] pr-2 ">
+          <div className="h-[40rem] pr-2">
             {loading ? (
               <div className="flex flex-col text-center justify-center p-3  ">
                 <div className="w-full h-[100px] my-2 skeleton"></div>
