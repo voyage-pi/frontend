@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PageTemplate from "../components/PageTemplate";
 import { FaCamera, FaEye, FaEyeSlash, FaUserCircle, FaImage, FaEdit } from "react-icons/fa";
 import userData from "../../public/user.json";
+import Notification from "../components/Notification";
 
 function Settings() {
   const [profileImage, setProfileImage] = useState(userData.image);
@@ -16,48 +17,48 @@ function Settings() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
-        showNotification("Profile image updated");
+        showNotification("Profile image updated", "info");
       };
       reader.readAsDataURL(file);
     }
   };
   
-  // Handle banner image change
   const handleBannerImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerImage(reader.result);
-        showNotification("Banner image updated");
+        showNotification("Banner image updated", "info");
       };
       reader.readAsDataURL(file);
     }
   };
   
-  // Handle bio change
   const handleBioChange = (e) => {
     setBio(e.target.value);
   };
   
-  // Handle toggle trips visibility
   const handleToggleTripsVisibility = () => {
     setHideTrips(!hideTrips);
-    showNotification(hideTrips ? "Trips are now visible to friends" : "Trips are now hidden from friends");
+    showNotification(hideTrips ? "Trips are now visible to friends" : "Trips are now hidden from friends", "info");
   };
   
-  // Save changes
   const handleSaveChanges = (e) => {
     e.preventDefault();
-    // api call
-    showNotification("Profile settings saved!");
+    
+    try {
+      //api call
+      showNotification("Profile settings saved successfully!", "success");
+    } catch (error) {
+      showNotification("Failed to save settings: " + error.message, "error");
+    }
   };
   
-  // Show notification
-  const showNotification = (message) => {
+  const showNotification = (message, type = "info") => {
     setNotification({
       text: message,
-      type: "success",
+      type: type,
       key: Date.now()
     });
     
@@ -232,12 +233,17 @@ function Settings() {
         
         {/* Notification */}
         {notification && (
-          <div className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 max-w-xs animate-slide-up">
-            <div className="flex items-center">
-              <div className={`w-2 h-2 rounded-full ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'} mr-3`}></div>
-              <p>{notification.text}</p>
-            </div>
-          </div>
+          <Notification 
+            key={notification.key}
+            type={notification.type} 
+            text={notification.text}
+            onClose={() => setNotification(null)}
+            options={{ 
+              position: "top-right",
+              autoClose: 3000,
+              pauseOnHover: false
+            }}
+          />
         )}
       </div>
     </PageTemplate>
