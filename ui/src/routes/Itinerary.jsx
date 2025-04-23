@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { axiosPlace,axiosInstance } from "../utils/axiosInstance";
+import { axiosPlace,axiosInstance,axiosUser } from "../utils/axiosInstance";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
@@ -343,19 +343,29 @@ function Itinerary() {
         });
         return;
       }
-      const response = await axiosInstance.post("/save", {
+      const trip_management_response = await axiosInstance.post("/save", {
         id: tripId,
         itinerary: itinerary,
       });
+        
+      const user_management_response = await axiosUser.post(`/trips/save?trip_id=${tripId}`);
 
-      if (response.status === 200) {
-        console.log("Trip saved successfully");
+      if (trip_management_response.status === 200) {
+        console.log("Trip saved successfully in trip-management");
         setNotification({
           type: "success",
-          text: response.data.message,
+          text: trip_management_response.data.message,
           key: Date.now(),
         });
-      } 
+      }
+      if (user_management_response.status === 200) {
+        console.log("Trip saved successfully in user-management");
+        setNotification({
+          type: "success",
+          text: user_management_response.data.message,
+          key: Date.now(),
+        });
+      }
     } catch (error) {
       console.error("Error saving trip:", error);
       setNotification({
