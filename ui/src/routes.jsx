@@ -6,6 +6,7 @@ import Forms from './routes/Forms';
 import Itinerary from './routes/Itinerary';
 import Login from './routes/Login';
 import Register from './routes/Register';
+import NotFound from './routes/NotFound';
 import { AuthProvider } from './context/AuthContext';
 
 export const routesList = [
@@ -100,3 +101,15 @@ export const routesList = [
       ),
     }
 ];
+
+routesList.push({
+  path: "*",
+  element: (
+    <>
+      <Helmet>
+        <title>Voyage - Page Not Found</title>
+      </Helmet>
+      <NotFound />
+    </>
+  ),
+});
