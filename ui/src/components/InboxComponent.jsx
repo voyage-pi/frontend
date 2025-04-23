@@ -54,7 +54,7 @@ const InboxComponent = ({ onClose, setNotification }) => {
   return (
     <div className="flex flex-col h-full">
       <div className="py-4 px-6 flex items-center justify-between border-b border-gray-100 bg-white z-10">
-        <div className="flex items-center mb-3">
+        <div className="flex items-center mb-3 mt-3">
           <FaBell className="text-primary text-xl mr-3" />
           <h2 className="font-bold text-lg">Notifications</h2>
         </div>
