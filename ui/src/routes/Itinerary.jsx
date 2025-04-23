@@ -348,21 +348,11 @@ function Itinerary() {
         itinerary: itinerary,
       });
         
-      const user_management_response = await axiosUser.post(`/trips/save?trip_id=${tripId}`);
-
       if (trip_management_response.status === 200) {
         console.log("Trip saved successfully in trip-management");
         setNotification({
           type: "success",
           text: trip_management_response.data.message,
-          key: Date.now(),
-        });
-      }
-      if (user_management_response.status === 200) {
-        console.log("Trip saved successfully in user-management");
-        setNotification({
-          type: "success",
-          text: user_management_response.data.message,
           key: Date.now(),
         });
       }
