@@ -4,14 +4,12 @@ import { FaCamera, FaEye, FaEyeSlash, FaUserCircle, FaImage, FaEdit } from "reac
 import userData from "../../public/user.json";
 
 function Settings() {
-  // User information state
   const [profileImage, setProfileImage] = useState(userData.image);
   const [bannerImage, setBannerImage] = useState(null);
   const [bio, setBio] = useState(userData.bio || "Travel enthusiast");
   const [hideTrips, setHideTrips] = useState(false);
   const [notification, setNotification] = useState(null);
   
-  // Handle profile image change
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -51,7 +49,7 @@ function Settings() {
   // Save changes
   const handleSaveChanges = (e) => {
     e.preventDefault();
-    // In a real application, this would make an API call to update the user's profile
+    // api call
     showNotification("Profile settings saved!");
   };
   
@@ -63,7 +61,6 @@ function Settings() {
       key: Date.now()
     });
     
-    // Auto-hide notification after 3 seconds
     setTimeout(() => {
       setNotification(null);
     }, 3000);
@@ -80,7 +77,7 @@ function Settings() {
         </div>
         
         <div className="flex-1 p-4 md:p-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <form onSubmit={handleSaveChanges}>
               {/* Banner Image Section */}
               <div className="mb-8">
