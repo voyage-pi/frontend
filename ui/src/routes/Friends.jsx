@@ -111,7 +111,7 @@ function Friends() {
 
   return (
     <PageTemplate>
-      <div className="h-full flex flex-col overflow-hidden">
+      <div className="h-screen flex flex-col overflow-hidden">
         <div className="flex flex-1 h-full">
           <div className="flex-1 flex flex-col">
             <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-3">
@@ -281,7 +281,7 @@ function Friends() {
                   animate={{ x: 0 }}
                   exit={{ x: "100%" }}
                   transition={{ type: "spring", damping: 20 }}
-                  className="absolute right-0 top-0 h-full w-96 bg-white shadow-lg z-50 overflow-y-auto motion-container"
+                  className="absolute right-0 top-0 h-screen w-96 bg-white shadow-lg z-50 overflow-y-auto motion-container"
                 >
                   <InboxComponent 
                     onClose={() => setShowInvites(false)}
@@ -299,7 +299,7 @@ function Friends() {
                   animate={{ x: 0 }}
                   exit={{ x: "100%" }}
                   transition={{ type: "spring", damping: 20 }}
-                  className="absolute right-0 top-0 h-full w-96 bg-white shadow-lg z-50 overflow-y-auto motion-container"
+                  className="absolute right-0 top-0 h-screen w-96 bg-white shadow-lg z-50 overflow-y-auto motion-container"
                 >
                   <div className="flex flex-col h-full">
                     <div className="py-4 px-6 flex items-center justify-between border-b border-gray-100 bg-white z-10">
