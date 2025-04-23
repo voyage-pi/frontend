@@ -5,8 +5,12 @@ import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
 import Map from "../components/Map";
-import { FaEarthAmericas } from "react-icons/fa6";
+import { FaEarthAmericas, FaEnvelope } from "react-icons/fa6";
 import { axiosInstance, axiosUser, axiosPlace } from "../utils/axiosInstance";
+import { useNotifications } from "../context/NotificationsContext";
+import InboxComponent from "../components/InboxComponent";
+import Notification from "../components/Notification";
+import { AnimatePresence, motion } from "framer-motion";
 
 function Trips() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,7 +18,33 @@ function Trips() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [photoCache, setPhotoCache] = useState({});
+  const [showInbox, setShowInbox] = useState(false);
+  const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
+  
+  const { totalCount, addTripInvite, tripInviteCount } = useNotifications();
+
+  // Load sample trip invites if none exist yet
+  useEffect(() => {
+    if (tripInviteCount === 0) {
+      const sampleInvites = [
+        {
+          id: 201,
+          tripName: "Weekend in Paris",
+          from: "John Smith",
+          date: "1 day ago"
+        },
+        {
+          id: 202,
+          tripName: "Tokyo Adventure",
+          from: "Sarah Lee",
+          date: "3 days ago"
+        }
+      ];
+      
+      sampleInvites.forEach(invite => addTripInvite(invite));
+    }
+  }, []);
 
   // Generate placeholder image as a fallback
   const generatePlaceholderImage = (seed) => {
@@ -283,21 +313,35 @@ function Trips() {
 
   return (
     <PageTemplate>
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-hidden">
         <div className="flex">
-          <div className="w-4/7 ">
+          <div className="w-4/7">
             <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-4 pb-9">
               <div className="flex items-center">
                 <FaEarthAmericas className="text-primary text-xl mr-3" />
                 <h1 className="text-2xl font-bold">Trips</h1>
               </div>
+              <div className="flex items-center">
+                <button 
+                  className="p-2 px-4 relative bg-gray-100 rounded-full hover:bg-gray-200 flex items-center"
+                  onClick={() => setShowInbox(!showInbox)}
+                >
+                  <FaEnvelope className="text-gray-600 mr-2" />
+                  <span className="text-gray-600 font-medium">Inbox</span>
+                  {totalCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {totalCount}
+                    </span>
+                  )}
+                </button>
+              </div>
             </div>
             <div className="ml-4">
-            <TabBar
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              tabs={tabs}
-            />
+              <TabBar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                tabs={tabs}
+              />
             </div>
             <div className="px-6 pt-4 overflow-y-auto">
               <div className="mb-4">
@@ -335,15 +379,47 @@ function Trips() {
               )}
             </div>
           </div>
-          <div className="w-3/7 h-screen overflow-hidden">
-            <Map
-              polylines={myPolylines}
-              markers={allMarkers}
-            />
+          
+          <div className="w-3/7 h-screen relative">
+            {/* Map component */}
+            {!showInbox && (
+              <Map
+                polylines={myPolylines}
+                markers={allMarkers}
+              />
+            )}
+            
+            {/* Inbox component with animation */}
+            <AnimatePresence>
+              {showInbox && (
+                <motion.div
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ type: "spring", damping: 20 }}
+                  className="absolute right-0 top-0 h-full w-full bg-white shadow-lg z-50 overflow-y-auto motion-container"
+                >
+                  <InboxComponent 
+                    onClose={() => setShowInbox(false)}
+                    setNotification={setNotification}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
+      
+      {notification && (
+        <Notification
+          type={notification.type}
+          text={notification.text}
+          key={notification.key}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </PageTemplate>
   );
 }
+
 export default Trips;
