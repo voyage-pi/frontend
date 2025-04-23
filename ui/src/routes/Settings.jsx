@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import PageTemplate from "../components/PageTemplate";
-import { FaCamera, FaEye, FaEyeSlash, FaUserCircle, FaImage } from "react-icons/fa";
+import { FaCamera, FaEye, FaEyeSlash, FaImage } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
+
 import userData from "../../public/user.json";
 import Notification from "../components/Notification";
 
@@ -69,10 +71,10 @@ function Settings() {
 
   return (
     <PageTemplate>
-      <div className="h-screen flex flex-col overflow-auto">
+      <div className="h-screen flex flex-col overflow-auto mt-[0.2rem]">
         <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-3">
           <div className="flex items-center">
-            <FaUserCircle className="text-primary text-xl mr-3" />
+            <FaGear className="text-primary text-xl mr-3" />
             <h1 className="text-2xl font-bold">Settings</h1>
           </div>
         </div>
@@ -160,7 +162,7 @@ function Settings() {
               
               {/* Bio Section */}
               <div className="mb-8">
-                <h2 className="text-lg font-black mb-4">Bio</h2>
+                <h2 className="text-lg font-black mb-4">Biography</h2>
                 <div className="relative">
                   <textarea
                     value={bio}
@@ -176,7 +178,7 @@ function Settings() {
               
               {/* User Stats Section */}
               <div className="mb-8">
-                <h2 className="text-lg font-black mb-4">User Stats</h2>
+                <h2 className="text-lg font-black mb-4">Statistics</h2>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
                     <div className="font-bold text-2xl text-secondary">{userData.stats.trips}</div>
