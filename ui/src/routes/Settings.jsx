@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PageTemplate from "../components/PageTemplate";
-import { FaCamera, FaEye, FaEyeSlash, FaUserCircle, FaImage, FaEdit } from "react-icons/fa";
+import { FaCamera, FaEye, FaEyeSlash, FaUserCircle, FaImage } from "react-icons/fa";
 import userData from "../../public/user.json";
 import Notification from "../components/Notification";
 
@@ -82,7 +82,7 @@ function Settings() {
             <form onSubmit={handleSaveChanges}>
               {/* Banner Image Section */}
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Banner Image</h2>
+                <h2 className="text-lg font-black mb-4">Profile Information</h2>
                 <div className="w-full h-48 bg-gray-200 rounded-lg relative overflow-hidden">
                   {bannerImage ? (
                     <img 
@@ -108,7 +108,7 @@ function Settings() {
               </div>
               
               {/* Profile Image Section */}
-              <div className="mb-8 flex flex-col md:flex-row items-start gap-6">
+              <div className="mb-8 flex flex-col md:flex-row items-center gap-6">
                 <div className="relative">
                   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
                     {profileImage ? (
@@ -135,7 +135,6 @@ function Settings() {
                 </div>
                 
                 <div className="flex-1">
-                  <h2 className="text-lg font-medium mb-4">Profile Information</h2>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -161,7 +160,7 @@ function Settings() {
               
               {/* Bio Section */}
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Bio</h2>
+                <h2 className="text-lg font-black mb-4">Bio</h2>
                 <div className="relative">
                   <textarea
                     value={bio}
@@ -177,26 +176,26 @@ function Settings() {
               
               {/* User Stats Section */}
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">User Stats</h2>
+                <h2 className="text-lg font-black mb-4">User Stats</h2>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-primary">{userData.stats.trips}</div>
+                    <div className="font-bold text-2xl text-secondary">{userData.stats.trips}</div>
                     <div className="text-gray-600">Trips</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-primary">{userData.stats.countries}</div>
+                    <div className="font-bold text-2xl text-secondary">{userData.stats.countries}</div>
                     <div className="text-gray-600">Countries</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-primary">{userData.stats.cities}</div>
+                    <div className="font-bold text-2xl text-secondary">{userData.stats.cities}</div>
                     <div className="text-gray-600">Cities</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-primary">{userData.stats.saved}</div>
+                    <div className="font-bold text-2xl text-secondary">{userData.stats.saved}</div>
                     <div className="text-gray-600">Saved Places</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-primary">{userData.stats.friends}</div>
+                    <div className="font-bold text-2xl text-secondary">{userData.stats.friends}</div>
                     <div className="text-gray-600">Friends</div>
                   </div>
                 </div>
@@ -204,7 +203,7 @@ function Settings() {
               
               {/* Privacy Settings */}
               <div className="mb-8">
-                <h2 className="text-lg font-medium mb-4">Privacy Settings</h2>
+                <h2 className="text-lg font-black mb-4">Privacy Settings</h2>
                 <div className="bg-white border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
