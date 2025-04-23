@@ -178,22 +178,26 @@ function Settings() {
               {/* User Stats Section */}
               <div className="mb-8">
                 <h2 className="text-lg font-medium mb-4">User Stats</h2>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
                     <div className="font-bold text-2xl text-primary">{userData.stats.trips}</div>
                     <div className="text-gray-600">Trips</div>
-                  </div>
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-primary">{userData.stats.friends}</div>
-                    <div className="text-gray-600">Friends</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
                     <div className="font-bold text-2xl text-primary">{userData.stats.countries}</div>
                     <div className="text-gray-600">Countries</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                    <div className="font-bold text-2xl text-primary">{userData.stats.cities}</div>
+                    <div className="text-gray-600">Cities</div>
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
                     <div className="font-bold text-2xl text-primary">{userData.stats.saved}</div>
-                    <div className="text-gray-600">Saved</div>
+                    <div className="text-gray-600">Saved Places</div>
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                    <div className="font-bold text-2xl text-primary">{userData.stats.friends}</div>
+                    <div className="text-gray-600">Friends</div>
                   </div>
                 </div>
               </div>
