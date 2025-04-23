@@ -52,7 +52,7 @@ const InboxComponent = ({ onClose, setNotification }) => {
   };
 
   return (
-    <div className="pt-3 w-full md:w-2/5 lg:w-1/3 bg-white border-l border-gray-200 flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-full">
       <div className="py-4 px-6 flex items-center justify-between border-b border-gray-100 bg-white z-10">
         <div className="flex items-center mb-3">
           <FaBell className="text-primary text-xl mr-3" />
@@ -161,4 +161,4 @@ const InboxComponent = ({ onClose, setNotification }) => {
   );
 };
 
-export default InboxComponent; 
+export default InboxComponent;
