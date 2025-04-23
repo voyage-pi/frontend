@@ -88,6 +88,8 @@ function SideBar({ onToggle, onMenuItemClick }) {
         if (label === "Logout") {
             // Perform logout logic here if needed (clear tokens, etc.)
             navigate("/login");
+        } else if (label === "Settings") {
+            navigate("/settings");
         }
     };
 

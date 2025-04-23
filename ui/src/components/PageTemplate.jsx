@@ -13,7 +13,7 @@ function PageTemplate({ children }) {
   }
 
   const handleMenuItemClick = (item) => {
-    if (['Friends', 'Saved', 'Settings', 'Share'].includes(item)) {
+    if (['Friends', 'Saved', 'Share'].includes(item)) {
       setNotification({
         type: 'info',
         text: `${item} feature coming soon!`,

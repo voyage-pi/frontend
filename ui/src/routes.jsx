@@ -7,6 +7,7 @@ import Itinerary from './routes/Itinerary';
 import Login from './routes/Login';
 import Register from './routes/Register';
 import NotFound from './routes/NotFound';
+import Settings from './routes/Settings';
 import { AuthProvider } from './context/AuthContext';
 
 export const routesList = [
@@ -72,6 +73,20 @@ export const routesList = [
           </Helmet>
           <AuthProvider>
             <Itinerary />
+          </AuthProvider>
+        </>
+      ),
+    },
+
+    {
+      path: "/settings",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - Settings</title>
+          </Helmet>
+          <AuthProvider>
+            <Settings />
           </AuthProvider>
         </>
       ),
