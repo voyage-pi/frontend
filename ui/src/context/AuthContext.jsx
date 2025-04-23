@@ -1,4 +1,4 @@
-import React, { use, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { createContext, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { axiosUser } from '../utils/axiosInstance'
@@ -20,13 +20,24 @@ export const AuthProvider = ({ children }) => {
             try {
                 const response = await axiosUser.get('/user/current_user');
                 console.log('API call successful:', response);
-                setUser(response.data)
-                setIsAuthenticated(true)
-                setIsUserLoading(false)
+                
+                // Extract user data from the nested response structure
+                const userData = response.data.response;
+                
+                if (userData && userData.id) {
+                    console.log('User data loaded successfully with ID:', userData.id);
+                    setUser(userData);
+                    setIsAuthenticated(true);
+                } else {
+                    console.error('Invalid user data structure:', response.data);
+                    throw new Error('User data is missing required properties');
+                }
+                
+                setIsUserLoading(false);
             } catch (error) {
                 console.log('API call error:', error);
                 //401 error enters has guest or not logged in
-                setUser(LoggedUser)
+                setUser(null)
                 setIsAuthenticated(false)
                 setIsUserLoading(false)
                 // if you want to redirect to login page when not authenticated
@@ -37,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     },[] )
 
     return(
-        <AuthContext.Provider value={{ LoggedUser,isAuthenticated, setIsAuthenticated, isUserLoading, setIsUserLoading}}>
+        <AuthContext.Provider value={{ LoggedUser, setUser, isAuthenticated, setIsAuthenticated, isUserLoading, setIsUserLoading}}>
             {children}
         </AuthContext.Provider>
     )

@@ -19,7 +19,9 @@ export const routesList = [
           {/* AuthProvider is used to provide authentication context to the Trips component */}
           {/* This allows the Trips component to access the authentication state and user information */}
           {/* The AuthProvider component wraps the Trips component, allowing it to access the authentication context */}
+          <AuthProvider>
             <Trips />
+          </AuthProvider>
         </>
       ),
     },

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
@@ -15,7 +16,7 @@ function Trips() {
   const [loading, setLoading] = useState(true);
   const [photoCache, setPhotoCache] = useState({});
   const navigate = useNavigate();
-
+  const { LoggedUser, isAuthenticated, isUserLoading } = useAuth();
   // Generate placeholder image as a fallback
   const generatePlaceholderImage = (seed) => {
     const seedStr = typeof seed === "string" ? seed : "place";
@@ -84,8 +85,17 @@ function Trips() {
     const fetchTrips = async () => {
       try {
         setLoading(true);
-        // Use hardcoded user ID 50 for now
-        const userTripsResponse = await axiosUser.get('/trips/users/50');
+        
+        // Check if user is authenticated and LoggedUser exists
+        if (!isAuthenticated || !LoggedUser) {
+          console.log('User not authenticated or LoggedUser is null');
+          setTrips([]);
+          setLoading(false);
+          return;
+        }
+        
+        // get the current logged user id trips
+        const userTripsResponse = await axiosUser.get(`/trips/users/${LoggedUser.id}`);
         console.log('User trips response:', userTripsResponse.data);
         
         // The response will be an array of user-trip associations
@@ -157,8 +167,11 @@ function Trips() {
       }
     };
     
-    fetchTrips();
-  }, []);
+    // Only fetch trips when we're done loading the user
+    if (!isUserLoading) {
+      fetchTrips();
+    }
+  }, [LoggedUser, isAuthenticated, isUserLoading]);
 
   // Format trip dates for display
   const formatTripDates = (startDate, endDate) => {
@@ -310,7 +323,15 @@ function Trips() {
                 />
               </div>
               
-              {loading ? (
+              {isUserLoading ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">Loading user information...</p>
+                </div>
+              ) : !isAuthenticated ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">Please log in to view your trips.</p>
+                </div>
+              ) : loading ? (
                 <div className="text-center py-10">
                   <p className="text-gray-500">Loading trips...</p>
                 </div>
