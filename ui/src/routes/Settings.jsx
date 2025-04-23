@@ -71,15 +71,15 @@ function Settings() {
 
   return (
     <PageTemplate>
-      <div className="h-screen flex flex-col overflow-auto mt-[0.2rem]">
-        <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-3">
+      <div className="h-screen flex flex-col overflow-auto">
+        <div className="bg-white pt-[1.9rem] px-6 flex fixed w-full items-center justify-between z-20">
           <div className="flex items-center">
             <FaGear className="text-primary text-xl mr-3" />
             <h1 className="text-2xl font-bold">Settings</h1>
           </div>
         </div>
         
-        <div className="flex-1 p-4 md:p-6">
+        <div className="flex-1 p-4 md:p-6 mt-18">
           <div className="max-w-7xl mx-auto">
             <form onSubmit={handleSaveChanges}>
               {/* Banner Image Section */}
@@ -224,7 +224,7 @@ function Settings() {
               </div>
               
               {/* Save Button */}
-              <div className="mt-8 flex justify-end">
+              <div className="mt-12 flex justify-end">
                 <button
                   type="submit"
                   className="bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark transition-colors"
