@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
@@ -23,8 +23,12 @@ function Trips() {
   const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
   const { LoggedUser, isAuthenticated, isUserLoading } = useAuth();
-
+  const { userTag } = useParams(); // Get userTag from URL params
   
+  // Determine if we're viewing our own trips or someone else's
+  const [viewingUser, setViewingUser] = useState(null);
+  const isViewingOwnTrips = !userTag || (LoggedUser && userTag === LoggedUser.tag);
+
   const { totalCount, addTripInvite, tripInviteCount } = useNotifications();
 
   // Load sample trip invites if none exist yet
@@ -48,6 +52,33 @@ function Trips() {
       sampleInvites.forEach(invite => addTripInvite(invite));
     }
   }, []);
+  
+  // If userTag is provided but doesn't match LoggedUser, fetch that user's info
+  useEffect(() => {
+    const fetchUserByTag = async () => {
+      if (userTag && (!LoggedUser || userTag !== LoggedUser.tag)) {
+        try {
+          // Fetch user info by tag
+          const response = await axiosUser.get(`/user/tag/${userTag}`);
+          if (response.data && response.data.response) {
+            setViewingUser(response.data.response);
+          }
+        } catch (error) {
+          console.error("Error fetching user by tag:", error);
+          // If user not found, redirect to home
+          navigate('/');
+        }
+      } else if (LoggedUser) {
+        // If viewing own trips, set viewingUser to LoggedUser
+        setViewingUser(LoggedUser);
+      }
+    };
+    
+    if (!isUserLoading) {
+      fetchUserByTag();
+    }
+  }, [userTag, LoggedUser, isUserLoading, navigate]);
+
   // Generate placeholder image as a fallback
   const generatePlaceholderImage = (seed) => {
     const seedStr = typeof seed === "string" ? seed : "place";
@@ -117,16 +148,19 @@ function Trips() {
       try {
         setLoading(true);
         
-        // Check if user is authenticated and LoggedUser exists
-        if (!isAuthenticated || !LoggedUser) {
-          console.log('User not authenticated or LoggedUser is null');
+        // Determine which user's trips to fetch
+        const userToFetch = viewingUser || LoggedUser;
+        
+        // Check if we have a user to fetch trips for
+        if (!userToFetch) {
+          console.log('No user to fetch trips for');
           setTrips([]);
           setLoading(false);
           return;
         }
         
-        // get the current logged user id trips
-        const userTripsResponse = await axiosUser.get(`/trips/users/${LoggedUser.id}`);
+        // get the trips for the user we're viewing
+        const userTripsResponse = await axiosUser.get(`/trips/users/${userToFetch.id}`);
         console.log('User trips response:', userTripsResponse.data);
         
         // The response will be an array of user-trip associations
@@ -198,11 +232,11 @@ function Trips() {
       }
     };
     
-    // Only fetch trips when we're done loading the user
-    if (!isUserLoading) {
+    // Only fetch trips when we have a user to fetch for
+    if (!isUserLoading && (viewingUser || LoggedUser)) {
       fetchTrips();
     }
-  }, [LoggedUser, isAuthenticated, isUserLoading]);
+  }, [viewingUser, LoggedUser, isUserLoading]);
 
   // Format trip dates for display
   const formatTripDates = (startDate, endDate) => {

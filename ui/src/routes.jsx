@@ -27,6 +27,21 @@ export const routesList = [
       ),
     },
     
+    // User-specific routes with :userTag parameter
+    {
+      path: "/:userTag",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - User Trips</title>
+          </Helmet>
+          <AuthProvider>
+            <Trips />
+          </AuthProvider>
+        </>
+      ),
+    },
+    
     {
       path: "/saved",
       element: (
@@ -34,7 +49,23 @@ export const routesList = [
           <Helmet>
             <title>Voyage - Saved</title>
           </Helmet>
-          <Saved />
+          <AuthProvider>
+            <Saved />
+          </AuthProvider>
+        </>
+      ),
+    },
+    
+    {
+      path: "/:userTag/saved",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - User Saved</title>
+          </Helmet>
+          <AuthProvider>
+            <Saved />
+          </AuthProvider>
         </>
       ),
     },
@@ -46,7 +77,23 @@ export const routesList = [
           <Helmet>
             <title>Voyage - Friends</title>
           </Helmet>
-          <Friends />
+          <AuthProvider>
+            <Friends />
+          </AuthProvider>
+        </>
+      ),
+    },
+    
+    {
+      path: "/:userTag/friends",
+      element: (
+        <>
+          <Helmet>
+            <title>Voyage - User Friends</title>
+          </Helmet>
+          <AuthProvider>
+            <Friends />
+          </AuthProvider>
         </>
       ),
     },

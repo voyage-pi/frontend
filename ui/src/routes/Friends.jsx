@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import PageTemplate from "../components/PageTemplate";
 import SearchBar from "../components/SearchBar";
 import TripCard from "../components/TripCard";
@@ -9,6 +11,7 @@ import { useNotifications } from "../context/NotificationsContext";
 import Notification from "../components/Notification";
 import InboxComponent from "../components/InboxComponent";
 import { AnimatePresence, motion } from "framer-motion";
+import { axiosUser } from "../utils/axiosInstance";
 
 function Friends() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,9 +25,42 @@ function Friends() {
   const [sentToEmail, setSentToEmail] = useState("");
   const [notification, setNotification] = useState(null);
   const [sentInvitations, setSentInvitations] = useState([]);
+  const { LoggedUser, isAuthenticated, isUserLoading } = useAuth();
+  const { userTag } = useParams(); // Get userTag from URL params
+  const navigate = useNavigate();
+  
+  // Determine if we're viewing our own friends or someone else's
+  const [viewingUser, setViewingUser] = useState(null);
+  const isViewingOwnFriends = !userTag || (LoggedUser && userTag === LoggedUser.tag);
   
   // Get notification state from context
   const { friendRequestCount, addFriendRequest } = useNotifications();
+  
+  // If userTag is provided but doesn't match LoggedUser, fetch that user's info
+  useEffect(() => {
+    const fetchUserByTag = async () => {
+      if (userTag && (!LoggedUser || userTag !== LoggedUser.tag)) {
+        try {
+          // Fetch user info by tag
+          const response = await axiosUser.get(`/user/tag/${userTag}`);
+          if (response.data && response.data.response) {
+            setViewingUser(response.data.response);
+          }
+        } catch (error) {
+          console.error("Error fetching user by tag:", error);
+          // If user not found, redirect to home
+          navigate('/');
+        }
+      } else if (LoggedUser) {
+        // If viewing own friends, set viewingUser to LoggedUser
+        setViewingUser(LoggedUser);
+      }
+    };
+    
+    if (!isUserLoading) {
+      fetchUserByTag();
+    }
+  }, [userTag, LoggedUser, isUserLoading, navigate]);
   
   // Initial sample data loading 
   useEffect(() => {
@@ -62,6 +98,25 @@ function Friends() {
     return () => clearTimeout(timer);
   }, [inviteSent]);
 
+  // Load friends data based on the user we're viewing
+  useEffect(() => {
+    const fetchFriends = async () => {
+      // For now, we're using static data, mas deve ser algo deste genero xd
+      // if (viewingUser) {
+      //   try {
+      //     const response = await axiosUser.get(`/user/friends/${viewingUser.id}`);
+      //     // Process and set friends data
+      //   } catch (error) {
+      //     console.error("Error fetching friends:", error);
+      //   }
+      // }
+    };
+    
+    if (viewingUser) {
+      fetchFriends();
+    }
+  }, [viewingUser]);
+
   const filteredFriends = friendsData.filter(friend => 
     friend.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     friend.username.toLowerCase().includes(searchTerm.toLowerCase())
@@ -74,6 +129,15 @@ function Friends() {
   };
 
   const handleCreateNew = () => {
+    // Only allow adding friends if viewing own friends page
+    if (!isViewingOwnFriends) {
+      setNotification({
+        message: "You can only add friends on your own friends page",
+        type: "warning"
+      });
+      return;
+    }
+    
     setShowAddFriend(true);
     setSelectedFriend(null);
     setShowInvites(false);
@@ -81,6 +145,11 @@ function Friends() {
   };
   
   const handleShowInvites = () => {
+    // Only show invites if viewing own friends page
+    if (!isViewingOwnFriends) {
+      return;
+    }
+    
     setShowInvites(true);
     setSelectedFriend(null);
     setShowAddFriend(false);
@@ -137,13 +206,15 @@ function Friends() {
 
             <div className="flex-1 p-4 overflow-auto">
               <div className="mb-6">
-                <SearchBar 
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  onCreateNew={handleCreateNew}
-                  createButtonText="Add Friend"
-                  placeholder="Search for friends"
-                />
+                <div className="flex items-center justify-between">
+                  <SearchBar 
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    onCreateNew={isViewingOwnFriends ? handleCreateNew : null}
+                    createButtonText="Add Friend"
+                    placeholder="Search for friends"
+                  />
+                </div>
               </div>
 
               {filterOpen && (
@@ -418,9 +489,8 @@ function Friends() {
       
       {notification && (
         <Notification
+          message={notification.message}
           type={notification.type}
-          text={notification.text}
-          key={notification.key}
           onClose={handleNotificationClose}
         />
       )}

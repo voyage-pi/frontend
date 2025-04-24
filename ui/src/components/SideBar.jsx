@@ -11,15 +11,16 @@ import {
 } from "react-icons/fa6"
 import VoyageCompleteLogo from "../assets/voyage-complete-logo-navy.png"
 import VoyageIconLogo from "../assets/voyage-logo.png"
-import userData from "../../public/user.json"
 import Notification from "./Notification"
 import { RiLoginCircleFill } from "react-icons/ri";
 import { FaUserPlus, FaSignOutAlt } from "react-icons/fa";
 import { useNotifications } from "../context/NotificationsContext";
+import { useAuth } from "../context/AuthContext";
 
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
     const navigate = useNavigate();
+    const { LoggedUser, isAuthenticated, setIsAuthenticated } = useAuth();
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     const { totalCount, friendRequestCount, tripInviteCount } = useNotifications();
     
@@ -35,7 +36,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
     const [showNotification, setShowNotification] = useState(false);
     const [notificationMessage, setNotificationMessage] = useState("");
     
-    const isGuest = userData.name === "Guest";
+    const isGuest = !isAuthenticated || !LoggedUser;
 
     useEffect(() => {
         if (isFormsPath && isExpanded) {
@@ -63,20 +64,56 @@ function SideBar({ onToggle, onMenuItemClick }) {
         }, 500);
     };
 
-    const userStats = [
-        { label: "Trips", count: userData.stats.trips },
-        { label: "Friends", count: userData.stats.friends },
-        { label: "Countries", count: userData.stats.countries },
+    const userStats = isGuest ? [] : [
+        { label: "Trips", count: LoggedUser?.stats?.trips || 0 },
+        { label: "Friends", count: LoggedUser?.stats?.friends || 0 },
+        { label: "Countries", count: LoggedUser?.stats?.countries || 0 },
     ]
 
+    const userTag = LoggedUser?.tag || "";
+
     const menuItems = [
-        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/", blockNavigation: false, hasNotification: tripInviteCount > 0, notificationCount: tripInviteCount },
-        { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved", blockNavigation: isGuest },
-        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends", blockNavigation: isGuest, hasNotification: friendRequestCount > 0, notificationCount: friendRequestCount },
+        { 
+            icon: FaEarthAmericas, 
+            label: "Trips", 
+            count: LoggedUser?.stats?.trips || 0, 
+            path: isGuest ? "/" : `/${userTag}`, 
+            blockNavigation: false, 
+            hasNotification: tripInviteCount > 0, 
+            notificationCount: tripInviteCount,
+            exact: true
+        },
+        { 
+            icon: FaHeart, 
+            label: "Saved", 
+            count: LoggedUser?.stats?.saved || 0, 
+            path: isGuest ? "/saved" : `/${userTag}/saved`, 
+            blockNavigation: isGuest,
+            exact: false
+        },
+        { 
+            icon: FaUsers, 
+            label: "Friends", 
+            count: LoggedUser?.stats?.friends || 0, 
+            path: isGuest ? "/friends" : `/${userTag}/friends`, 
+            blockNavigation: isGuest, 
+            hasNotification: friendRequestCount > 0, 
+            notificationCount: friendRequestCount,
+            exact: false
+        },
     ]
     
+    // Custom function to determine if a route is active
+    const isPathActive = (path, exact) => {
+        if (exact) {
+            return location.pathname === path || 
+                   (path === "/" && location.pathname === "") ||
+                   (userTag && path === `/${userTag}` && (location.pathname === `/${userTag}` || location.pathname === "/"));
+        }
+        return location.pathname.startsWith(path);
+    }
+
     const handleMenuItemClick = (item, blockNavigation, e) => {
-        
         if (onMenuItemClick) {
             onMenuItemClick(item);
         }
@@ -86,7 +123,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
         onMenuItemClick(label);
         
         if (label === "Logout") {
-            // Perform logout logic here if needed (clear tokens, etc.)
+            setIsAuthenticated(false);
             navigate("/login");
         }
     };
@@ -178,14 +215,14 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <div
                                     className={`rounded-full text-primary/90 bg-white border-1 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
                                     <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>
-                                        <img src={userData.image} alt="User Avatar"/>
+                                        <img src={LoggedUser?.image} alt="User Avatar"/>
                                         </span>
                                 </div>
                             </div>
 
                             <div className={`text-start mt-4 w-full text-secondary transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
-                                <div className="font-bold text-2xl">{userData.name}</div>
-                                <p className="text-base opacity-70">{userData.tag}</p>
+                                <div className="font-bold text-2xl">{LoggedUser?.name}</div>
+                                <p className="text-base opacity-70">{LoggedUser?.tag}</p>
 
                                 <div className="flex justify-between mt-4 text-base">
                                     {userStats.map(({ label, count }, index) => (
@@ -215,7 +252,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
                             <nav className="w-full mt-10 transition-all duration-400 ease-in-out">
                                 <ul className="w-full">
-                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification, notificationCount }, index) => (
+                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification, notificationCount, exact }, index) => (
                                         <li key={index} className="w-full">
                                             {blockNavigation ? (
                                                 <div
@@ -233,25 +270,44 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                             ) : (
                                                 <NavLink
                                                     to={path}
-                                                    className={({ isActive }) =>`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}
+                                                    end={exact}
+                                                    className={({ isActive }) => {
+                                                        // Override isActive with our custom function
+                                                        const isActiveRoute = isPathActive(path, exact);
+                                                        
+                                                        return `flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 ${
+                                                            isActiveRoute 
+                                                                ? isExpanded 
+                                                                    ? "font-bold bg-primary/10 text-primary px-3" 
+                                                                    : "text-primary justify-center"
+                                                                : isExpanded
+                                                                    ? "px-3 hover:opacity-80" 
+                                                                    : "px-0 hover:opacity-80 justify-center"
+                                                        }`;
+                                                    }}
                                                     onClick={(e) => handleMenuItemClick(label, blockNavigation, e)}
                                                 >
-                                                    {({ isActive }) => (
-                                                        <>
-                                                            <div className={`relative flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
-                                                                <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
-                                                                {hasNotification && (
-                                                                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                                                                        {notificationCount}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
-                                                                <span className="text-lg whitespace-nowrap">{label}</span>
-                                                                <span className="opacity-70">{count}</span>
-                                                            </div>
-                                                        </>
-                                                    )}
+                                                    {({ isActive }) => {
+                                                        // Override isActive with our custom function
+                                                        const isActiveRoute = isPathActive(path, exact);
+                                                        
+                                                        return (
+                                                            <>
+                                                                <div className={`relative flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
+                                                                    <Icon className={isActiveRoute ? "text-primary" : "text-secondary"} size={22}/>
+                                                                    {hasNotification && (
+                                                                        <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                                                                            {notificationCount}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
+                                                                    <span className="text-lg whitespace-nowrap">{label}</span>
+                                                                    <span className="opacity-70">{count}</span>
+                                                                </div>
+                                                            </>
+                                                        );
+                                                    }}
                                                 </NavLink>
                                             )}
                                         </li>
