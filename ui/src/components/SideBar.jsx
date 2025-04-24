@@ -28,11 +28,47 @@ function SideBar({ onToggle, onMenuItemClick }) {
         LoggedUser = null, 
         isAuthenticated = false, 
         setIsAuthenticated = () => {},
-        setUser = () => {}
+        setUser = () => {},
+        loadUserData = () => {}
     } = auth || {};
     
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     const { totalCount, friendRequestCount, tripInviteCount } = useNotifications();
+    
+    // Debug user data structure
+    useEffect(() => {
+        if (LoggedUser) {
+            console.log("SideBar - User Data:", LoggedUser);
+            console.log("SideBar - User Stats:", LoggedUser.stats);
+            
+            // If stats don't exist or trips count is incorrect, fetch fresh data
+            if (!LoggedUser.stats || typeof LoggedUser.stats.trips === 'undefined') {
+                console.log("Stats missing or incomplete, refreshing user data");
+                loadUserData();
+            }
+        }
+    }, [LoggedUser, loadUserData]);
+    
+    // Process stats from user data
+    const processUserStats = () => {
+        if (!LoggedUser) return { trips: 0, friends: 0, countries: 0, saved: 0 };
+        
+        // Check for stats object
+        if (!LoggedUser.stats) {
+            console.warn("User stats object is missing");
+            return { trips: 0, friends: 0, countries: 0, saved: 0 };
+        }
+        
+        // Access stats properties with fallbacks
+        return {
+            trips: LoggedUser.stats.trips || LoggedUser.trips_count || 0,
+            friends: LoggedUser.stats.friends || LoggedUser.friends_count || 0,
+            countries: LoggedUser.stats.countries || LoggedUser.countries_count || 0,
+            saved: LoggedUser.stats.saved || LoggedUser.saved_count || 0
+        };
+    };
+    
+    const userStatsData = processUserStats();
     
     const [isExpanded, setIsExpanded] = useState(() => {
         const storedState = JSON.parse(localStorage.getItem("sidebarState"));
@@ -75,9 +111,9 @@ function SideBar({ onToggle, onMenuItemClick }) {
     };
 
     const userStats = isGuest ? [] : [
-        { label: "Trips", count: LoggedUser?.stats?.trips || 0 },
-        { label: "Friends", count: LoggedUser?.stats?.friends || 0 },
-        { label: "Countries", count: LoggedUser?.stats?.countries || 0 },
+        { label: "Trips", count: userStatsData.trips },
+        { label: "Friends", count: userStatsData.friends },
+        { label: "Countries", count: userStatsData.countries },
     ]
 
     const userTag = LoggedUser?.tag || "";
@@ -93,7 +129,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
         { 
             icon: FaEarthAmericas, 
             label: "Trips", 
-            count: LoggedUser?.stats?.trips || defaultGuestStats.trips, 
+            count: userStatsData.trips, 
             path: isGuest ? "/" : `/${userTag}`, 
             blockNavigation: false, 
             hasNotification: tripInviteCount > 0, 
@@ -103,7 +139,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
         { 
             icon: FaHeart, 
             label: "Saved", 
-            count: LoggedUser?.stats?.saved || defaultGuestStats.saved, 
+            count: userStatsData.saved, 
             path: isGuest ? "/saved" : `/${userTag}/saved`, 
             blockNavigation: isGuest,
             exact: false
@@ -111,7 +147,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
         { 
             icon: FaUsers, 
             label: "Friends", 
-            count: LoggedUser?.stats?.friends || defaultGuestStats.friends, 
+            count: userStatsData.friends, 
             path: isGuest ? "/friends" : `/${userTag}/friends`, 
             blockNavigation: isGuest, 
             hasNotification: friendRequestCount > 0, 
