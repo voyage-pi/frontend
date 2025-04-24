@@ -16,6 +16,7 @@ import { RiLoginCircleFill } from "react-icons/ri";
 import { FaUserPlus, FaSignOutAlt } from "react-icons/fa";
 import { useNotifications } from "../context/NotificationsContext";
 import { useAuth } from "../context/AuthContext";
+import { axiosUser } from "../utils/axiosInstance";
 
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
@@ -26,7 +27,8 @@ function SideBar({ onToggle, onMenuItemClick }) {
     const { 
         LoggedUser = null, 
         isAuthenticated = false, 
-        setIsAuthenticated = () => {} 
+        setIsAuthenticated = () => {},
+        setUser = () => {}
     } = auth || {};
     
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
@@ -135,11 +137,29 @@ function SideBar({ onToggle, onMenuItemClick }) {
     };
 
     const handleBottomItemClick = (label) => {
-        onMenuItemClick(label);
+        if (onMenuItemClick) {
+            onMenuItemClick(label);
+        }
         
         if (label === "Logout") {
-            setIsAuthenticated(false);
-            navigate("/login");
+            // Perform logout request to the backend
+            const handleLogout = async () => {
+                try {
+                    await axiosUser.post('/user/logout');
+                    console.log('Logout successful');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    // Update authentication context
+                    setIsAuthenticated(false);
+                    // Clear user data
+                    setUser(null);
+                    // Redirect to login page
+                    navigate("/login");
+                }
+            };
+            
+            handleLogout();
         }
     };
 

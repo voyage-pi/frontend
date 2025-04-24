@@ -8,29 +8,17 @@ import Login from './routes/Login';
 import Register from './routes/Register';
 import NotFound from './routes/NotFound';
 import { AuthProvider } from './context/AuthContext';
-import Layout from './components/Layout';
-
-// Create a root layout that provides auth context to all routes
-const AppLayout = ({ children }) => {
-  return (
-    <AuthProvider>
-      <Layout>
-        {children}
-      </Layout>
-    </AuthProvider>
-  );
-};
 
 export const routesList = [
     {
       path: "/",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Trips</title>
           </Helmet>
           <Trips />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
     
@@ -38,108 +26,108 @@ export const routesList = [
     {
       path: "/:userTag",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - User Trips</title>
           </Helmet>
           <Trips />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
     
     {
       path: "/saved",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Saved</title>
           </Helmet>
           <Saved />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
     
     {
       path: "/:userTag/saved",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - User Saved</title>
           </Helmet>
           <Saved />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
 
     {
       path: "/friends",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Friends</title>
           </Helmet>
           <Friends />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
     
     {
       path: "/:userTag/friends",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - User Friends</title>
           </Helmet>
           <Friends />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
 
     {
       path: "/forms",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Forms</title>
           </Helmet>
           <Forms />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
 
     {
       path:"/itinerary/:tripId",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Itinerary</title>
           </Helmet>
           <Itinerary />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
 
     {
       path: "/login",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Login</title>
           </Helmet>
           <Login />
-        </AppLayout>
+        </AuthProvider>
       ),
     },
 
     {
       path: "/register",
       element: (
-        <AppLayout>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Register</title>
           </Helmet>
           <Register />
-        </AppLayout>
+        </AuthProvider>
       ),
     }
 ];
@@ -147,11 +135,11 @@ export const routesList = [
 routesList.push({
   path: "*",
   element: (
-    <AppLayout>
+    <AuthProvider>
       <Helmet>
         <title>Voyage - Page Not Found</title>
       </Helmet>
       <NotFound />
-    </AppLayout>
+    </AuthProvider>
   ),
 });
