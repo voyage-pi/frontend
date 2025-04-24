@@ -8,22 +8,29 @@ import Login from './routes/Login';
 import Register from './routes/Register';
 import NotFound from './routes/NotFound';
 import { AuthProvider } from './context/AuthContext';
+import Layout from './components/Layout';
+
+// Create a root layout that provides auth context to all routes
+const AppLayout = ({ children }) => {
+  return (
+    <AuthProvider>
+      <Layout>
+        {children}
+      </Layout>
+    </AuthProvider>
+  );
+};
 
 export const routesList = [
     {
       path: "/",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Trips</title>
           </Helmet>
-          {/* AuthProvider is used to provide authentication context to the Trips component */}
-          {/* This allows the Trips component to access the authentication state and user information */}
-          {/* The AuthProvider component wraps the Trips component, allowing it to access the authentication context */}
-          <AuthProvider>
-            <Trips />
-          </AuthProvider>
-        </>
+          <Trips />
+        </AppLayout>
       ),
     },
     
@@ -31,120 +38,108 @@ export const routesList = [
     {
       path: "/:userTag",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - User Trips</title>
           </Helmet>
-          <AuthProvider>
-            <Trips />
-          </AuthProvider>
-        </>
+          <Trips />
+        </AppLayout>
       ),
     },
     
     {
       path: "/saved",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Saved</title>
           </Helmet>
-          <AuthProvider>
-            <Saved />
-          </AuthProvider>
-        </>
+          <Saved />
+        </AppLayout>
       ),
     },
     
     {
       path: "/:userTag/saved",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - User Saved</title>
           </Helmet>
-          <AuthProvider>
-            <Saved />
-          </AuthProvider>
-        </>
+          <Saved />
+        </AppLayout>
       ),
     },
 
     {
       path: "/friends",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Friends</title>
           </Helmet>
-          <AuthProvider>
-            <Friends />
-          </AuthProvider>
-        </>
+          <Friends />
+        </AppLayout>
       ),
     },
     
     {
       path: "/:userTag/friends",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - User Friends</title>
           </Helmet>
-          <AuthProvider>
-            <Friends />
-          </AuthProvider>
-        </>
+          <Friends />
+        </AppLayout>
       ),
     },
 
     {
       path: "/forms",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Forms</title>
           </Helmet>
           <Forms />
-        </>
+        </AppLayout>
       ),
     },
 
     {
       path:"/itinerary/:tripId",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Itinerary</title>
           </Helmet>
-          <AuthProvider>
-            <Itinerary />
-          </AuthProvider>
-        </>
+          <Itinerary />
+        </AppLayout>
       ),
     },
 
     {
       path: "/login",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Login</title>
           </Helmet>
           <Login />
-        </>
+        </AppLayout>
       ),
     },
 
     {
       path: "/register",
       element: (
-        <>
+        <AppLayout>
           <Helmet>
             <title>Voyage - Register</title>
           </Helmet>
           <Register />
-        </>
+        </AppLayout>
       ),
     }
 ];
@@ -152,11 +147,11 @@ export const routesList = [
 routesList.push({
   path: "*",
   element: (
-    <>
+    <AppLayout>
       <Helmet>
         <title>Voyage - Page Not Found</title>
       </Helmet>
       <NotFound />
-    </>
+    </AppLayout>
   ),
 });

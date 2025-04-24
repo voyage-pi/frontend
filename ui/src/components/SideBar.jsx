@@ -20,7 +20,15 @@ import { useAuth } from "../context/AuthContext";
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const { LoggedUser, isAuthenticated, setIsAuthenticated } = useAuth();
+    
+    // Get auth context safely with a fallback
+    const auth = useAuth();
+    const { 
+        LoggedUser = null, 
+        isAuthenticated = false, 
+        setIsAuthenticated = () => {} 
+    } = auth || {};
+    
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     const { totalCount, friendRequestCount, tripInviteCount } = useNotifications();
     
@@ -72,11 +80,18 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
     const userTag = LoggedUser?.tag || "";
 
+    // Default placeholder stats for guests
+    const defaultGuestStats = {
+        trips: 0,
+        saved: 0,
+        friends: 0
+    };
+
     const menuItems = [
         { 
             icon: FaEarthAmericas, 
             label: "Trips", 
-            count: LoggedUser?.stats?.trips || 0, 
+            count: LoggedUser?.stats?.trips || defaultGuestStats.trips, 
             path: isGuest ? "/" : `/${userTag}`, 
             blockNavigation: false, 
             hasNotification: tripInviteCount > 0, 
@@ -86,7 +101,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
         { 
             icon: FaHeart, 
             label: "Saved", 
-            count: LoggedUser?.stats?.saved || 0, 
+            count: LoggedUser?.stats?.saved || defaultGuestStats.saved, 
             path: isGuest ? "/saved" : `/${userTag}/saved`, 
             blockNavigation: isGuest,
             exact: false
@@ -94,7 +109,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
         { 
             icon: FaUsers, 
             label: "Friends", 
-            count: LoggedUser?.stats?.friends || 0, 
+            count: LoggedUser?.stats?.friends || defaultGuestStats.friends, 
             path: isGuest ? "/friends" : `/${userTag}/friends`, 
             blockNavigation: isGuest, 
             hasNotification: friendRequestCount > 0, 
