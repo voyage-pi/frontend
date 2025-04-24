@@ -330,7 +330,7 @@ function Trips() {
       <div className="flex flex-col overflow-hidden">
         <div className="flex">
           <div className="w-4/7">
-            <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-4 pb-9">
+            <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-[0.6rem] pb-9">
               <div className="flex items-center">
                 <FaEarthAmericas className="text-primary text-xl mr-3" />
                 <h1 className="text-2xl font-bold">Trips</h1>

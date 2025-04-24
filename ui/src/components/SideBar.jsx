@@ -21,7 +21,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
     const navigate = useNavigate();
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
-    const { totalCount } = useNotifications();
+    const { totalCount, friendRequestCount, tripInviteCount } = useNotifications();
     
     const [isExpanded, setIsExpanded] = useState(() => {
         const storedState = JSON.parse(localStorage.getItem("sidebarState"));
@@ -70,9 +70,9 @@ function SideBar({ onToggle, onMenuItemClick }) {
     ]
 
     const menuItems = [
-        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/", blockNavigation: false, hasNotification: totalCount > 0 },
+        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/", blockNavigation: false, hasNotification: tripInviteCount > 0, notificationCount: tripInviteCount },
         { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved", blockNavigation: isGuest },
-        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends", blockNavigation: isGuest, hasNotification: totalCount > 0 },
+        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends", blockNavigation: isGuest, hasNotification: friendRequestCount > 0, notificationCount: friendRequestCount },
     ]
     
     const handleMenuItemClick = (item, blockNavigation, e) => {
@@ -215,7 +215,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
                             <nav className="w-full mt-10 transition-all duration-400 ease-in-out">
                                 <ul className="w-full">
-                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification }, index) => (
+                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification, notificationCount }, index) => (
                                         <li key={index} className="w-full">
                                             {blockNavigation ? (
                                                 <div
@@ -242,7 +242,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                                                 <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
                                                                 {hasNotification && (
                                                                     <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                                                                        {totalCount}
+                                                                        {notificationCount}
                                                                     </span>
                                                                 )}
                                                             </div>
