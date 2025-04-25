@@ -56,7 +56,9 @@ const Step4Content = () => {
     const startObj = new Date(start);
     const endObj = new Date(end);
     if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) return 0;
-    return Math.max(1, Math.ceil((endObj - startObj) / (1000 * 60 * 60 * 24)));
+    
+    // Use inclusive counting: Add 1 to include both start and end dates
+    return Math.max(1, Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1);
   };
   const days = calculateDays(startDate, endDate);
 
