@@ -4,39 +4,39 @@ import VoyageIcon from "../../assets/voyage-logo.png";
 import RangeSlider from "../RangeSlider";
 import RangeDatePicker from "../RangeDatePicker";
 import "../../styles/RangeDatePicker.css";
-import Notification from "../Notification";
 
 const Step4Content = () => {
   const today = new Date();
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(332);
   const [dateError, setDateError] = useState(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [calendarPosition, setCalendarPosition] = useState(0);
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState("");
   const [activeField, setActiveField] = useState("start");
   const datePickerRef = useRef(null);
   const startFieldRef = useRef(null);
   const endFieldRef = useRef(null);
-
-  const startButtonRef = useRef(null);
-  const endButtonRef = useRef(null);
 
   useEffect(() => {
     const savedStart = localStorage.getItem("Start Date");
     const savedEnd = localStorage.getItem("End Date");
     const savedBudget = localStorage.getItem("Budget");
 
+    // Only set dates if they were previously saved
     if (savedStart) setStartDate(new Date(savedStart));
     if (savedEnd) setEndDate(new Date(savedEnd));
     if (savedBudget) setBudget(parseInt(savedBudget, 10));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("Start Date", startDate instanceof Date ? startDate.toISOString().split("T")[0] : startDate);
-    localStorage.setItem("End Date", endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate);
+    // Only save dates to localStorage if they're not null
+    if (startDate) {
+      localStorage.setItem("Start Date", startDate instanceof Date ? startDate.toISOString().split("T")[0] : startDate);
+    }
+    if (endDate) {
+      localStorage.setItem("End Date", endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate);
+    }
   }, [startDate, endDate]);
 
   useEffect(() => {
@@ -47,13 +47,6 @@ const Step4Content = () => {
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
     
-    // Check if start date is before today
-    if (start && start < todayDate) {
-      setNotificationMessage("You cannot select a start date in the past");
-      setShowNotification(true);
-      return;
-    }
-    
     setStartDate(start || today);
     if (end) setEndDate(end);
     
@@ -62,9 +55,8 @@ const Step4Content = () => {
     } else {
       setDateError(null);
     }
-  }, [today]);
+  }, [today, activeField]);
 
-  // Calculate total days
   const calculateDays = (start, end) => {
     if (!start || !end) return 0;
     const startObj = new Date(start);
@@ -75,7 +67,6 @@ const Step4Content = () => {
   };
   const days = calculateDays(startDate, endDate);
 
-  // Persist # of days in localStorage
   useEffect(() => {
     localStorage.setItem("Duration", days);
   }, [days]);
@@ -86,7 +77,6 @@ const Step4Content = () => {
     // localStorage update is handled by the effect above
   };
 
-  // Click outside handler for calendar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
@@ -98,9 +88,7 @@ const Step4Content = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Open calendar and calculate position
   const openCalendar = (ref, field) => {
-    // Get the position of the clicked element
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect();
       setCalendarPosition(rect.top + rect.height + window.scrollY);
@@ -111,15 +99,11 @@ const Step4Content = () => {
 
   // Format date for display
   const formatDate = (date) => {
-    if (!date) return '';
+    if (!date) return 'Select a date';
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-  };
-
-  const handleNotificationClose = () => {
-    setShowNotification(false);
   };
 
   const CalendarIcon = () => (
@@ -143,15 +127,7 @@ const Step4Content = () => {
   );
 
   return (
-    <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
-      {showNotification && (
-        <Notification
-          type="warning"
-          text={notificationMessage}
-          onClose={handleNotificationClose}
-        />
-      )}
-      
+    <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12"> 
       {/* Left Column - Dates */}
       <div className="flex-1" ref={datePickerRef}>
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
@@ -194,20 +170,18 @@ const Step4Content = () => {
           </div>
 
           {/* Timeline visualization between dates */}
-          {startDate && endDate && days > 0 && (
-            <div className="date-duration-visualizer between-dates mb-2">
-              <div className="vertical-timeline">
-                <div className="timeline-dot"></div>
-                <div className="timeline-dot"></div>
-                <div className="timeline-icon-container">
-                  <img src={VoyageIcon} alt="Voyage Logo" className="timeline-icon" />
-                  <span className="timeline-days">{days} {days === 1 ? "day" : "days"}</span>
-                </div>
-                <div className="timeline-dot"></div>
-                <div className="timeline-dot"></div>
+          <div className="date-duration-visualizer between-dates mb-2">
+            <div className="vertical-timeline">
+              <div className="timeline-dot"></div>
+              <div className="timeline-dot"></div>
+              <div className="timeline-icon-container">
+                <img src={VoyageIcon} alt="Voyage Logo" className="timeline-icon" />
+                <span className="timeline-days">{days} {days === 1 ? "day" : "days"}</span>
               </div>
+              <div className="timeline-dot"></div>
+              <div className="timeline-dot"></div>
             </div>
-          )}
+          </div>
 
           {/* End Date */}
           <div 
@@ -224,7 +198,7 @@ const Step4Content = () => {
             </div>
           </div>
 
-          {/* Calendar - using fixed positioning with calculated top position */}
+          {/* Calendar */}
           {isCalendarVisible && (
             <div 
               className="inline-calendar-container" 
@@ -239,7 +213,7 @@ const Step4Content = () => {
                   maxDate={new Date(2100, 0, 1)}
                   className="calendar-only"
                   startWeekDay="monday"
-                  highlightToday={true}
+                  highlightToday={false}
                   initialSelecting={activeField}
                 />
               </div>
@@ -252,7 +226,6 @@ const Step4Content = () => {
       <div className="divider md:divider-horizontal mx-24"></div>
       
       {/* Right Column - Budget */}
-       
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-6 text-center">Budget</h2>
           <div className="p-4">

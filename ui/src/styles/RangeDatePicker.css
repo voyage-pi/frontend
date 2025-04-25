@@ -247,12 +247,6 @@
   cursor: default;
 }
 
-.datepicker-day-today {
-  font-weight: bold;
-  border: 1px solid #ddd;
-  border-radius: 20%;
-}
-
 .datepicker-day-selected {
   background-color: #FF6B81;
   color: white;

@@ -11,7 +11,6 @@ const RangeDatePicker = ({
   endDatePlaceholder = 'End Date',
   className = '',
   startWeekDay = 'monday',
-  highlightToday = false,
   initialSelecting = 'start'
 }) => {
   const [localStartDate, setLocalStartDate] = useState(startDate || null);
@@ -19,7 +18,7 @@ const RangeDatePicker = ({
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selecting, setSelecting] = useState(initialSelecting); // Use initialSelecting prop
+  const [selecting, setSelecting] = useState(initialSelecting); 
   const datePickerRef = useRef(null);
   
   const isCalendarOnly = className?.includes('calendar-only');
@@ -32,12 +31,10 @@ const RangeDatePicker = ({
     setLocalEndDate(endDate);
   }, [endDate]);
 
-  // Update selecting when initialSelecting changes
   useEffect(() => {
     setSelecting(initialSelecting);
   }, [initialSelecting]);
 
-  // Only add click outside handler for the standard mode (not calendar-only)
   useEffect(() => {
     if (isCalendarOnly) return;
     
@@ -67,6 +64,9 @@ const RangeDatePicker = ({
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const dayOffset = startWeekDay === 'monday' ? (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1) : firstDayOfMonth;
     
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    
     const days = [];
     for (let i = 0; i < dayOffset; i++) {
       days.push({ day: null, isCurrentMonth: false });
@@ -74,12 +74,12 @@ const RangeDatePicker = ({
     
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month, i);
+      
       days.push({
         day: i,
         date,
         isCurrentMonth: true,
-        isToday: highlightToday && isDateToday(date),
-        isDisabled: date < minDate || date > maxDate,
+        isDisabled: date < minDate || date > maxDate || date < currentDate, // Disable past dates
         isStartDate: isDateEqual(date, localStartDate),
         isEndDate: isDateEqual(date, localEndDate),
         isInRange: isDateInRange(date, localStartDate, localEndDate)
@@ -87,13 +87,6 @@ const RangeDatePicker = ({
     }
     
     return days;
-  };
-
-  const isDateToday = (date) => {
-    const today = new Date();
-    return date.getDate() === today.getDate() && 
-           date.getMonth() === today.getMonth() && 
-           date.getFullYear() === today.getFullYear();
   };
 
   const isDateEqual = (date1, date2) => {
@@ -187,6 +180,10 @@ const RangeDatePicker = ({
     const month = currentMonth.getMonth();
     const days = generateCalendarDays(year, month);
     
+    // Get current date for comparison
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    
     return (
       <div className="datepicker-calendar">
         <div className="datepicker-header">
@@ -202,23 +199,48 @@ const RangeDatePicker = ({
         </div>
         {getDaysOfWeek()}
         <div className="datepicker-days-container">
-          {days.map((day, i) => (
-            <div 
-              key={i} 
-              className={`datepicker-day ${!day.isCurrentMonth ? 'datepicker-day-outside' : ''} 
-                         ${day.isToday ? 'datepicker-day-today' : ''} 
-                         ${day.isDisabled ? 'datepicker-day-disabled' : ''} 
-                         ${day.isStartDate ? 'datepicker-day-selected datepicker-day-start' : ''} 
-                         ${day.isEndDate ? 'datepicker-day-selected datepicker-day-end' : ''} 
-                         ${day.isInRange && !day.isStartDate && !day.isEndDate ? 'datepicker-day-in-range' : ''}`}
-              onClick={() => day.isCurrentMonth && !day.isDisabled && handleDayClick(day.date)}
-            >
-              {day.day}
-            </div>
-          ))}
+          {days.map((day, i) => {
+            const isCurrentDay = day.date && 
+                             day.date.getDate() === currentDate.getDate() && 
+                             day.date.getMonth() === currentDate.getMonth() && 
+                             day.date.getFullYear() === currentDate.getFullYear();
+            
+            const isStartSelected = day.isStartDate && (!isCurrentDay || isExplicitlyChosen(day.date, localStartDate));
+            const isEndSelected = day.isEndDate && (!isCurrentDay || isExplicitlyChosen(day.date, localEndDate));
+            
+            const dayClasses = [
+              'datepicker-day',
+              !day.isCurrentMonth ? 'datepicker-day-outside' : '',
+              day.isDisabled ? 'datepicker-day-disabled' : '',
+              isStartSelected ? 'datepicker-day-selected datepicker-day-start' : '',
+              isEndSelected ? 'datepicker-day-selected datepicker-day-end' : '',
+              day.isInRange && !isStartSelected && !isEndSelected ? 'datepicker-day-in-range' : ''
+            ].filter(Boolean).join(' ');
+            
+            return (
+              <div 
+                key={i} 
+                className={dayClasses}
+                onClick={() => day.isCurrentMonth && !day.isDisabled && handleDayClick(day.date)}
+              >
+                {day.day}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
+  };
+
+
+  const isExplicitlyChosen = (date, chosenDate) => {
+    if (!date || !chosenDate) return false;
+    
+    const dateStr = date.toISOString().split('T')[0];
+    const savedStart = localStorage.getItem("Start Date");
+    const savedEnd = localStorage.getItem("End Date");
+    
+    return savedStart === dateStr || savedEnd === dateStr;
   };
 
   const CalendarIcon = () => (
