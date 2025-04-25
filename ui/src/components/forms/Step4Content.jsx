@@ -4,6 +4,7 @@ import VoyageIcon from "../../assets/voyage-logo.png";
 import RangeSlider from "../RangeSlider";
 import RangeDatePicker from "../RangeDatePicker";
 import "../../styles/RangeDatePicker.css";
+import Notification from "../Notification";
 
 const Step4Content = () => {
   const today = new Date();
@@ -13,6 +14,8 @@ const Step4Content = () => {
   const [dateError, setDateError] = useState(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [calendarPosition, setCalendarPosition] = useState(0);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
   const datePickerRef = useRef(null);
   const startFieldRef = useRef(null);
   const endFieldRef = useRef(null);
@@ -40,6 +43,16 @@ const Step4Content = () => {
   }, [budget]);
 
   const handleDateChange = useCallback((start, end) => {
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    
+    // Check if start date is before today
+    if (start && start < todayDate) {
+      setNotificationMessage("You cannot select a start date in the past");
+      setShowNotification(true);
+      return;
+    }
+    
     setStartDate(start || today);
     if (end) setEndDate(end);
     
@@ -103,6 +116,10 @@ const Step4Content = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const handleNotificationClose = () => {
+    setShowNotification(false);
+  };
+
   const CalendarIcon = () => (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -125,6 +142,14 @@ const Step4Content = () => {
 
   return (
     <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
+      {showNotification && (
+        <Notification
+          type="warning"
+          text={notificationMessage}
+          onClose={handleNotificationClose}
+        />
+      )}
+      
       {/* Left Column - Dates */}
       <div className="flex-1" ref={datePickerRef}>
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
