@@ -4,6 +4,7 @@ import Step2 from "./Step2Content"
 import Step3 from "./Step3Content"
 import Step4 from "./Step4Content"
 import Step5Content from "./Step5Content"
+import Step6Content from "./Step6Content"
 
 const StepContent = ({
   currentStep,
@@ -36,6 +37,8 @@ const StepContent = ({
           handleNext={handleNext}
         />
       )
+    case 6:
+      return <Step6Content />
     default:
       return <div>Invalid step</div>
   }

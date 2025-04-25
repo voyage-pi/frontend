@@ -14,7 +14,7 @@ import Notification from "../components/Notification";
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isInitialized, setIsInitialized] = useState(false)
-  const totalSteps = 5
+  const totalSteps = 6
   const [answers, setAnswers] = useState([...questions])
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
   const totalSubQuestions = answers.length
@@ -88,12 +88,15 @@ function Forms() {
       if (subQuestionIndex < totalSubQuestions - 1) {
         setSubQuestionIndex(subQuestionIndex + 1);
       } else {
-        if (currentStep < totalSteps) {
-          setCurrentStep(currentStep + 1);
-        } else {
-          console.log("All done with step 5 questions.");
-        }
+        // When all questions in step 5 are done, go to step 6
+        setCurrentStep(currentStep + 1);
       }
+      return;
+    }
+    
+    if (currentStep === 6) {
+      // We're at the must-visit places step, no special validation needed
+      console.log("All done with must-visit places.");
     }
   };
 
@@ -111,6 +114,10 @@ function Forms() {
       } else {
         setCurrentStep(currentStep - 1);
       }
+    }
+    
+    if (currentStep === 6) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -135,6 +142,7 @@ function Forms() {
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
 
     setIsNavigating(true);
 
@@ -143,6 +151,8 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
+    console.log("Must Visit Places:", mustVisitPlaces);
+    
     const tripType = localStorage.getItem("Trip Type")
     let obj = {}
     //add an object related to the trip type an append it to the sending data for the backend attributes
@@ -161,6 +171,13 @@ function Forms() {
       obj.place_name = localStorage.getItem("Location")
     }
 
+    // Format must-visit places for API
+    const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
+      name: place.name,
+      latitude: place.position.lat,
+      longitude: place.position.lng
+    }));
+
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       dateStart: formattedDate,
@@ -169,6 +186,7 @@ function Forms() {
       users: ["user123"],
       display_name: localStorage.getItem("Location"),
       data_type: obj,
+      must_visit_places: formattedMustVisitPlaces,
       questions: {
         user123: userRatings.map((answer, index) => ({
           question_id: index,
@@ -298,6 +316,13 @@ function Forms() {
                   Next <TiArrowRight className="ml-1" />
                 </button>
               ) : currentStep === 5 ? (
+                <button
+                  onClick={handleNext}
+                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                >
+                  Next <TiArrowRight className="ml-1" />
+                </button>
+              ) : currentStep === 6 ? (
                 <button className="btn btn-primary" onClick={handleFinish}>
                   Finish
                 </button>
