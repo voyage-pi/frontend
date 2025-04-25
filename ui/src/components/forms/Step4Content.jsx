@@ -3,6 +3,7 @@ import "cally";
 import VoyageIcon from "../../assets/voyage-logo.png";
 import RangeSlider from "../RangeSlider";
 import RangeDatePicker from "../RangeDatePicker";
+import "../../styles/RangeDatePicker.css";
 
 const Step4Content = () => {
   const today = new Date();
@@ -10,9 +11,12 @@ const Step4Content = () => {
   const [endDate, setEndDate] = useState(today);
   const [budget, setBudget] = useState(332);
   const [dateError, setDateError] = useState(null);
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+  const [calendarPosition, setCalendarPosition] = useState(0);
+  const datePickerRef = useRef(null);
+  const startFieldRef = useRef(null);
+  const endFieldRef = useRef(null);
 
-  const startPopoverRef = useRef(null);
-  const endPopoverRef = useRef(null);
   const startButtonRef = useRef(null);
   const endButtonRef = useRef(null);
 
@@ -67,84 +71,61 @@ const Step4Content = () => {
     // localStorage update is handled by the effect above
   };
 
-  const positionPopover = (buttonRef, popoverRef) => {
-    if (buttonRef.current && popoverRef.current) {
-      const buttonRect = buttonRef.current.getBoundingClientRect();
-      popoverRef.current.style.position = "absolute";
-      popoverRef.current.style.top = `${buttonRect.bottom + window.scrollY}px`;
-      popoverRef.current.style.left = `${buttonRect.left + window.scrollX}px`;
-      popoverRef.current.style.zIndex = "100";
-    }
-  };
-
-  const toggleStartPopover = () => {
-    if (!startPopoverRef.current) return;
-
-    if (startPopoverRef.current.matches(":popover-open")) {
-      startPopoverRef.current.hidePopover();
-    } else {
-      startPopoverRef.current.showPopover();
-      positionPopover(startButtonRef, startPopoverRef);
-    }
-  };
-
-  const toggleEndPopover = () => {
-    if (!endPopoverRef.current) return;
-
-    if (endPopoverRef.current.matches(":popover-open")) {
-      endPopoverRef.current.hidePopover();
-    } else {
-      endPopoverRef.current.showPopover();
-      positionPopover(endButtonRef, endPopoverRef);
-    }
-  };
-
-  // Listen for window resize only once
-  useEffect(() => {
-    const handleResize = () => {
-      if (
-        startPopoverRef.current &&
-        startPopoverRef.current.matches(":popover-open")
-      ) {
-        positionPopover(startButtonRef, startPopoverRef);
-      }
-      if (
-        endPopoverRef.current &&
-        endPopoverRef.current.matches(":popover-open")
-      ) {
-        positionPopover(endButtonRef, endPopoverRef);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Close popovers if the user clicks outside
+  // Click outside handler for calendar
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        startPopoverRef.current &&
-        !startPopoverRef.current.contains(event.target) &&
-        !startButtonRef.current.contains(event.target)
-      ) {
-        startPopoverRef.current.hidePopover();
-      }
-      if (
-        endPopoverRef.current &&
-        !endPopoverRef.current.contains(event.target) &&
-        !endButtonRef.current.contains(event.target)
-      ) {
-        endPopoverRef.current.hidePopover();
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
+        setIsCalendarVisible(false);
       }
     };
+    
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Open calendar and calculate position
+  const openCalendar = (ref) => {
+    // Get the position of the clicked element
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setCalendarPosition(rect.top + rect.height + window.scrollY);
+    }
+    setIsCalendarVisible(true);
+  };
+
+  // Format date for display
+  const formatDate = (date) => {
+    if (!date) return '';
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const CalendarIcon = () => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      className="date-icon" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="#FF6B81" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  );
+
   return (
     <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
       {/* Left Column - Dates */}
-      <div className="flex-1">
+      <div className="flex-1" ref={datePickerRef}>
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
 
         {/* Date Error Message */}
@@ -168,40 +149,73 @@ const Step4Content = () => {
           </div>
         )}
 
-        {/* Custom Range Date Picker */}
-        <div className="card bg-base-100 shadow-md mb-6">
-          <div className="card-body p-4">
-            <RangeDatePicker
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(start, end) => handleDateChange(start, end)}
-              minDate={new Date(2000, 0, 1)}
-              maxDate={new Date(2100, 0, 1)}
-              dateFormat="D"
-              monthFormat="MMM YYYY"
-              startDatePlaceholder="Start Date"
-              endDatePlaceholder="End Date"
-              className="w-full"
-              startWeekDay="monday"
-              highlightToday={true}
-            />
-          </div>
-        </div>
-
-        {/* Duration visualization */}
-        <div className="flex flex-col items-start my-4 pl-3">
-          <div className="flex flex-col items-start gap-y-[0.5rem] pl-3">
-            <div className="w-2 h-2 rounded-full bg-primary/30"></div>
-            <div className="w-2 h-2 rounded-full bg-primary/30"></div>
-            <div className="flex flex-row items-center -ml-3">
-              <img src={VoyageIcon} alt="Voyage Logo" className="h-8 w-8" />
-              <span className="text-secondary/50 pl-1">
-                {days} {days === 1 ? "day" : "days"}
-              </span>
+        <div className="flex flex-col" style={{ position: 'relative' }}>
+          {/* Start Date */}
+          <div 
+            ref={startFieldRef}
+            className="date-field mb-4" 
+            onClick={() => openCalendar(startFieldRef)}
+          >
+            <div className="date-label">
+              <CalendarIcon />
+              <span>Start Date:</span>
             </div>
-            <div className="w-2 h-2 rounded-full bg-primary/30"></div>
-            <div className="w-2 h-2 rounded-full bg-primary/30"></div>
+            <div className="date-value">
+              {formatDate(startDate)}
+            </div>
           </div>
+
+          {/* Timeline visualization between dates */}
+          {startDate && endDate && days > 0 && (
+            <div className="date-duration-visualizer between-dates">
+              <div className="vertical-timeline">
+                <div className="timeline-dot"></div>
+                <div className="timeline-dot"></div>
+                <div className="timeline-icon-container">
+                  <img src={VoyageIcon} alt="Voyage Logo" className="timeline-icon" />
+                  <span className="timeline-days">{days} {days === 1 ? "day" : "days"}</span>
+                </div>
+                <div className="timeline-dot"></div>
+                <div className="timeline-dot"></div>
+              </div>
+            </div>
+          )}
+
+          {/* End Date */}
+          <div 
+            ref={endFieldRef}
+            className="date-field mb-4" 
+            onClick={() => openCalendar(endFieldRef)}
+          >
+            <div className="date-label">
+              <CalendarIcon />
+              <span>End Date:</span>
+            </div>
+            <div className="date-value">
+              {formatDate(endDate)}
+            </div>
+          </div>
+
+          {/* Calendar - using fixed positioning with calculated top position */}
+          {isCalendarVisible && (
+            <div 
+              className="inline-calendar-container" 
+              style={{ top: `${calendarPosition}px` }}
+            >
+              <div className="calendar-card">
+                <RangeDatePicker 
+                  startDate={startDate}
+                  endDate={endDate}
+                  onChange={handleDateChange}
+                  minDate={new Date(2000, 0, 1)}
+                  maxDate={new Date(2100, 0, 1)}
+                  className="calendar-only"
+                  startWeekDay="monday"
+                  highlightToday={true}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -15,10 +15,81 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 20px;
 }
 
 .datepicker-input-container {
   flex: 1;
+}
+
+.date-field {
+  background-color: white;
+  border-radius: 15px;
+  padding: 15px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.date-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
+}
+
+.date-icon {
+  margin-right: 8px;
+}
+
+.date-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Timeline Visualizer */
+.date-duration-visualizer {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.between-dates {
+  margin: 0 auto;
+  padding: 5px 0;
+}
+
+.vertical-timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #FF6B81;
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+.timeline-icon-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.timeline-days {
+  font-size: 14px;
+  color: #666;
 }
 
 .mb-2 {
@@ -52,6 +123,41 @@
   color: #666;
 }
 
+/* Calendar styles */
+.inline-calendar-container {
+  position: fixed;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 10px;
+  z-index: 9999;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-card {
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.calendar-only .datepicker-inputs-vertical {
+  display: none;
+}
+
+.calendar-only .datepicker-dropdown {
+  position: static;
+  box-shadow: none;
+  margin-top: 0;
+  width: 100%;
+  display: block;
+}
+
+.calendar-only {
+  width: 100%;
+}
+
 .datepicker-dropdown {
   position: absolute;
   top: 100%;
@@ -66,6 +172,7 @@
 
 .datepicker-calendar {
   padding: 16px;
+  background-color: white;
 }
 
 .datepicker-header {
@@ -144,13 +251,13 @@
 }
 
 .datepicker-day-selected {
-  background-color: #ef4444;
+  background-color: #FF6B81;
   color: white;
   font-weight: 500;
 }
 
 .datepicker-day-in-range {
-  background-color: rgba(239, 68, 68, 0.2);
+  background-color: rgba(255, 107, 129, 0.2);
   border-radius: 0;
 }
 

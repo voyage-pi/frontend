@@ -20,6 +20,8 @@ const RangeDatePicker = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selecting, setSelecting] = useState('start'); // 'start' or 'end'
   const datePickerRef = useRef(null);
+  
+  const isCalendarOnly = className?.includes('calendar-only');
 
   useEffect(() => {
     setLocalStartDate(startDate);
@@ -29,7 +31,10 @@ const RangeDatePicker = ({
     setLocalEndDate(endDate);
   }, [endDate]);
 
+  // Only add click outside handler for the standard mode (not calendar-only)
   useEffect(() => {
+    if (isCalendarOnly) return;
+    
     const handleClickOutside = (event) => {
       if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
         setIsStartDatePickerOpen(false);
@@ -41,15 +46,14 @@ const RangeDatePicker = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isCalendarOnly]);
 
   const formatDate = (date) => {
     if (!date) return '';
-    return date.toLocaleDateString('en-US', { 
-      day: 'numeric',
-      month: 'short', 
-      year: 'numeric'
-    });
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const generateCalendarDays = (year, month) => {
@@ -211,34 +215,59 @@ const RangeDatePicker = ({
     );
   };
 
+  const CalendarIcon = () => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      className="date-icon" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="#FF6B81" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  );
+
   return (
     <div className={`range-datepicker ${className}`} ref={datePickerRef}>
-      <div className="datepicker-inputs-vertical">
-        <div className="datepicker-input-container mb-2">
-          <label className="datepicker-label">From</label>
-          <input
-            type="text"
-            className="datepicker-input"
-            placeholder={startDatePlaceholder}
-            value={localStartDate ? formatDate(localStartDate) : ''}
-            readOnly
-            onClick={() => openDatePicker('start')}
-          />
+      {!isCalendarOnly && (
+        <div className="datepicker-inputs-vertical">
+          <div className="date-field mb-2">
+            <div className="date-label">
+              <CalendarIcon />
+              <span>Start Date:</span>
+            </div>
+            <div 
+              className="date-value" 
+              onClick={() => openDatePicker('start')}
+            >
+              {localStartDate ? formatDate(localStartDate) : startDatePlaceholder}
+            </div>
+          </div>
+          
+          <div className="date-field">
+            <div className="date-label">
+              <CalendarIcon />
+              <span>End Date:</span>
+            </div>
+            <div 
+              className="date-value" 
+              onClick={() => openDatePicker('end')}
+            >
+              {localEndDate ? formatDate(localEndDate) : endDatePlaceholder}
+            </div>
+          </div>
         </div>
-        <div className="datepicker-input-container">
-          <label className="datepicker-label">To</label>
-          <input
-            type="text"
-            className="datepicker-input"
-            placeholder={endDatePlaceholder}
-            value={localEndDate ? formatDate(localEndDate) : ''}
-            readOnly
-            onClick={() => openDatePicker('end')}
-          />
-        </div>
-      </div>
+      )}
       
-      {(isStartDatePickerOpen || isEndDatePickerOpen) && (
+      {(isStartDatePickerOpen || isEndDatePickerOpen || isCalendarOnly) && (
         <div className="datepicker-dropdown">
           {generateCalendar()}
         </div>
