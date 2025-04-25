@@ -68,8 +68,8 @@
 }
 
 .timeline-dot {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   background-color: #FF6B81;
   border-radius: 50%;
   opacity: 0.3;
@@ -127,7 +127,7 @@
 .inline-calendar-container {
   position: fixed;
   top: auto;
-  left: 50%;
+  left: 39%;
   transform: translateX(-50%);
   margin-top: 10px;
   z-index: 9999;
