@@ -219,10 +219,13 @@ const Step4Content = () => {
           )}
         </div>
       </div>
-
+      
+      {/* Divider */}
+      <div className="divider md:divider-horizontal mx-24"></div>
+      
       {/* Right Column - Budget */}
-      {/* 
-        <div className="flex-1 pl-24">
+       
+        <div className="flex-1">
           <h2 className="text-2xl font-bold mb-6 text-center">Budget</h2>
           <div className="p-4">
             <p className="text-center mb-14">
@@ -242,7 +245,7 @@ const Step4Content = () => {
             />
           </div>
         </div>
-      */}
+    
     </div>
   );
 };
