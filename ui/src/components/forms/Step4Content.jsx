@@ -16,6 +16,7 @@ const Step4Content = () => {
   const [calendarPosition, setCalendarPosition] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+  const [activeField, setActiveField] = useState("start");
   const datePickerRef = useRef(null);
   const startFieldRef = useRef(null);
   const endFieldRef = useRef(null);
@@ -98,12 +99,13 @@ const Step4Content = () => {
   }, []);
 
   // Open calendar and calculate position
-  const openCalendar = (ref) => {
+  const openCalendar = (ref, field) => {
     // Get the position of the clicked element
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect();
       setCalendarPosition(rect.top + rect.height + window.scrollY);
     }
+    setActiveField(field);
     setIsCalendarVisible(true);
   };
 
@@ -180,7 +182,7 @@ const Step4Content = () => {
           <div 
             ref={startFieldRef}
             className="date-field mb-4" 
-            onClick={() => openCalendar(startFieldRef)}
+            onClick={() => openCalendar(startFieldRef, 'start')}
           >
             <div className="date-label">
               <CalendarIcon />
@@ -211,7 +213,7 @@ const Step4Content = () => {
           <div 
             ref={endFieldRef}
             className="date-field mb-4" 
-            onClick={() => openCalendar(endFieldRef)}
+            onClick={() => openCalendar(endFieldRef, 'end')}
           >
             <div className="date-label">
               <CalendarIcon />
@@ -238,6 +240,7 @@ const Step4Content = () => {
                   className="calendar-only"
                   startWeekDay="monday"
                   highlightToday={true}
+                  initialSelecting={activeField}
                 />
               </div>
             </div>

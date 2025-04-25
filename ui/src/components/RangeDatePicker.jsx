@@ -11,14 +11,15 @@ const RangeDatePicker = ({
   endDatePlaceholder = 'End Date',
   className = '',
   startWeekDay = 'monday',
-  highlightToday = false
+  highlightToday = false,
+  initialSelecting = 'start'
 }) => {
   const [localStartDate, setLocalStartDate] = useState(startDate || null);
   const [localEndDate, setLocalEndDate] = useState(endDate || null);
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selecting, setSelecting] = useState('start'); // 'start' or 'end'
+  const [selecting, setSelecting] = useState(initialSelecting); // Use initialSelecting prop
   const datePickerRef = useRef(null);
   
   const isCalendarOnly = className?.includes('calendar-only');
@@ -30,6 +31,11 @@ const RangeDatePicker = ({
   useEffect(() => {
     setLocalEndDate(endDate);
   }, [endDate]);
+
+  // Update selecting when initialSelecting changes
+  useEffect(() => {
+    setSelecting(initialSelecting);
+  }, [initialSelecting]);
 
   // Only add click outside handler for the standard mode (not calendar-only)
   useEffect(() => {
