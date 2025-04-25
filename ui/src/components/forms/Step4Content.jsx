@@ -168,7 +168,7 @@ const Step4Content = () => {
 
           {/* Timeline visualization between dates */}
           {startDate && endDate && days > 0 && (
-            <div className="date-duration-visualizer between-dates">
+            <div className="date-duration-visualizer between-dates mb-2">
               <div className="vertical-timeline">
                 <div className="timeline-dot"></div>
                 <div className="timeline-dot"></div>
