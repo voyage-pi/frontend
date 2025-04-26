@@ -3,15 +3,12 @@ import { FaMapMarkerAlt, FaTrash } from "react-icons/fa";
 import { FaSistrix } from "react-icons/fa6";
 import { axiosPlace } from "../../../utils/axiosInstance";
 import LoadingAnimation from "../../LoadingAnimation";
-import Notification from "../../Notification";
-import { ToastContainer } from "react-toastify";
 
 const MustVisitPlacesContent = () => {
   const [suggestionlist, setSuggestionList] = useState([]);
   const [currentText, setCurrentText] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestionHovered, setSuggestionHovered] = useState(-1);
-  const [notify, setNotify] = useState();
   const [mustVisitPlaces, setMustVisitPlaces] = useState([]);
   const timeoutRef = useRef(null);
 
@@ -34,11 +31,6 @@ const MustVisitPlacesContent = () => {
 
   const addPlace = async (placeName) => {
     if (mustVisitPlaces.some(place => place.name === placeName)) {
-      setNotify({
-        type: "warning",
-        text: `${placeName} is already in your must-visit list`,
-        key: Date.now()
-      });
       return;
     }
 
@@ -59,29 +51,13 @@ const MustVisitPlacesContent = () => {
       setMustVisitPlaces(prev => [...prev, newPlace]);
       setCurrentText("");
       setSuggestionList([]);
-
-      setNotify({
-        type: "success",
-        text: `${placeName} added to your must-visit list`,
-        key: Date.now()
-      });
     } catch (error) {
-      setNotify({
-        type: "error",
-        text: `There was an error adding ${placeName}: ${error}`,
-        key: Date.now()
-      });
       console.error("Add place error:", error);
     }
   };
 
   const removePlace = (placeName) => {
     setMustVisitPlaces(prev => prev.filter(place => place.name !== placeName));
-    setNotify({
-      type: "info",
-      text: `${placeName} removed from your must-visit list`,
-      key: Date.now()
-    });
   };
 
   const autocompleteSearch = async () => {
@@ -92,11 +68,6 @@ const MustVisitPlacesContent = () => {
       setSuggestionList(response.data.suggestions_list);
       setLoading(false);
     } catch (error) {
-      setNotify({
-        type: "error",
-        text: `Search error: ${error}`,
-        key: Date.now()
-      });
       console.error("Search error:", error);
     }
   };
@@ -146,24 +117,19 @@ const MustVisitPlacesContent = () => {
     setSuggestionHovered(idx);
   };
 
-  return (
-    <div>
-      <ToastContainer />
+  const getPlaceHeightClass = () => {
+    const count = mustVisitPlaces.length;
+    if (count === 0) return "";
+    if (count === 1) return "h-1/2"; 
+    if (count === 2) return "h-1/2"; 
+    if (count === 3) return "h-1/3"; 
+    return "h-1/3"; 
+  };
 
-      {notify && (
-        <Notification
-          key={notify.key}
-          type={notify.type}
-          text={notify.text}
-          onClose={() => setNotify(null)}
-          options={{
-            position: "top-right",
-            autoClose: 3000,
-            pauseOnHover: false,
-          }}
-        />
-      )}
-      
+  const shouldAddScroll = mustVisitPlaces.length > 3;
+
+  return (
+    <div className="h-[25rem]">
       <h2 className="text-3xl mb-10 text-center">
         Add <span className="text-primary">places</span> you must visit!
       </h2>
@@ -217,44 +183,51 @@ const MustVisitPlacesContent = () => {
           </div>
         </div>
 
-        {/* Right Side - Must Visit Places */}
-        <div className="flex-1">          
-          {mustVisitPlaces.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              No must-visit places added yet. Start searching and add places you don't want to miss!
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto max-h-[500px]">
-              {mustVisitPlaces.map((place, index) => (
-                <div key={index} className="rounded-lg shadow-md overflow-hidden border border-gray-200 relative">
-                  <div className="h-40 bg-gray-200 overflow-hidden">
-                    <img 
-                      src={place.image} 
-                      alt={place.name} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                      }}
-                    />
+        {/* Right Side - Must Visit Places Box */}
+        <div className="flex-1">
+          <div className=" h-84 w-full overflow-hidden">          
+            {mustVisitPlaces.length === 0 ? (
+              <div className="flex items-center justify-center h-full w-full">
+                <div className="text-center text-gray-500">
+                  No must-visit places added yet.
+                </div>  
+              </div>
+            ) : (
+              <div className={`flex flex-col gap-y-4 ${shouldAddScroll ? 'overflow-y-auto' : ''} h-full w-full`}>
+                {mustVisitPlaces.map((place, index) => (
+                  <div 
+                    key={index} 
+                    className={`rounded-lg overflow-hidden border border-gray-200 relative flex w-full ${getPlaceHeightClass()} ${index > 0 ? 'border-t' : ''}`}
+                  >
+                    <div className="w-1/4 bg-gray-200 overflow-hidden">
+                      <img 
+                        src={place.image} 
+                        alt={place.name} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+                        }}
+                      />
+                    </div>
+                    <div className="p-4 w-3/4 flex items-center">
+                      <h4 className="text-lg font-medium">{place.name}</h4>
+                      <button 
+                        onClick={() => removePlace(place.name)}
+                        className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-red-100 transition-colors"
+                      >
+                        <FaTrash className="text-red-500" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <h4 className="text-lg font-medium">{place.name}</h4>
-                    <button 
-                      onClick={() => removePlace(place.name)}
-                      className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-red-100 transition-colors"
-                    >
-                      <FaTrash className="text-red-500" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default MustVisitPlacesContent; 
+export default MustVisitPlacesContent;
