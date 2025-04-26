@@ -93,11 +93,6 @@ function Forms() {
       }
       return;
     }
-    
-    if (currentStep === 6) {
-      // We're at the must-visit places step, no special validation needed
-      console.log("All done with must-visit places.");
-    }
   };
 
   const handleBack = () => {
@@ -142,7 +137,7 @@ function Forms() {
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-    const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
+    //const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
 
     setIsNavigating(true);
 
@@ -151,7 +146,6 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
-    console.log("Must Visit Places:", mustVisitPlaces);
     
     const tripType = localStorage.getItem("Trip Type")
     let obj = {}
@@ -172,11 +166,11 @@ function Forms() {
     }
 
     // Format must-visit places for API
-    const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
-      name: place.name,
-      latitude: place.position.lat,
-      longitude: place.position.lng
-    }));
+    //const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
+    //  name: place.name,
+    //  latitude: place.position.lat,
+    //  longitude: place.position.lng
+    //}));f
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
@@ -186,7 +180,6 @@ function Forms() {
       users: ["user123"],
       display_name: localStorage.getItem("Location"),
       data_type: obj,
-      must_visit_places: formattedMustVisitPlaces,
       questions: {
         user123: userRatings.map((answer, index) => ({
           question_id: index,

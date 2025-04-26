@@ -26,7 +26,7 @@ const MustVisitPlacesContent = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("MustVisitPlaces", JSON.stringify(mustVisitPlaces));
+    //localStorage.setItem("MustVisitPlaces", JSON.stringify(mustVisitPlaces));
   }, [mustVisitPlaces]);
 
   const addPlace = async (placeName) => {
