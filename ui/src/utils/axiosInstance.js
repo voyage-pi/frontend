@@ -16,6 +16,14 @@ export const axiosPlace = axios.create({
   },
 });
 
+export const axiosMaps = axios.create({
+  baseURL: "/api/v1/maps-wrapper/", // Updated to use the nginx proxy path
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export const axiosUser = axios.create({
   baseURL: "/api/v1/user-management",
   timeout: 10000,
