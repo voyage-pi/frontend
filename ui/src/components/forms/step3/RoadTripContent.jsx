@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaSistrix } from "react-icons/fa6";
+import { RiRoadMapLine, RiRoadsterLine } from "react-icons/ri";
 import Map from "../../Map";
 import { axiosMaps, axiosPlace } from "../../../utils/axiosInstance";
 import LoadingAnimation from "../../LoadingAnimation";
 import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 import { motion } from "motion/react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, calcLength } from "framer-motion";
 
 const RoadTripContent = () => {
   const [selectedLocationOrigin, setSelectedLocationOrigin] = useState("");
@@ -16,7 +17,8 @@ const RoadTripContent = () => {
   const [suggestionlistDes, setSuggestionListDes] = useState([]);
   const [currentTextOrigin, setCurrentTextOrigin] = useState("");
   const [currentTextDes, setCurrentTextDes] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingOrigin, setLoadingOrigin] = useState(false);
+  const [loadingDes, setLoadingDes] = useState(false);
   const [suggestionHoveredOrigin, setSuggestionHoveredOrigin] = useState(-1);
   const [suggestionHoveredDes, setSuggestionHoveredDes] = useState(-1);
   const [notify, setNotify] = useState();
@@ -26,6 +28,30 @@ const RoadTripContent = () => {
   const [showOrigin, setShowOrigin] = useState(true);
   const [showDes, setShowDes] = useState(true);
   const [route, setRoute] = useState([]);
+  useEffect(() => {
+    const routing = async () => {
+      if (markersOrigin.length > 0 && markersDes.length > 0) {
+        console.log("Both markers are set");
+        let originR = {
+          latitude: markersOrigin[0].position.lat,
+          longitude: markersOrigin[0].position.lng,
+        };
+        let destinationR = {
+          latitude: markersDes[0].position.lat,
+          longitude: markersDes[0].position.lng,
+        };
+        const response = await axiosMaps.post("/maps/", {
+          origin: originR,
+          destination: destinationR,
+          travelingMode: "DRIVE",
+        });
+        console.log(response.data.routes);
+        setRoute(response.data.routes);
+      }
+    };
+    routing();
+  }, [markersDes, markersOrigin]);
+
   const handleSelectLocation = async (location, origin) => {
     if (origin) {
       setSelectedLocationOrigin(location);
@@ -58,18 +84,6 @@ const RoadTripContent = () => {
       } else {
         setMarkersDes([m]);
       }
-      if (markersOrigin.length > 0 && markersDes.length > 0) {
-        console.log("Both markers are set");
-        let originR = {latitude:markersOrigin[0].position.lat, longitude:markersOrigin[0].position.lng};
-        let destinationR = {latitude:markersDes[0].position.lat, longitude:markersDes[0].position.lng};
-        const response = await axiosMaps.post("/maps/", {
-          origin: originR,
-          destination: destinationR,
-          travelingMode: "DRIVE",
-        });
-        console.log(response.data);
-        setRoute(response.data.routes[0]);
-      } 
     } catch (error) {
       setNotify({
         type: "error",
@@ -90,7 +104,8 @@ const RoadTripContent = () => {
       } else {
         setSuggestionListDes(response.data.suggestions_list);
       }
-      setLoading(false);
+
+      origin ? setLoadingOrigin(false) : setLoadingDes(false);
       // Here you can handle the response, for example updating the locations list
       // based on the API response
     } catch (error) {
@@ -101,12 +116,15 @@ const RoadTripContent = () => {
       });
       console.error("Search error:", error);
     }
+    finally{
+      origin ? setLoadingOrigin(false) : setLoadingDes(false);
+    }
   };
 
   // Handle input changes with debounce
   const handleInputChange = (e, origin) => {
     const value = e.target.value;
-    setLoading(value !== "");
+    origin ? setLoadingOrigin(value !== "") : setLoadingDes(value !== "");
     origin ? setShowOrigin(true) : setShowDes(true);
     origin ? setCurrentTextOrigin(value) : setCurrentTextDes(value);
     if (value == "") {
@@ -130,7 +148,6 @@ const RoadTripContent = () => {
     let suggestionlist = origin ? suggestionlistOrigin : suggestionlistDes;
 
     if (suggestionlist.length === 0) return;
-    console.log(event);
     let key = event.key;
     let suggestionsL = suggestionlist.length != 0 ? suggestionlist.length : 1;
     if (key === "ArrowDown") {
@@ -148,7 +165,6 @@ const RoadTripContent = () => {
     } else if (key === "Enter") {
       let currentSelectedSuggestion =
         suggestionlist[origin ? suggestionHoveredOrigin : suggestionHoveredDes];
-      console.log(currentSelectedSuggestion);
       handleSelectLocation(currentSelectedSuggestion.text, origin);
     }
   };
@@ -175,9 +191,9 @@ const RoadTripContent = () => {
       )}
       <div className="w-full p-3 h-full grid grid-cols-2 gap-y-5 gap-x-3">
         <div className="w-full flex justify-center ">
-          <div className="relative w-full grid ">
+          <div className="relative  w-full grid ">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <FaSistrix className="text-gray-400 text-xl" />
+              <RiRoadsterLine className="text-gray-400 text-xl" />
             </div>
             <input
               onKeyDown={(event) => handleSuggestionsSelection(event, true)}
@@ -187,7 +203,18 @@ const RoadTripContent = () => {
               className="pl-10 p-3 w-full border border-gray-200 rounded-lg focus:outline-none"
               placeholder="Origin"
             />
-            <div className={`${showOrigin ? "": "hidden"} absolute left-0 top-[100%] z-10 w-full grid grid-cols-1 gap-y-1 px-2 max-h-200px overflow-y-auto `}>
+
+            {
+            loadingOrigin && currentTextOrigin.length > 3 && (
+            <div className="absolute right-2 top-1/2 translate-y-[-50%] rounded-md">
+              <LoadingAnimation width={"40px"} height={"40px"} />
+            </div>
+            )}
+            <div
+              className={`${
+                showOrigin ? "" : "hidden"
+              } absolute left-0 top-[100%] z-10 w-full grid grid-cols-1 gap-y-1 px-2 max-h-200px overflow-y-auto `}
+            >
               <AnimatePresence mode="wait">
                 {suggestionlistOrigin.map((location, idx) => (
                   <motion.div
@@ -229,9 +256,9 @@ const RoadTripContent = () => {
           </div>
         </div>
         <div className="w-full flex justify-center">
-          <div className="relative w-full">
+          <div className="relative w-full  grid">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <FaSistrix className="text-gray-400 text-xl" />
+              <RiRoadMapLine className="text-gray-400 text-xl" />
             </div>
             <input
               onKeyDown={(event) => handleSuggestionsSelection(event, false)}
@@ -241,7 +268,17 @@ const RoadTripContent = () => {
               className="pl-10 p-3 w-full border border-gray-200 rounded-lg focus:outline-none"
               placeholder="Destination"
             />
-            <div className={`${showDes ? "": "hidden"} absolute left-0 top-[100%] z-10 w-full grid grid-cols-1 gap-y-1 px-2 max-h-200px overflow-y-auto `}>
+            {
+            loadingDes && currentTextDes.length > 3 && (
+            <div className="absolute right-2 top-1/2 translate-y-[-50%] rounded-md">
+              <LoadingAnimation width={"40px"} height={"40px"} />
+            </div>
+            )}
+            <div
+              className={`${
+                showDes ? "" : "hidden"
+              } absolute left-0 top-[100%] z-10 w-full grid grid-cols-1 gap-y-1 px-2 max-h-200px overflow-y-auto `}
+            >
               <AnimatePresence mode="wait">
                 {suggestionlistDes.map((location, idx) => (
                   <motion.div
@@ -283,7 +320,10 @@ const RoadTripContent = () => {
           </div>
         </div>
         <div className="w-full flex h-[35vh] justify-center overflow-hidden col-span-2 rounded-2xl">
-          <Map markers={markersOrigin.concat(markersDes)} polylines={route}/>
+          <Map
+            markers={markersOrigin.concat(markersDes)}
+            polylines={[{ polylines: route }]}
+          />
         </div>
       </div>
     </>
