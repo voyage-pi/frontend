@@ -13,7 +13,7 @@ function PageTemplate({ children, headerIcon, headerTitle, headerContent }) {
   }
 
   const handleMenuItemClick = (item) => {
-    if (['Settings', 'Share'].includes(item)) {
+    if (['Friends', 'Saved', 'Share', 'Settings'].includes(item)) {
       setNotification({
         type: 'info',
         text: `${item} feature coming soon!`,

@@ -196,6 +196,8 @@ function SideBar({ onToggle, onMenuItemClick }) {
             };
             
             handleLogout();
+        } else if (label === "Settings") {
+            navigate("/settings");
         }
     };
 
