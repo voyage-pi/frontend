@@ -15,9 +15,9 @@ function Forms() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isInitialized, setIsInitialized] = useState(false)
   const totalSteps = 5
-  const [answers, setAnswers] = useState([...questions])
+  const [answers, setAnswers] = useState([])
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
-  const totalSubQuestions = answers.length
+  const totalSubQuestions = questions.length
   const navigate = useNavigate()
   const [isNavigating, setIsNavigating] = useState(false)
   const [itinerary, setItinerary] = useState(null)
@@ -43,8 +43,9 @@ function Forms() {
 
     if (savedAnswers && Array.isArray(savedAnswers) && savedAnswers.length > 0) {
       setAnswers(savedAnswers);
-    }else{
-      setAnswers(answers);
+    } else {
+      // If no saved answers, initialize from questions
+      setAnswers(questions.map(q => ({...q, answer: null}))); 
     }
 
     setIsInitialized(true);
@@ -199,20 +200,19 @@ function Forms() {
           } 
         });
         
-        // Instead of clearing all localStorage, just remove specific keys
-        // but keep userRatings for the preference sidebar
+        // Clear all localStorage items related to the form
         const keysToRemove = [
           "currentStep", "subQuestionIndex", "answers", 
           "Start Date", "Trip Type", "radius", "Latitude", 
-          "Longitude", "Location", "Budget", "Duration"
+          "Longitude", "Location", "Budget", "Duration",
+          "userRatings" // Also clear userRatings
         ];
         
         keysToRemove.forEach(key => localStorage.removeItem(key));
         
-        answers.forEach(answer => {
-          answer.answer = null;
-        });
-        setAnswers([...answers]);
+        // Reset the answers state to initial state
+        const resetAnswers = questions.map(q => ({...q, answer: null}));
+        setAnswers(resetAnswers);
         setCurrentStep(1);
         setSubQuestionIndex(0);
         
