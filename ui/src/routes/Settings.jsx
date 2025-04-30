@@ -3,7 +3,7 @@ import PageTemplate from "../components/PageTemplate";
 import { FaCamera, FaEye, FaEyeSlash, FaImage, FaUserCircle } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 
-import { axiosInstance } from "../utils/axiosInstance";
+import { axiosUser } from "../utils/axiosInstance";
 import Notification from "../components/Notification";
 import { useAuth } from "../context/AuthContext";
 
@@ -26,11 +26,14 @@ const defaultUserData = {
 
 function Settings() {
   const [profileImage, setProfileImage] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [bannerImage, setBannerImage] = useState(null);
+  const [bannerImageFile, setBannerImageFile] = useState(null);
   const [bio, setBio] = useState("");
   const [hideTrips, setHideTrips] = useState(false);
   const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Get auth context
   const { 
@@ -51,8 +54,8 @@ function Settings() {
 
   // Initialize component state with user data
   const initializeWithUserData = (userData) => {
-    setProfileImage(userData.image);
-    setBannerImage(userData.bannerImage);
+    setProfileImage(userData.avatar_url || userData.image);
+    setBannerImage(userData.banner_url || userData.bannerImage);
     setBio(userData.bio || "");
     setHideTrips(userData.hideTrips || false);
     setIsLoading(false);
@@ -64,10 +67,12 @@ function Settings() {
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setProfileImageFile(file);
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
-        showNotification("Profile image updated", "info");
+        showNotification("Profile image selected. Save changes to update.", "info");
       };
       reader.readAsDataURL(file);
     }
@@ -76,10 +81,12 @@ function Settings() {
   const handleBannerImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setBannerImageFile(file);
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerImage(reader.result);
-        showNotification("Banner image updated", "info");
+        showNotification("Banner image selected. Save changes to update.", "info");
       };
       reader.readAsDataURL(file);
     }
@@ -91,40 +98,107 @@ function Settings() {
   
   const handleToggleTripsVisibility = () => {
     setHideTrips(!hideTrips);
-    showNotification(hideTrips ? "Trips are now visible to friends" : "Trips are now hidden from friends", "info");
+    showNotification(hideTrips ? "Trips visibility changed. Save changes to update." : "Trips visibility changed. Save changes to update.", "info");
+  };
+  
+  const uploadProfileImage = async () => {
+    if (!profileImageFile || !LoggedUser) return null;
+    
+    const formData = new FormData();
+    formData.append('avatar', profileImageFile);
+    
+    try {
+      const response = await axiosUser.patch(`/user/${LoggedUser.id}/avatar`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload profile image:", error);
+      throw new Error("Failed to upload profile image");
+    }
+  };
+  
+  const uploadBannerImage = async () => {
+    if (!bannerImageFile || !LoggedUser) return null;
+    
+    const formData = new FormData();
+    formData.append('banner', bannerImageFile);
+    
+    try {
+      const response = await axiosUser.patch(`/user/${LoggedUser.id}/banner`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload banner image:", error);
+      throw new Error("Failed to upload banner image");
+    }
+  };
+  
+  const updateUserBio = async () => {
+    if (!LoggedUser) return null;
+    
+    try {
+      // Update user bio in Supabase
+      const response = await axiosUser.patch(`/user/${LoggedUser.id}/bio`, {
+        bio: bio
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update user bio:", error);
+      throw new Error("Failed to update user bio");
+    }
   };
   
   const handleSaveChanges = async (e) => {
     e.preventDefault();
-
+    
+    if (!LoggedUser) {
+      showNotification("User data not available", "error");
+      return;
+    }
+    
+    setIsSaving(true);
+    
     try {
-      if (!LoggedUser) {
-        showNotification("User data not available", "error");
-        return;
+      // Create an array to store all update operations
+      const updateOperations = [];
+      
+      // Only add profile image upload if a new file was selected
+      if (profileImageFile) {
+        updateOperations.push(uploadProfileImage());
       }
       
-      // Prepare updated user data
-      const updatedUserData = {
-        ...LoggedUser,
-        image: profileImage,
-        bannerImage: bannerImage,
-        bio: bio,
-        hideTrips: hideTrips,
-      };
-      
-      // Try to save to API
-      try {
-        await axiosInstance.put("/users/me", updatedUserData);
-        // Reload user data in context after update
-        loadUserData();
-      } catch (apiError) {
-        console.warn("Could not save to API:", apiError);
-        showNotification("Changes saved locally only", "warning");
+      // Only add banner image upload if a new file was selected
+      if (bannerImageFile) {
+        updateOperations.push(uploadBannerImage());
       }
+      
+      // Always update bio, as it might have changed
+      updateOperations.push(updateUserBio());
+      
+      // Wait for all operations to complete
+      await Promise.all(updateOperations);
+      
+      // Reload user data to get the updated profile
+      await loadUserData();
       
       showNotification("Profile settings saved successfully!", "success");
+      
+      // Clear file states after successful upload
+      setProfileImageFile(null);
+      setBannerImageFile(null);
     } catch (error) {
       showNotification("Failed to save settings: " + error.message, "error");
+    } finally {
+      setIsSaving(false);
     }
   };
   
@@ -250,6 +324,7 @@ function Settings() {
                     onChange={handleBioChange}
                     placeholder="Tell others about yourself..."
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[120px]"
+                    maxLength={250}
                   />
                   <div className="absolute bottom-3 right-3 text-gray-400 text-sm">
                     {bio.length}/250
@@ -308,9 +383,17 @@ function Settings() {
               <div className="mt-12 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark transition-colors"
+                  className={`bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark transition-colors flex items-center ${isSaving ? 'opacity-70 cursor-wait' : ''}`}
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? (
+                    <>
+                      <span className="mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
                 </button>
               </div>
             </form>
@@ -320,15 +403,9 @@ function Settings() {
         {/* Notification */}
         {notification && (
           <Notification 
-            key={notification.key}
             type={notification.type} 
             text={notification.text}
             onClose={() => setNotification(null)}
-            options={{ 
-              position: "top-right",
-              autoClose: 3000,
-              pauseOnHover: false
-            }}
           />
         )}
       </div>
