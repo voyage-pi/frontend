@@ -2,6 +2,7 @@ import { useState } from "react";
 import LoginIllustration from "../assets/login.svg";
 import { axiosUser } from "../utils/axiosInstance";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ function Login() {
     email: "voyage@gmail.com",
     password: "••••••••"
   });
+  
+  const { setUser, setIsAuthenticated, loadUserData } = useAuth();
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,13 +55,24 @@ function Login() {
       console.log('Login response:', response);
       setLoginStatus({ type: 'success', message: 'Login successful!' });
       
-      
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      // Load user data after successful login
+      try {
+        await loadUserData();
+        
+        // Navigate to home page after successfully loading user data
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
+      } catch (userError) {
+        console.error('Error loading user data after login:', userError);
+        setLoginStatus({ 
+          type: 'error', 
+          message: 'Login successful but failed to load user data. Please refresh the page.'
+        });
+      }
     } catch (error) {
       console.error('Error during login:', error);
-      const errorMessage = error.response?.data?.message || 'Invalid credentials . Please try again.';
+      const errorMessage = error.response?.data?.message || 'Invalid credentials. Please try again.';
       setLoginStatus({ type: 'error', message: errorMessage });
     } finally {
       setIsLoading(false);

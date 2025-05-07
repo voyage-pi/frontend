@@ -15,6 +15,99 @@ export const AuthProvider = ({ children }) => {
 
     const navigate = useNavigate()
 
+    // Process user data to ensure all required fields are present
+    const processUserData = (userData) => {
+        if (!userData) return null;
+        
+        // Ensure stats object exists
+        if (!userData.stats) {
+            userData.stats = {};
+        }
+        
+        // Fetch trips count if not already there
+        if (typeof userData.stats.trips === 'undefined') {
+            // Try to get from trip_count or trips_count properties if they exist
+            userData.stats.trips = userData.trip_count || userData.trips_count || 0;
+        }
+        
+        // Fetch friends count if not already there
+        if (typeof userData.stats.friends === 'undefined') {
+            userData.stats.friends = userData.friends_count || 0;
+        }
+        
+        // Fetch countries count if not already there
+        if (typeof userData.stats.countries === 'undefined') {
+            userData.stats.countries = userData.countries_count || 0;
+        }
+        
+        // Fetch saved count if not already there
+        if (typeof userData.stats.saved === 'undefined') {
+            userData.stats.saved = userData.saved_count || 0;
+        }
+        
+        return userData;
+    };
+
+    // Function to load user trip statistics
+    const loadUserStats = async (userId) => {
+        if (!userId) return null;
+        
+        try {
+            // Fetch user trip statistics
+            const statsResponse = await axiosUser.get(`/trip-info/stats/${userId}`);
+            console.log(`Trip stats for user ${userId}:`, statsResponse.data);
+            return statsResponse.data;
+        } catch (error) {
+            console.error("Error fetching user stats:", error);
+            return null;
+        }
+    };
+
+    // Function to load/refresh user data
+    const loadUserData = async () => {
+        setIsUserLoading(true);
+        try {
+            const response = await axiosUser.get('/user/current_user');
+            console.log('User data refresh - API call successful:', response);
+            
+            // Extract user data from the nested response structure
+            let userData = response.data.response;
+            
+            if (userData && userData.id) {
+                console.log('User data loaded successfully with ID:', userData.id);
+                
+                // Try to load user statistics
+                const stats = await loadUserStats(userData.id);
+                if (stats) {
+                    // Make sure stats object exists
+                    if (!userData.stats) userData.stats = {};
+                    
+                    // Update stats with data from the API
+                    userData.stats.trips = stats.num_trips || 0;
+                    userData.stats.countries = stats.num_countries || 0;
+                    userData.stats.cities = stats.num_cities || 0;
+                    userData.stats.days = stats.num_days || 0;
+                }
+                
+                // Process user data to ensure all fields are present
+                userData = processUserData(userData);
+                
+                // Update the user state
+                setUser(userData);
+                setIsAuthenticated(true);
+            } else {
+                console.error('Invalid user data structure:', response.data);
+                throw new Error('User data is missing required properties');
+            }
+        } catch (error) {
+            console.log('User data refresh - API call error:', error);
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setIsUserLoading(false);
+        }
+    };
+
     useEffect(() => {
         const checkAuth = async () => {
             try {
@@ -22,10 +115,27 @@ export const AuthProvider = ({ children }) => {
                 console.log('API call successful:', response);
                 
                 // Extract user data from the nested response structure
-                const userData = response.data.response;
+                let userData = response.data.response;
                 
                 if (userData && userData.id) {
                     console.log('User data loaded successfully with ID:', userData.id);
+                    
+                    // Try to load user statistics
+                    const stats = await loadUserStats(userData.id);
+                    if (stats) {
+                        // Make sure stats object exists
+                        if (!userData.stats) userData.stats = {};
+                        
+                        // Update stats with data from the API
+                        userData.stats.trips = stats.num_trips || 0;
+                        userData.stats.countries = stats.num_countries || 0;
+                        userData.stats.cities = stats.num_cities || 0;
+                        userData.stats.days = stats.num_days || 0;
+                    }
+                    
+                    // Process user data to ensure all fields are present
+                    userData = processUserData(userData);
+                    
                     setUser(userData);
                     setIsAuthenticated(true);
                 } else {
@@ -48,7 +158,15 @@ export const AuthProvider = ({ children }) => {
     },[] )
 
     return(
-        <AuthContext.Provider value={{ LoggedUser, setUser, isAuthenticated, setIsAuthenticated, isUserLoading, setIsUserLoading}}>
+        <AuthContext.Provider value={{ 
+            LoggedUser, 
+            setUser, 
+            isAuthenticated, 
+            setIsAuthenticated, 
+            isUserLoading, 
+            setIsUserLoading,
+            loadUserData
+        }}>
             {children}
         </AuthContext.Provider>
     )

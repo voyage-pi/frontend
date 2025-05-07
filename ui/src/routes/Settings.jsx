@@ -1,25 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PageTemplate from "../components/PageTemplate";
-import { FaCamera, FaEye, FaEyeSlash, FaImage } from "react-icons/fa";
+import { FaCamera, FaEye, FaEyeSlash, FaImage, FaUserCircle } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 
-import userData from "../../public/user.json";
+import { axiosUser } from "../utils/axiosInstance";
 import Notification from "../components/Notification";
+import { useAuth } from "../context/AuthContext";
+
+// Fallback user data when API is not available
+const defaultUserData = {
+  name: "John Doe",
+  tag: "@johndoe",
+  image: null,
+  bannerImage: null,
+  bio: "Travel enthusiast",
+  hideTrips: false,
+  stats: {
+    trips: 0,
+    countries: 0,
+    cities: 0,
+    saved: 0,
+    friends: 0
+  }
+};
 
 function Settings() {
-  const [profileImage, setProfileImage] = useState(userData.image);
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [bannerImage, setBannerImage] = useState(null);
-  const [bio, setBio] = useState(userData.bio || "Travel enthusiast");
+  const [bannerImageFile, setBannerImageFile] = useState(null);
+  const [bio, setBio] = useState("");
   const [hideTrips, setHideTrips] = useState(false);
   const [notification, setNotification] = useState(null);
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Get auth context
+  const { 
+    LoggedUser, 
+    isAuthenticated,
+    loadUserData
+  } = useAuth();
+
+  useEffect(() => {
+    // If user data exists in context, initialize the component
+    if (LoggedUser) {
+      initializeWithUserData(LoggedUser);
+    } else {
+      // If not authenticated or no user data, load it
+      loadUserData();
+    }
+  }, [LoggedUser, loadUserData]);
+
+  // Initialize component state with user data
+  const initializeWithUserData = (userData) => {
+    setProfileImage(userData.avatar_url || userData.image);
+    setBannerImage(userData.banner_url || userData.bannerImage);
+    setBio(userData.bio || "");
+    setHideTrips(userData.hideTrips || false);
+    setIsLoading(false);
+    
+    // Debug
+    console.log("Settings - User Data:", userData);
+  };
+
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setProfileImageFile(file);
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
-        showNotification("Profile image updated", "info");
+        showNotification("Profile image selected. Save changes to update.", "info");
       };
       reader.readAsDataURL(file);
     }
@@ -28,10 +81,12 @@ function Settings() {
   const handleBannerImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setBannerImageFile(file);
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerImage(reader.result);
-        showNotification("Banner image updated", "info");
+        showNotification("Banner image selected. Save changes to update.", "info");
       };
       reader.readAsDataURL(file);
     }
@@ -43,17 +98,107 @@ function Settings() {
   
   const handleToggleTripsVisibility = () => {
     setHideTrips(!hideTrips);
-    showNotification(hideTrips ? "Trips are now visible to friends" : "Trips are now hidden from friends", "info");
+    showNotification(hideTrips ? "Trips visibility changed. Save changes to update." : "Trips visibility changed. Save changes to update.", "info");
   };
   
-  const handleSaveChanges = (e) => {
-    e.preventDefault();
+  const uploadProfileImage = async () => {
+    if (!profileImageFile || !LoggedUser) return null;
+    
+    const formData = new FormData();
+    formData.append('avatar', profileImageFile);
     
     try {
-      //api call
+      const response = await axiosUser.patch(`/user/${LoggedUser.id}/avatar`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload profile image:", error);
+      throw new Error("Failed to upload profile image");
+    }
+  };
+  
+  const uploadBannerImage = async () => {
+    if (!bannerImageFile || !LoggedUser) return null;
+    
+    const formData = new FormData();
+    formData.append('banner', bannerImageFile);
+    
+    try {
+      const response = await axiosUser.patch(`/user/${LoggedUser.id}/banner`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload banner image:", error);
+      throw new Error("Failed to upload banner image");
+    }
+  };
+  
+  const updateUserBio = async () => {
+    if (!LoggedUser) return null;
+    
+    try {
+      // Update user bio in Supabase
+      const response = await axiosUser.patch(`/user/${LoggedUser.id}/bio`, {
+        bio: bio
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update user bio:", error);
+      throw new Error("Failed to update user bio");
+    }
+  };
+  
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    
+    if (!LoggedUser) {
+      showNotification("User data not available", "error");
+      return;
+    }
+    
+    setIsSaving(true);
+    
+    try {
+      // Create an array to store all update operations
+      const updateOperations = [];
+      
+      // Only add profile image upload if a new file was selected
+      if (profileImageFile) {
+        updateOperations.push(uploadProfileImage());
+      }
+      
+      // Only add banner image upload if a new file was selected
+      if (bannerImageFile) {
+        updateOperations.push(uploadBannerImage());
+      }
+      
+      // Always update bio, as it might have changed
+      updateOperations.push(updateUserBio());
+      
+      // Wait for all operations to complete
+      await Promise.all(updateOperations);
+      
+      // Reload user data to get the updated profile
+      await loadUserData();
+      
       showNotification("Profile settings saved successfully!", "success");
+      
+      // Clear file states after successful upload
+      setProfileImageFile(null);
+      setBannerImageFile(null);
     } catch (error) {
       showNotification("Failed to save settings: " + error.message, "error");
+    } finally {
+      setIsSaving(false);
     }
   };
   
@@ -68,6 +213,16 @@ function Settings() {
       setNotification(null);
     }, 3000);
   };
+
+  if (isLoading || !LoggedUser) {
+    return (
+      <PageTemplate>
+        <div className="h-screen flex justify-center items-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+        </div>
+      </PageTemplate>
+    );
+  }
 
   return (
     <PageTemplate>
@@ -116,7 +271,7 @@ function Settings() {
                     {profileImage ? (
                       <img 
                         src={profileImage} 
-                        alt={userData.name} 
+                        alt={LoggedUser.name} 
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -142,7 +297,7 @@ function Settings() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                       <input
                         type="text"
-                        defaultValue={userData.name}
+                        defaultValue={LoggedUser.name}
                         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         disabled
                       />
@@ -151,7 +306,7 @@ function Settings() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                       <input
                         type="text"
-                        defaultValue={userData.tag}
+                        defaultValue={LoggedUser.tag}
                         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         disabled
                       />
@@ -169,6 +324,7 @@ function Settings() {
                     onChange={handleBioChange}
                     placeholder="Tell others about yourself..."
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[120px]"
+                    maxLength={250}
                   />
                   <div className="absolute bottom-3 right-3 text-gray-400 text-sm">
                     {bio.length}/250
@@ -181,23 +337,23 @@ function Settings() {
                 <h2 className="text-lg font-black mb-4">Statistics</h2>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-secondary">{userData.stats.trips}</div>
+                    <div className="font-bold text-2xl text-secondary">{LoggedUser.stats?.trips || 0}</div>
                     <div className="text-gray-600">Trips</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-secondary">{userData.stats.countries}</div>
+                    <div className="font-bold text-2xl text-secondary">{LoggedUser.stats?.countries || 0}</div>
                     <div className="text-gray-600">Countries</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-secondary">{userData.stats.cities}</div>
+                    <div className="font-bold text-2xl text-secondary">{LoggedUser.stats?.cities || 0}</div>
                     <div className="text-gray-600">Cities</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-secondary">{userData.stats.saved}</div>
+                    <div className="font-bold text-2xl text-secondary">{LoggedUser.stats?.saved || 0}</div>
                     <div className="text-gray-600">Saved Places</div>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div className="font-bold text-2xl text-secondary">{userData.stats.friends}</div>
+                    <div className="font-bold text-2xl text-secondary">{LoggedUser.stats?.friends || 0}</div>
                     <div className="text-gray-600">Friends</div>
                   </div>
                 </div>
@@ -227,9 +383,17 @@ function Settings() {
               <div className="mt-12 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark transition-colors"
+                  className={`bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark transition-colors flex items-center ${isSaving ? 'opacity-70 cursor-wait' : ''}`}
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? (
+                    <>
+                      <span className="mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
                 </button>
               </div>
             </form>
@@ -239,15 +403,9 @@ function Settings() {
         {/* Notification */}
         {notification && (
           <Notification 
-            key={notification.key}
             type={notification.type} 
             text={notification.text}
             onClose={() => setNotification(null)}
-            options={{ 
-              position: "top-right",
-              autoClose: 3000,
-              pauseOnHover: false
-            }}
           />
         )}
       </div>

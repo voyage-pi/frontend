@@ -11,17 +11,64 @@ import {
 } from "react-icons/fa6"
 import VoyageCompleteLogo from "../assets/voyage-complete-logo-navy.png"
 import VoyageIconLogo from "../assets/voyage-logo.png"
-import userData from "../../public/user.json"
 import Notification from "./Notification"
 import { RiLoginCircleFill } from "react-icons/ri";
 import { FaUserPlus, FaSignOutAlt } from "react-icons/fa";
 import { useNotifications } from "../context/NotificationsContext";
+import { useAuth } from "../context/AuthContext";
+import { axiosUser } from "../utils/axiosInstance";
 
 function SideBar({ onToggle, onMenuItemClick }) {
     const location = useLocation();
     const navigate = useNavigate();
+    
+    // Get auth context safely with a fallback
+    const auth = useAuth();
+    const { 
+        LoggedUser = null, 
+        isAuthenticated = false, 
+        setIsAuthenticated = () => {},
+        setUser = () => {},
+        loadUserData = () => {}
+    } = auth || {};
+    
     const isFormsPath = location.pathname === "/forms" || location.pathname === "/itinerary";
     const { totalCount, friendRequestCount, tripInviteCount } = useNotifications();
+    
+    // Debug user data structure
+    useEffect(() => {
+        if (LoggedUser) {
+            console.log("SideBar - User Data:", LoggedUser);
+            console.log("SideBar - User Stats:", LoggedUser.stats);
+            
+            // If stats don't exist or trips count is incorrect, fetch fresh data
+            if (!LoggedUser.stats || typeof LoggedUser.stats.trips === 'undefined') {
+                console.log("Stats missing or incomplete, refreshing user data");
+                loadUserData();
+            }
+        }
+    }, [LoggedUser, loadUserData]);
+    
+    // Process stats from user data
+    const processUserStats = () => {
+        if (!LoggedUser) return { trips: 0, friends: 0, countries: 0, saved: 0 };
+        
+        // Check for stats object
+        if (!LoggedUser.stats) {
+            console.warn("User stats object is missing");
+            return { trips: 0, friends: 0, countries: 0, saved: 0 };
+        }
+        
+        // Access stats properties with fallbacks
+        return {
+            trips: LoggedUser.stats.trips || LoggedUser.trips_count || 0,
+            friends: LoggedUser.stats.friends || LoggedUser.friends_count || 0,
+            countries: LoggedUser.stats.countries || LoggedUser.countries_count || 0,
+            saved: LoggedUser.stats.saved || LoggedUser.saved_count || 0
+        };
+    };
+    
+    const userStatsData = processUserStats();
     
     const [isExpanded, setIsExpanded] = useState(() => {
         const storedState = JSON.parse(localStorage.getItem("sidebarState"));
@@ -35,7 +82,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
     const [showNotification, setShowNotification] = useState(false);
     const [notificationMessage, setNotificationMessage] = useState("");
     
-    const isGuest = userData.name === "Guest";
+    const isGuest = !isAuthenticated || !LoggedUser;
 
     useEffect(() => {
         if (isFormsPath && isExpanded) {
@@ -63,31 +110,92 @@ function SideBar({ onToggle, onMenuItemClick }) {
         }, 500);
     };
 
-    const userStats = [
-        { label: "Trips", count: userData.stats.trips },
-        { label: "Friends", count: userData.stats.friends },
-        { label: "Countries", count: userData.stats.countries },
+    const userStats = isGuest ? [] : [
+        { label: "Trips", count: userStatsData.trips },
+        { label: "Friends", count: userStatsData.friends },
+        { label: "Countries", count: userStatsData.countries },
     ]
 
+    const userTag = LoggedUser?.tag || "";
+
+    // Default placeholder stats for guests
+    const defaultGuestStats = {
+        trips: 0,
+        saved: 0,
+        friends: 0
+    };
+
     const menuItems = [
-        { icon: FaEarthAmericas, label: "Trips", count: userData.stats.trips, path: "/", blockNavigation: false, hasNotification: tripInviteCount > 0, notificationCount: tripInviteCount },
-        { icon: FaHeart, label: "Saved", count: userData.stats.saved, path: "/saved", blockNavigation: isGuest },
-        { icon: FaUsers, label: "Friends", count: userData.stats.friends, path: "/friends", blockNavigation: isGuest, hasNotification: friendRequestCount > 0, notificationCount: friendRequestCount },
+        { 
+            icon: FaEarthAmericas, 
+            label: "Trips", 
+            count: userStatsData.trips, 
+            path: isGuest ? "/" : `/${userTag}`, 
+            blockNavigation: false, 
+            hasNotification: tripInviteCount > 0, 
+            notificationCount: tripInviteCount,
+            exact: true
+        },
+        { 
+            icon: FaHeart, 
+            label: "Saved", 
+            count: userStatsData.saved, 
+            path: isGuest ? "/saved" : `/${userTag}/saved`, 
+            blockNavigation: isGuest,
+            exact: false
+        },
+        { 
+            icon: FaUsers, 
+            label: "Friends", 
+            count: userStatsData.friends, 
+            path: isGuest ? "/friends" : `/${userTag}/friends`, 
+            blockNavigation: isGuest, 
+            hasNotification: friendRequestCount > 0, 
+            notificationCount: friendRequestCount,
+            exact: false
+        },
     ]
     
+    // Custom function to determine if a route is active
+    const isPathActive = (path, exact) => {
+        if (exact) {
+            return location.pathname === path || 
+                   (path === "/" && location.pathname === "") ||
+                   (userTag && path === `/${userTag}` && (location.pathname === `/${userTag}` || location.pathname === "/"));
+        }
+        return location.pathname.startsWith(path);
+    }
+
     const handleMenuItemClick = (item, blockNavigation, e) => {
-        
         if (onMenuItemClick) {
             onMenuItemClick(item);
         }
     };
 
     const handleBottomItemClick = (label) => {
-        onMenuItemClick(label);
+        if (onMenuItemClick) {
+            onMenuItemClick(label);
+        }
         
         if (label === "Logout") {
-            // Perform logout logic here if needed (clear tokens, etc.)
-            navigate("/login");
+            // Perform logout request to the backend
+            const handleLogout = async () => {
+                try {
+                    await axiosUser.post('/user/logout');
+                    console.log('Logout successful');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    // Update authentication context
+                    setIsAuthenticated(false);
+                    // Clear user data
+                    setUser(null);
+                    // Redirect to login page
+                    navigate("/login");
+                }
+            };
+            
+            handleLogout();
         } else if (label === "Settings") {
             navigate("/settings");
         }
@@ -180,14 +288,14 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <div
                                     className={`rounded-full text-primary/90 bg-white border-1 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
                                     <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>
-                                        <img src={userData.image} alt="User Avatar"/>
+                                        <img src={LoggedUser?.image} alt="User Avatar"/>
                                         </span>
                                 </div>
                             </div>
 
                             <div className={`text-start mt-4 w-full text-secondary transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
-                                <div className="font-bold text-2xl">{userData.name}</div>
-                                <p className="text-base opacity-70">{userData.tag}</p>
+                                <div className="font-bold text-2xl">{LoggedUser?.name}</div>
+                                <p className="text-base opacity-70">{LoggedUser?.tag}</p>
 
                                 <div className="flex justify-between mt-4 text-base">
                                     {userStats.map(({ label, count }, index) => (
@@ -217,7 +325,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
                             <nav className="w-full mt-10 transition-all duration-400 ease-in-out">
                                 <ul className="w-full">
-                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification, notificationCount }, index) => (
+                                    {menuItems.map(({ icon: Icon, label, count, path, blockNavigation, hasNotification, notificationCount, exact }, index) => (
                                         <li key={index} className="w-full">
                                             {blockNavigation ? (
                                                 <div
@@ -235,25 +343,44 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                             ) : (
                                                 <NavLink
                                                     to={path}
-                                                    className={({ isActive }) =>`flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 px-3 ${isActive && isExpanded ? "font-bold bg-primary/10 text-primary" : "px-0 hover:opacity-80 items-center justify-center"}`}
+                                                    end={exact}
+                                                    className={({ isActive }) => {
+                                                        // Override isActive with our custom function
+                                                        const isActiveRoute = isPathActive(path, exact);
+                                                        
+                                                        return `flex w-full items-center gap-3 py-2 rounded-full mb-5 h-10 ${
+                                                            isActiveRoute 
+                                                                ? isExpanded 
+                                                                    ? "font-bold bg-primary/10 text-primary px-3" 
+                                                                    : "text-primary justify-center"
+                                                                : isExpanded
+                                                                    ? "px-3 hover:opacity-80" 
+                                                                    : "px-0 hover:opacity-80 justify-center"
+                                                        }`;
+                                                    }}
                                                     onClick={(e) => handleMenuItemClick(label, blockNavigation, e)}
                                                 >
-                                                    {({ isActive }) => (
-                                                        <>
-                                                            <div className={`relative flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
-                                                                <Icon className={isActive ? "text-primary" : "text-secondary"} size={22}/>
-                                                                {hasNotification && (
-                                                                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                                                                        {notificationCount}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
-                                                                <span className="text-lg whitespace-nowrap">{label}</span>
-                                                                <span className="opacity-70">{count}</span>
-                                                            </div>
-                                                        </>
-                                                    )}
+                                                    {({ isActive }) => {
+                                                        // Override isActive with our custom function
+                                                        const isActiveRoute = isPathActive(path, exact);
+                                                        
+                                                        return (
+                                                            <>
+                                                                <div className={`relative flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : "ml-3 mt-3"} transition-all duration-400 ease-in-out`}>
+                                                                    <Icon className={isActiveRoute ? "text-primary" : "text-secondary"} size={22}/>
+                                                                    {hasNotification && (
+                                                                        <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                                                                            {notificationCount}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className={`flex w-full justify-between items-center transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>
+                                                                    <span className="text-lg whitespace-nowrap">{label}</span>
+                                                                    <span className="opacity-70">{count}</span>
+                                                                </div>
+                                                            </>
+                                                        );
+                                                    }}
                                                 </NavLink>
                                             )}
                                         </li>
