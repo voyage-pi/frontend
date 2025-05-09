@@ -15,7 +15,8 @@ const StepContent = ({
   onRatingSelect,
   onValidationChange,
   setShowLeaveButton,
-  handleNext
+  handleNext,
+  step6SubStep
 }) => {
   switch (currentStep) {
     case 1:
@@ -38,7 +39,7 @@ const StepContent = ({
         />
       )
     case 6:
-      return <Step6Content />
+      return <Step6Content step6SubStep={step6SubStep} />
     default:
       return <div>Invalid step</div>
   }
