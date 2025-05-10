@@ -17,6 +17,7 @@ function Forms() {
   const totalSteps = 6
   const [answers, setAnswers] = useState([...questions])
   const [subQuestionIndex, setSubQuestionIndex] = useState(0)
+  const [step6SubStep, setStep6SubStep] = useState(0)
   const totalSubQuestions = questions.length
   const navigate = useNavigate()
   const [isNavigating, setIsNavigating] = useState(false)
@@ -32,6 +33,7 @@ function Forms() {
     const savedSubQuestionIndex =
       parseInt(localStorage.getItem("subQuestionIndex")) || 0;
     const savedAnswers = JSON.parse(localStorage.getItem("answers"));
+    const savedStep6SubStep = parseInt(localStorage.getItem("step6SubStep")) || 0;
 
     if (savedStep) {
       setCurrentStep(savedStep);
@@ -39,6 +41,10 @@ function Forms() {
 
     if (savedSubQuestionIndex) {
       setSubQuestionIndex(savedSubQuestionIndex);
+    }
+    
+    if (savedStep6SubStep !== undefined) {
+      setStep6SubStep(savedStep6SubStep);
     }
 
     if (savedAnswers && Array.isArray(savedAnswers) && savedAnswers.length > 0) {
@@ -56,12 +62,12 @@ function Forms() {
     if (isInitialized) {
       localStorage.setItem("currentStep", currentStep);
       localStorage.setItem("subQuestionIndex", subQuestionIndex);
+      localStorage.setItem("step6SubStep", step6SubStep);
       localStorage.setItem("answers", JSON.stringify(answers));
     }
-  }, [currentStep, subQuestionIndex, answers, isInitialized]);
+  }, [currentStep, subQuestionIndex, step6SubStep, answers, isInitialized]);
 
   // Calculate progress percentage for progress bar
-
   const progressPercentage = currentStep === 5
     ? Math.round(((subQuestionIndex) / totalSubQuestions) * 100)
     : 0;
@@ -91,8 +97,17 @@ function Forms() {
       } else {
         // When all questions in step 5 are done, go to step 6
         setCurrentStep(currentStep + 1);
+        setStep6SubStep(0); // Ensure we start at the first substep of step 6
       }
       return;
+    }
+
+    if (currentStep === 6) {
+      if (step6SubStep === 0) {
+        setStep6SubStep(1);
+      } else {
+        handleFinish();
+      }
     }
   };
 
@@ -110,10 +125,16 @@ function Forms() {
       } else {
         setCurrentStep(currentStep - 1);
       }
+      return;
     }
     
     if (currentStep === 6) {
-      setCurrentStep(currentStep - 1);
+      if (step6SubStep === 1) {
+        setStep6SubStep(0);
+      } else {
+        setCurrentStep(currentStep - 1);
+        setSubQuestionIndex(totalSubQuestions - 1); // Go back to the last question of step 5
+      }
     }
   };
 
@@ -138,7 +159,7 @@ function Forms() {
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-    //const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
+    const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
 
     setIsNavigating(true);
 
@@ -167,11 +188,11 @@ function Forms() {
     }
 
     // Format must-visit places for API
-    //const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
-    //  name: place.name,
-    //  latitude: place.position.lat,
-    //  longitude: place.position.lng
-    //}));f
+    const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
+      name: place.name,
+      latitude: place.position.lat,
+      longitude: place.position.lng
+    }));
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
@@ -181,6 +202,7 @@ function Forms() {
       users: ["user123"],
       display_name: localStorage.getItem("Location"),
       data_type: obj,
+      must_visit_places: formattedMustVisitPlaces,
       questions: {
         user123: userRatings.map((answer, index) => ({
           question_id: index,
@@ -213,10 +235,10 @@ function Forms() {
         
         // Clear all localStorage items related to the form
         const keysToRemove = [
-          "currentStep", "subQuestionIndex", "answers", 
+          "currentStep", "subQuestionIndex", "step6SubStep", "answers", 
           "Start Date", "Trip Type", "radius", "Latitude", 
           "Longitude", "Location", "Budget", "Duration",
-          "userRatings" // Also clear userRatings
+          "userRatings", "MustVisitPlaces" // Also clear userRatings and MustVisitPlaces
         ];
         
         keysToRemove.forEach(key => localStorage.removeItem(key));
@@ -226,6 +248,7 @@ function Forms() {
         setAnswers(resetAnswers);
         setCurrentStep(1);
         setSubQuestionIndex(0);
+        setStep6SubStep(0);
         
       } else {
         console.error("Invalid response structure:", response.data);
@@ -270,6 +293,7 @@ function Forms() {
               onValidationChange={setIsStep5Valid}
               setShowLeaveButton={setShowLeaveButton}
               handleNext={handleNext}
+              step6SubStep={step6SubStep}
             />
 
             {showError && (
@@ -299,6 +323,7 @@ function Forms() {
                 </button>
               )}
 
+              {/* Modified Next/Finish button logic */}
               {(currentStep >= 3 && currentStep < 5) ||
                 (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
                 <button
@@ -315,8 +340,18 @@ function Forms() {
                 >
                   Next <TiArrowRight className="ml-1" />
                 </button>
-              ) : currentStep === 6 ? (
-                <button className="btn btn-primary" onClick={handleFinish}>
+              ) : currentStep === 6 && step6SubStep === 0 ? (
+                <button
+                  onClick={handleNext}
+                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                >
+                  Next <TiArrowRight className="ml-1" />
+                </button>
+              ) : currentStep === 6 && step6SubStep === 1 ? (
+                <button
+                  onClick={handleNext}
+                  className="ml-auto btn btn-primary"
+                >
                   Finish
                 </button>
               ) : null}
@@ -338,4 +373,3 @@ function Forms() {
 }
 
 export default Forms
-
