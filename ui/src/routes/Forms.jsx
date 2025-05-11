@@ -160,6 +160,11 @@ function Forms() {
       }
       obj.place_name = localStorage.getItem("Location")
     }
+    else if (tripType == "road") {
+      obj.origin=JSON.parse(localStorage.getItem("origin"))
+      obj.destination=JSON.parse(localStorage.getItem("destination"))
+      obj.polylines= localStorage.getItem("route")
+    }
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,

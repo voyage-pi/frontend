@@ -47,7 +47,12 @@ const RoadTripContent = () => {
         });
         console.log(response.data.routes);
         setRoute(response.data.routes);
+        //store the origin and destination in local storage such has the route
+        localStorage.setItem("Location","Driving from "+currentTextOrigin+" to "+currentTextDes);
+        localStorage.setItem("route",response.data.routes[0].polylineEncoded);
       }
+
+
     };
     routing();
   }, [markersDes, markersOrigin]);
@@ -76,12 +81,13 @@ const RoadTripContent = () => {
         address: "",
         image: "",
       };
-      localStorage.setItem("Longitude", response.data.longitude);
-      localStorage.setItem("Latitude", response.data.latitude);
-      localStorage.setItem("place_name", location);
+      console.log("Markers", {...m.position});
       if (origin) {
+
+        localStorage.setItem("origin", JSON.stringify({latitude:m.position.lat, longitude:m.position.lng}));
         setMarkersOrigin([m]);
       } else {
+        localStorage.setItem("destination", JSON.stringify({latitude:m.position.lat, longitude:m.position.lng}));
         setMarkersDes([m]);
       }
     } catch (error) {
@@ -92,7 +98,6 @@ const RoadTripContent = () => {
       });
       console.error("Search error:", error);
     }
-    localStorage.setItem("Location", location);
   };
   const autocompleteSearch = async (origin) => {
     try {
