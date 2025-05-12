@@ -8,7 +8,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import Map from "../components/Map";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
-import { FaRegFloppyDisk } from "react-icons/fa6";
+import { FaRegFloppyDisk, FaMapLocationDot } from "react-icons/fa6";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { axiosRecommendation } from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
@@ -694,6 +694,78 @@ function Itinerary() {
       });
     }
   };
+
+  const generateGoogleMapsUrl = (dayIndex) => {
+    if (!itinerary.days || !itinerary.days[dayIndex]) return null;
+
+    const day = itinerary.days[dayIndex];
+    const waypoints = [];
+    let origin = null;
+    let destination = null;
+
+    // Process morning activities
+    if (day.morning_activities && day.morning_activities.length > 0) {
+      const firstActivity = day.morning_activities[0];
+      if (firstActivity.place.location) {
+        origin = `${firstActivity.place.location.latitude},${firstActivity.place.location.longitude}`;
+      }
+      
+      // Add remaining morning activities as waypoints
+      day.morning_activities.slice(1).forEach(activity => {
+        if (activity.place.location) {
+          waypoints.push(`${activity.place.location.latitude},${activity.place.location.longitude}`);
+        }
+      });
+    }
+
+    // Process afternoon activities
+    if (day.afternoon_activities && day.afternoon_activities.length > 0) {
+      day.afternoon_activities.forEach(activity => {
+        if (activity.place.location) {
+          if (!origin) {
+            origin = `${activity.place.location.latitude},${activity.place.location.longitude}`;
+          } else {
+            waypoints.push(`${activity.place.location.latitude},${activity.place.location.longitude}`);
+          }
+        }
+      });
+
+      // Set the last activity as destination
+      const lastActivity = day.afternoon_activities[day.afternoon_activities.length - 1];
+      if (lastActivity.place.location) {
+        destination = `${lastActivity.place.location.latitude},${lastActivity.place.location.longitude}`;
+      }
+    }
+
+    if (!origin || !destination) return null;
+
+    const waypointsStr = waypoints.length > 0 ? `&waypoints=${waypoints.join('|')}` : '';
+    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsStr}&travelmode=driving`;
+  };
+
+  const handleOpenInGoogleMaps = (dayIndex) => {
+    const url = generateGoogleMapsUrl(dayIndex);
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (exportDropdownRef.current && !exportDropdownRef.current.contains(event.target)) {
+        setExportDropdownOpen(false);
+      }
+    }
+    if (exportDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [exportDropdownOpen]);
 
   return (
     <PageTemplate>
