@@ -29,7 +29,17 @@ function Trips() {
   const [viewingUser, setViewingUser] = useState(null);
   const isViewingOwnTrips = !userTag || (LoggedUser && userTag === LoggedUser.tag);
 
-  const { totalCount, addTripInvite, tripInviteCount } = useNotifications();
+  const { totalCount, addTripInvite, tripInviteCount, refreshNotifications } = useNotifications();
+
+  // Refresh notifications when component mounts
+  useEffect(() => {
+    console.log("[Trips] Component mounted, refreshing notifications");
+    if (LoggedUser) {
+      refreshNotifications(LoggedUser.id);
+    } else {
+      console.log("[Trips] LoggedUser not available yet, will refresh later");
+    }
+  }, [refreshNotifications, LoggedUser]);
 
   // Load sample trip invites if none exist yet
   useEffect(() => {
