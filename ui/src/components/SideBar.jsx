@@ -295,7 +295,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
 
                             <div className={`text-start mt-4 w-full text-secondary transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
                                 <div className="font-bold text-2xl">{LoggedUser?.name}</div>
-                                <p className="text-base opacity-70">{LoggedUser?.tag}</p>
+                                <p className="text-base opacity-70">@{LoggedUser?.tag}</p>
 
                                 <div className="flex justify-between mt-4 text-base">
                                     {userStats.map(({ label, count }, index) => (
