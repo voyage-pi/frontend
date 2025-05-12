@@ -288,7 +288,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <div
                                     className={`rounded-full text-primary/90 bg-white border-1 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
                                     <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>
-                                        <img src={LoggedUser?.image} alt="User Avatar"/>
+                                        <img src={LoggedUser?.avatar_url} alt="User Avatar"/>
                                         </span>
                                 </div>
                             </div>
