@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { axiosPlace,axiosInstance,axiosUser } from "../utils/axiosInstance";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
@@ -8,7 +8,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import Map from "../components/Map";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
-import { FaRegFloppyDisk } from "react-icons/fa6";
+import { FaRegFloppyDisk, FaMapLocationDot } from "react-icons/fa6";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { axiosRecommendation } from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
@@ -44,6 +44,8 @@ function Itinerary() {
   const [refreshingActivity, setRefreshingActivity] = useState(null);
   // State for preferences sidebar
   const [isPreferencesSidebarOpen, setIsPreferencesSidebarOpen] = useState(false);
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const exportDropdownRef = useRef(null);
 
   useEffect(() => {
     if (location.state?.itineraryData) {
@@ -366,6 +368,78 @@ function Itinerary() {
     }
   };
 
+  const generateGoogleMapsUrl = (dayIndex) => {
+    if (!itinerary.days || !itinerary.days[dayIndex]) return null;
+
+    const day = itinerary.days[dayIndex];
+    const waypoints = [];
+    let origin = null;
+    let destination = null;
+
+    // Process morning activities
+    if (day.morning_activities && day.morning_activities.length > 0) {
+      const firstActivity = day.morning_activities[0];
+      if (firstActivity.place.location) {
+        origin = `${firstActivity.place.location.latitude},${firstActivity.place.location.longitude}`;
+      }
+      
+      // Add remaining morning activities as waypoints
+      day.morning_activities.slice(1).forEach(activity => {
+        if (activity.place.location) {
+          waypoints.push(`${activity.place.location.latitude},${activity.place.location.longitude}`);
+        }
+      });
+    }
+
+    // Process afternoon activities
+    if (day.afternoon_activities && day.afternoon_activities.length > 0) {
+      day.afternoon_activities.forEach(activity => {
+        if (activity.place.location) {
+          if (!origin) {
+            origin = `${activity.place.location.latitude},${activity.place.location.longitude}`;
+          } else {
+            waypoints.push(`${activity.place.location.latitude},${activity.place.location.longitude}`);
+          }
+        }
+      });
+
+      // Set the last activity as destination
+      const lastActivity = day.afternoon_activities[day.afternoon_activities.length - 1];
+      if (lastActivity.place.location) {
+        destination = `${lastActivity.place.location.latitude},${lastActivity.place.location.longitude}`;
+      }
+    }
+
+    if (!origin || !destination) return null;
+
+    const waypointsStr = waypoints.length > 0 ? `&waypoints=${waypoints.join('|')}` : '';
+    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsStr}&travelmode=driving`;
+  };
+
+  const handleOpenInGoogleMaps = (dayIndex) => {
+    const url = generateGoogleMapsUrl(dayIndex);
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (exportDropdownRef.current && !exportDropdownRef.current.contains(event.target)) {
+        setExportDropdownOpen(false);
+      }
+    }
+    if (exportDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [exportDropdownOpen]);
+
   return (
     <PageTemplate>
       <PreferencesSidebar 
@@ -376,7 +450,7 @@ function Itinerary() {
       />
       
       <div className="flex justify-center items-center flex-col w-full px-4 pt-2 ">
-        <div className="mb-4">
+        <div className="mb-4 w-full flex flex-row items-center gap-3">
           <img 
             src={VoyageLogo} 
             alt="Voyage Logo" 
@@ -405,15 +479,44 @@ function Itinerary() {
         {/* Left Side */}
         <div className="w-full md:w-1/2 pr-4 overflow-hidden  ">
           <div className="flex flex-row  mb-4 items-center gap-5">
-            <h1 className="text-3xl font-bold">{title}</h1>
-            {/* <div className="btn btn-md btn-primary rounded-full btn-circle shadow-sm">
-              <CiSaveDown1 className="text-white text-2xl" />
-            </div> */}
-            <div
-              className="btn btn-md btn-white rounded-full btn-circle shadow-sm"
-              onClick={() => handleSaveTrip()}
-            >
-              <FaRegFloppyDisk className="text-primary text-xl" />
+            <div className="flex flex-row items-center gap-2">
+              <h1 className="text-3xl font-bold">{title}</h1>
+              <div
+                className="btn btn-md btn-white rounded-full btn-circle shadow-sm"
+                onClick={() => handleSaveTrip()}
+              >
+                <FaRegFloppyDisk className="text-primary text-xl" />
+              </div>
+              <div className="relative" ref={exportDropdownRef}>
+                <button
+                  className="btn btn-md btn-white rounded-full btn-circle shadow-sm flex items-center justify-center"
+                  onClick={() => setExportDropdownOpen((open) => !open)}
+                  aria-haspopup="true"
+                  aria-expanded={exportDropdownOpen}
+                >
+                  <FaMapLocationDot className="text-primary text-xl" />
+                </button>
+                {exportDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-50">
+                    {itinerary.days && itinerary.days.length > 0 ? (
+                      itinerary.days.map((_, idx) => (
+                        <button
+                          key={idx}
+                          className="block w-full text-left px-4 py-2 hover:bg-blue-100 text-gray-700"
+                          onClick={() => {
+                            handleOpenInGoogleMaps(idx);
+                            setExportDropdownOpen(false);
+                          }}
+                        >
+                          Export Day {idx + 1}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-2 text-gray-400">No days to export</div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
