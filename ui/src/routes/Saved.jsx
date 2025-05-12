@@ -42,7 +42,7 @@ function Saved() {
   
   return (
     <PageTemplate
-      headerIcon={<FaHeart className="text-3xl text-primary" />}
+      headerIcon={<FaHeart className="text-xl text-primary" />}
       headerTitle={viewingUser ? (isViewingOwnSaved ? "My Saved Places" : `${viewingUser.name}'s Saved Places`) : "Saved Places"}
     >
       <div className="p-8">
