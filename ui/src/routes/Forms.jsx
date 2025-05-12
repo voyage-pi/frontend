@@ -45,7 +45,7 @@ function Forms() {
       setAnswers(savedAnswers);
     } else {
       // If no saved answers, initialize from questions
-      setAnswers(questions.map(q => ({...q, answer: null}))); 
+      setAnswers(questions.map(q => ({...q, answer: null})));
     }
 
     setIsInitialized(true);
@@ -72,7 +72,7 @@ function Forms() {
     if (currentStep === 5) {
       // Check if current question has an answer
       const currentQuestionHasAnswer = answers[subQuestionIndex]?.answer !== undefined;
-      
+
       // If trying to proceed without an answer, show error
       if (!currentQuestionHasAnswer) {
         setShowError(true);
@@ -122,7 +122,7 @@ function Forms() {
       updated[subQuestionIndex].answer = rating;
       return updated;
     });
-    
+
     // Also save to localStorage for persistence and to be used in Itinerary
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     savedRatings[subQuestionIndex] = rating;
@@ -191,31 +191,31 @@ function Forms() {
         response.data.response &&
         response.data.response.itinerary
       ) {
-        setItinerary(response.data);
+        //setItinerary(response.data);
         const tripId = response.data.response.tripId;
-        navigate(`/itinerary/${tripId}`, { 
-          state: { 
+        navigate(`/itinerary/${tripId}`, {
+          state: {
             itineraryData: response.data,
-            userRatings: userRatings 
-          } 
+            userRatings: userRatings
+          }
         });
-        
+
         // Clear all localStorage items related to the form
         const keysToRemove = [
-          "currentStep", "subQuestionIndex", "answers", 
-          "Start Date", "Trip Type", "radius", "Latitude", 
+          "currentStep", "subQuestionIndex", "answers",
+          "Start Date", "Trip Type", "radius", "Latitude",
           "Longitude", "Location", "Budget", "Duration",
           "userRatings" // Also clear userRatings
         ];
-        
+
         keysToRemove.forEach(key => localStorage.removeItem(key));
-        
+
         // Reset the answers state to initial state
         const resetAnswers = questions.map(q => ({...q, answer: null}));
         setAnswers(resetAnswers);
         setCurrentStep(1);
         setSubQuestionIndex(0);
-        
+
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -238,10 +238,10 @@ function Forms() {
       <div className="flex justify-center w-full">
         <div className="flex justify-center items-center flex-col w-full px-4">
           <div className="mb-4">
-            <img 
-              src={VoyageLogo} 
-              alt="Voyage Logo" 
-              className="h-30 cursor-pointer" 
+            <img
+              src={VoyageLogo}
+              alt="Voyage Logo"
+              className="h-30 cursor-pointer"
               onClick={handleLeave}
             />
           </div>

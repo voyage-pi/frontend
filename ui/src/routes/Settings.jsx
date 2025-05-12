@@ -34,6 +34,8 @@ function Settings() {
   const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [name, setName] = useState("");
+  const [tag, setTag] = useState("");
 
   // Get auth context
   const { 
@@ -57,7 +59,9 @@ function Settings() {
     setProfileImage(userData.avatar_url || userData.image);
     setBannerImage(userData.banner_url || userData.bannerImage);
     setBio(userData.bio || "");
-    setHideTrips(userData.hideTrips || false);
+    setHideTrips(!userData.show_trips);
+    setName(userData.name || "");
+    setTag(userData.tag || "");
     setIsLoading(false);
     
     // Debug
@@ -108,7 +112,7 @@ function Settings() {
     formData.append('avatar', profileImageFile);
     
     try {
-      const response = await axiosUser.patch(`/user/${LoggedUser.id}/avatar`, formData, {
+      const response = await axiosUser.patch(`/user/avatar`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -128,7 +132,7 @@ function Settings() {
     formData.append('banner', bannerImageFile);
     
     try {
-      const response = await axiosUser.patch(`/user/${LoggedUser.id}/banner`, formData, {
+      const response = await axiosUser.patch(`/user/banner`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -145,9 +149,11 @@ function Settings() {
     if (!LoggedUser) return null;
     
     try {
-      // Update user bio in Supabase
-      const response = await axiosUser.patch(`/user/${LoggedUser.id}/bio`, {
-        bio: bio
+      const response = await axiosUser.patch(`/user/user-update`, {
+        bio: bio,
+        show_trips: !hideTrips,
+        name: name,
+        tag: tag
       });
       
       return response.data;
@@ -297,18 +303,18 @@ function Settings() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                       <input
                         type="text"
-                        defaultValue={LoggedUser.name}
+                        value={name}
+                        onChange={e => setName(e.target.value)}
                         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                        disabled
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tag</label>
                       <input
                         type="text"
-                        defaultValue={LoggedUser.tag}
+                        value={tag}
+                        onChange={e => setTag(e.target.value)}
                         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                        disabled
                       />
                     </div>
                   </div>
