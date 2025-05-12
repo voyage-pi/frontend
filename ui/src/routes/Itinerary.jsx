@@ -54,6 +54,7 @@ function Itinerary() {
   const [cursorId, setCursorId] = useState(null);
   const pageRef = useRef(null);
   const [cursorClicks, setCursorClicks] = useState({});
+  const [hasActiveCollaborators, setHasActiveCollaborators] = useState(false);
 
   useEffect(() => {
     // Generate a unique cursor ID on component mount
@@ -87,19 +88,81 @@ function Itinerary() {
     // Subscribe to cursor updates for this trip
     cursorChannel
       .on("broadcast", { event: "cursor-move" }, handleCursorUpdate)
+      .on("broadcast", { event: "user-joined" }, handleUserJoined)
+      .on("broadcast", { event: "user-left" }, handleUserLeft)
       .subscribe((status) => {
         console.log(`Cursor channel status: ${status}`);
+
+        // Announce this user's presence when joining
+        if (status === "SUBSCRIBED" && isAuthenticated) {
+          cursorChannel.send({
+            type: "broadcast",
+            event: "user-joined",
+            payload: {
+              userId: LoggedUser?.id || "anonymous",
+              cursorId: cursorId,
+            },
+          });
+        }
       });
 
     // Store the channel reference for sending updates
     window._cursorChannel = cursorChannel;
 
     return () => {
+      // Announce this user is leaving
+      if (cursorChannel && isAuthenticated) {
+        cursorChannel.send({
+          type: "broadcast",
+          event: "user-left",
+          payload: {
+            userId: LoggedUser?.id || "anonymous",
+            cursorId: cursorId,
+          },
+        });
+      }
+
       console.log("Unsubscribing from cursor channel");
       cursorChannel.unsubscribe();
       window._cursorChannel = null;
     };
-  }, [tripId, cursorId]);
+  }, [tripId, cursorId, isAuthenticated]);
+
+  const handleUserJoined = (payload) => {
+    if (payload && payload.payload && payload.payload.cursorId !== cursorId) {
+      setHasActiveCollaborators(true);
+
+      // Send back our presence to the new user
+      if (window._cursorChannel && isAuthenticated) {
+        window._cursorChannel.send({
+          type: "broadcast",
+          event: "user-joined",
+          payload: {
+            userId: LoggedUser?.id || "anonymous",
+            cursorId: cursorId,
+          },
+        });
+      }
+    }
+  };
+
+  const handleUserLeft = (payload) => {
+    if (payload && payload.payload && payload.payload.cursorId !== cursorId) {
+      // Remove the cursor of the user who left
+      setOtherCursors((prev) => {
+        const updated = { ...prev };
+        delete updated[payload.payload.cursorId];
+
+        // Check if there are any remaining collaborators
+        const remainingUsers = Object.keys(updated).length;
+        if (remainingUsers === 0) {
+          setHasActiveCollaborators(false);
+        }
+
+        return updated;
+      });
+    }
+  };
 
   const handleCursorUpdate = (payload) => {
     console.log("Received cursor update:", payload);
@@ -110,6 +173,7 @@ function Itinerary() {
       payload.payload.cursor.id !== cursorId
     ) {
       const cursor = payload.payload.cursor;
+      setHasActiveCollaborators(true);
 
       // If it's a click event, store it with animation state
       if (cursor.isClicking) {
@@ -139,15 +203,14 @@ function Itinerary() {
       !cursorId ||
       !pageRef.current ||
       !isAuthenticated ||
-      !window._cursorChannel
+      !window._cursorChannel ||
+      !hasActiveCollaborators
     )
       return;
 
     const rect = pageRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    console.log(LoggedUser);
 
     const cursorData = {
       id: cursorId,
@@ -191,15 +254,14 @@ function Itinerary() {
       !cursorId ||
       !pageRef.current ||
       !isAuthenticated ||
-      !window._cursorChannel
+      !window._cursorChannel ||
+      !hasActiveCollaborators
     )
       return;
 
     const rect = pageRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    console.log(LoggedUser);
 
     const cursorData = {
       id: cursorId,
@@ -216,10 +278,7 @@ function Itinerary() {
       isClicking: true,
     };
 
-    // We don't add local click effect for your own clicks
-    // This keeps the animations clean by only showing other users' clicks
-
-    // Broadcast click event
+    // Broadcast click event only if there are other users
     window._cursorChannel
       .send({
         type: "broadcast",
@@ -343,17 +402,13 @@ function Itinerary() {
 
   useEffect(() => {
     // Initialize first day as open when itinerary is loaded
-    if (!loading && itinerary.calendar) {
-      const days = Object.keys(itinerary.calendar);
-      if (days.length > 0) {
-        // Initialize with first day open
-        setOpenDays((prevState) => ({
-          ...prevState,
-          [days[0]]: true,
-        }));
+    if (!loading && itinerary.days && itinerary.days.length > 0) {
+      // Only run this effect if we don't already have any open days
+      if (Object.keys(openDays).length === 0) {
+        setOpenDays({ 0: true });
       }
     }
-  }, [loading, itinerary.calendar]);
+  }, [loading, itinerary.days]);
 
   const getPhotoUrl = async (place) => {
     if (!place || !place.photos || !place.photos.length) {
@@ -535,8 +590,6 @@ function Itinerary() {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  console.log("itinerary", itinerary);
-  console.log("openDays", openDays);
   const limitDays = 5;
 
   const handleSelectedDay = (dayIndex) => {
