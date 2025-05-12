@@ -8,6 +8,7 @@ import TabBar from "../components/TabBar";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import TripCard from "../components/TripCard";
+import PlaceDetailSidebar from "../components/PlaceDetailSidebar";
 
 function Saved() {
   const { userTag } = useParams(); // Get userTag from URL params
@@ -27,6 +28,9 @@ function Saved() {
 
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Mock saved places data
   const [savedPlaces, setSavedPlaces] = useState([
@@ -36,7 +40,8 @@ function Saved() {
       location: "Lisbon, Portugal", 
       image: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       type: "locations",
-      position: { lat: 38.7528, lng: -9.1843 }
+      position: { lat: 38.7528, lng: -9.1843 },
+      description: "A major stadium in Lisbon, home to Benfica football club. It hosted the UEFA Euro 2004 final and has a capacity of over 65,000 spectators."
     },
     { 
       id: 2, 
@@ -44,7 +49,8 @@ function Saved() {
       location: "Porto, Portugal", 
       image: "https://images.unsplash.com/photo-1603984362497-0a878f607b92?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
       type: "attractions",
-      position: { lat: 41.1473, lng: -8.6151 }
+      position: { lat: 41.1473, lng: -8.6151 },
+      description: "One of the oldest bookstores in Portugal and frequently rated as one of the most beautiful bookstores in the world. It's said to have inspired J.K. Rowling's Harry Potter."
     },
     { 
       id: 3, 
@@ -52,7 +58,8 @@ function Saved() {
       location: "Paris, France", 
       image: "https://images.unsplash.com/photo-1543158266-0066955977ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       type: "attractions",
-      position: { lat: 48.8673, lng: 2.7813 }
+      position: { lat: 48.8673, lng: 2.7813 },
+      description: "A magical entertainment resort featuring two theme parks, many hotels, and a shopping, dining and entertainment complex."
     },
     { 
       id: 4, 
@@ -60,7 +67,8 @@ function Saved() {
       location: "London, UK", 
       image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
       type: "restaurants",
-      position: { lat: 51.5074, lng: -0.1278 }
+      position: { lat: 51.5074, lng: -0.1278 },
+      description: "A cozy restaurant in central London offering traditional British cuisine with a modern twist, featuring locally sourced ingredients."
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -94,8 +102,28 @@ function Saved() {
   const handleToggleSave = (placeId) => {
     if (!isViewingOwnSaved) return;
     
+    if (selectedPlace && selectedPlace.id === placeId) {
+      setSidebarOpen(false);
+      setSelectedPlace(null);
+    }
 
     setSavedPlaces(prev => prev.filter(place => place.id !== placeId));
+  };
+  
+  // Handle clicking on a saved place card
+  const handlePlaceClick = (place) => {
+    // Add isSaved property to the place data
+    const placeWithSavedStatus = {
+      ...place,
+      isSaved: true
+    };
+    setSelectedPlace(placeWithSavedStatus);
+    setSidebarOpen(true);
+  };
+  
+  // Close the sidebar
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false);
   };
   
   const filteredPlaces = savedPlaces.filter(place => {
@@ -178,6 +206,8 @@ function Saved() {
                       isSavedPlace={true}
                       isSaved={true}
                       onToggleSave={() => handleToggleSave(place.id)}
+                      onCardClick={handlePlaceClick}
+                      placeData={place}
                     />
                   ))}
                 </div>
@@ -186,8 +216,19 @@ function Saved() {
           </div>
           
           <div className="w-3/7 h-screen relative">
-            <Map
-              markers={getMarkers()}
+            {/* Map component - hide when sidebar is open */}
+            {!sidebarOpen && (
+              <Map
+                markers={getMarkers()}
+              />
+            )}
+            
+            {/* Place Detail Sidebar - moved inside the map container */}
+            <PlaceDetailSidebar
+              place={selectedPlace}
+              isOpen={sidebarOpen}
+              onClose={handleCloseSidebar}
+              onToggleSave={handleToggleSave}
             />
           </div>
         </div>

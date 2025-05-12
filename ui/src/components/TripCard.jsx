@@ -12,7 +12,9 @@ function TripCard({
   location,
   isSavedPlace = false,
   isSaved,
-  onToggleSave
+  onToggleSave,
+  onCardClick,
+  placeData
 }) {
   const [showModal, setShowModal] = useState(false);
   
@@ -37,9 +39,24 @@ function TripCard({
     document.body.classList.remove('overflow-hidden');
   };
   
+  const handleCardClick = () => {
+    if (isSavedPlace && onCardClick) {
+      onCardClick(placeData || {
+        id: Math.random(),
+        name,
+        location,
+        image,
+        isSaved
+      });
+    }
+  };
+  
   return (
     <>
-      <div className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative">
+      <div 
+        className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative cursor-pointer hover:shadow-md transition-all duration-300 transform hover:scale-102"
+        onClick={handleCardClick}
+      >
         <img
           src={image}
           alt={name}
