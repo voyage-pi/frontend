@@ -56,6 +56,10 @@ function Itinerary() {
   const [cursorClicks, setCursorClicks] = useState({});
   const [hasActiveCollaborators, setHasActiveCollaborators] = useState(false);
 
+  // State for export dropdown
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const exportDropdownRef = useRef(null);
+
   useEffect(() => {
     // Generate a unique cursor ID on component mount
     const newCursorId = uuidv4();
@@ -889,6 +893,36 @@ function Itinerary() {
                 onClick={() => handleSaveTrip()}
               >
                 <FaRegFloppyDisk className="text-primary text-xl" />
+              </div>
+              <div className="relative" ref={exportDropdownRef}>
+                <button
+                  className="btn btn-md btn-white rounded-full btn-circle shadow-sm flex items-center justify-center"
+                  onClick={() => setExportDropdownOpen((open) => !open)}
+                  aria-haspopup="true"
+                  aria-expanded={exportDropdownOpen}
+                >
+                  <FaMapLocationDot className="text-primary text-xl" />
+                </button>
+                {exportDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-50">
+                    {itinerary.days && itinerary.days.length > 0 ? (
+                      itinerary.days.map((_, idx) => (
+                        <button
+                          key={idx}
+                          className="block w-full text-left px-4 py-2 hover:bg-blue-100 text-gray-700"
+                          onClick={() => {
+                            handleOpenInGoogleMaps(idx);
+                            setExportDropdownOpen(false);
+                          }}
+                        >
+                          Export Day {idx + 1}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-2 text-gray-400">No days to export</div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
