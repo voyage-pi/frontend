@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
@@ -21,6 +21,7 @@ function Trips() {
   const [photoCache, setPhotoCache] = useState({});
   const [showInbox, setShowInbox] = useState(false);
   const [notification, setNotification] = useState(null);
+  const fetchingTripsRef = useRef(false);
   const navigate = useNavigate();
   const { LoggedUser, isAuthenticated, isUserLoading } = useAuth();
   const { userTag } = useParams(); // Get userTag from URL params
@@ -78,15 +79,18 @@ function Trips() {
           navigate('/');
         }
       } else if (LoggedUser) {
-        // If viewing own trips, set viewingUser to LoggedUser
-        setViewingUser(LoggedUser);
+        // Only set viewingUser to LoggedUser if it's not already set to prevent extra renders
+        if (!viewingUser || viewingUser.id !== LoggedUser.id) {
+          console.log("Setting viewingUser to LoggedUser");
+          setViewingUser(LoggedUser);
+        }
       }
     };
 
     if (!isUserLoading) {
       fetchUserByTag();
     }
-  }, [userTag, LoggedUser, isUserLoading, navigate]);
+  }, [userTag, LoggedUser, isUserLoading, navigate, viewingUser]);
 
   // Generate placeholder image as a fallback
   const generatePlaceholderImage = (seed) => {
@@ -154,7 +158,14 @@ function Trips() {
   // Fetch user trips
   useEffect(() => {
     const fetchTrips = async () => {
+      // Prevent duplicate fetches while one is in progress
+      if (fetchingTripsRef.current) {
+        console.log('Trip fetch already in progress, skipping');
+        return;
+      }
+
       try {
+        fetchingTripsRef.current = true;
         setLoading(true);
 
         // Determine which user's trips to fetch
@@ -303,14 +314,16 @@ function Trips() {
         });
       } finally {
         setLoading(false);
+        fetchingTripsRef.current = false;
       }
     };
 
     // Only fetch trips when we have a user to fetch for
     if (!isUserLoading && (viewingUser || LoggedUser)) {
+      console.log("Triggering trip fetch - dependencies changed");
       fetchTrips();
     }
-  }, [viewingUser, LoggedUser, isUserLoading, isViewingOwnTrips]);
+  }, [viewingUser, LoggedUser, isUserLoading]); // Removed isViewingOwnTrips dependency
 
   // Format trip dates for display
   const formatTripDates = (startDate, endDate) => {
