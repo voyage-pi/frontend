@@ -19,14 +19,14 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
     if (!hours || !Array.isArray(hours) || hours.length === 0) {
       return [{ day: "Information not available", hours: "" }];
     }
-    
+
     return hours;
   };
 
   return (
     <AnimatePresence>
       {isOpen && place && (
-        <motion.div 
+        <motion.div
           initial={{ x: "100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
@@ -40,7 +40,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                 <FaLocationDot className="text-primary text-xl mr-3" />
                 <h2 className="font-bold text-lg">Place Details</h2>
               </div>
-              <button 
+              <button
                 className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100"
                 onClick={onClose}
               >
@@ -52,9 +52,9 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
             <div className="flex-1 overflow-auto p-4 bg-gray-50">
               {/* Photo Section */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-4 overflow-hidden">
-                <img 
-                  src={place.image} 
-                  alt={place.name} 
+                <img
+                  src={place.image}
+                  alt={place.name}
                   className="w-full h-52 object-cover"
                 />
               </div>
@@ -64,12 +64,16 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-2xl font-bold">{place.name}</h2>
                 </div>
-                
+
                 {/* Address */}
                 <div className="flex items-start text-gray-700 mt-3 mb-4">
                   <FaMap className="mt-1 mr-2 text-primary flex-shrink-0" />
                   <span>{place.address || "Address not available"}</span>
                 </div>
+
+                <p className="text-gray-700">
+                  {place.description || "No description available for this place."}
+                </p>
               </div>
 
               {/* Map Section */}
@@ -80,13 +84,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                 </div>
               </div>
 
-              {/* Description Section */}
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
-                <h3 className="font-semibold text-lg mb-3">About</h3>
-                <p className="text-gray-700">
-                  {place.description || "No description available for this place."}
-                </p>
-              </div>
+              
 
               {/* Operating Hours Section */}
               {place.openHours && (
@@ -133,9 +131,9 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
               )}
 
               {/* Info Section */}
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
-                <h3 className="font-semibold text-lg mb-4 border-b pb-2">Place Information</h3>
-                
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-8">
+                <h3 className="font-semibold text-lg mb-4 pb-2">More Information</h3>
+
                 {/* Rating */}
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-700 font-medium">Rating</span>
@@ -158,10 +156,10 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Phone Number */}
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-700 font-medium">Phone</span>
+                  <span className="text-gray-700 font-medium">Phone Number</span>
                   {place.phone ? (
                     <a href={`tel:${place.phone}`} className="text-primary hover:underline transition-colors">
                       {place.phone}
@@ -170,45 +168,43 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                     <span className="text-gray-500">Not available</span>
                   )}
                 </div>
-                
+
                 {/* Opening Hours Summary */}
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-700 font-medium">Hours</span>
-                  <span className="text-gray-700">
-                    {place.openHours && place.openHours.length > 0 
-                      ? "Available above" 
+                  <span className="text-gray-700 font-medium">Opening Hours</span>
+                  <span className="text-gray-500">
+                    {place.openHours && place.openHours.length > 0
+                      ? "Available above"
                       : "Not available"}
                   </span>
                 </div>
-                
+
                 {/* Reviews Summary */}
                 <div className="flex items-center justify-between py-2">
                   <span className="text-gray-700 font-medium">Reviews</span>
-                  <span className="text-gray-700">
-                    {place.reviews && place.reviews.length > 0 
-                      ? `${place.reviews.length} ${place.reviews.length === 1 ? 'review' : 'reviews'}` 
+                  <span className="text-gray-500">
+                    {place.reviews && place.reviews.length > 0
+                      ? `${place.reviews.length} ${place.reviews.length === 1 ? 'review' : 'reviews'}`
                       : "No reviews yet"}
                   </span>
                 </div>
               </div>
 
               {/* Save Button */}
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
-                <button 
-                  className="btn btn-primary w-full flex items-center justify-center gap-2 py-3"
-                  onClick={() => onToggleSave && onToggleSave(place.id)}
-                >
-                  {place.isSaved ? (
-                    <>
-                      <FaHeart /> Remove from Saved
-                    </>
-                  ) : (
-                    <>
-                      <FaRegHeart /> Add to Saved
-                    </>
-                  )}
-                </button>
-              </div>
+              <button
+                className="btn btn-primary w-full flex items-center justify-center gap-2 py-3 pt-3"
+                onClick={() => onToggleSave && onToggleSave(place.id)}
+              >
+                {place.isSaved ? (
+                  <>
+                    <FaHeart /> Remove from Saved
+                  </>
+                ) : (
+                  <>
+                    <FaRegHeart /> Add to Saved
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </motion.div>
