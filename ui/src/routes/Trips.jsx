@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import PageTemplate from "../components/PageTemplate";
@@ -21,15 +21,25 @@ function Trips() {
   const [photoCache, setPhotoCache] = useState({});
   const [showInbox, setShowInbox] = useState(false);
   const [notification, setNotification] = useState(null);
+  const fetchingTripsRef = useRef(false);
   const navigate = useNavigate();
   const { LoggedUser, isAuthenticated, isUserLoading } = useAuth();
   const { userTag } = useParams(); // Get userTag from URL params
-  
+
   // Determine if we're viewing our own trips or someone else's
   const [viewingUser, setViewingUser] = useState(null);
   const isViewingOwnTrips = !userTag || (LoggedUser && userTag === LoggedUser.tag);
 
-  const { totalCount, addTripInvite, tripInviteCount } = useNotifications();
+  const { totalCount, addTripInvite, tripInviteCount, refreshNotifications } = useNotifications();
+
+  // Refresh notifications when component mounts
+  useEffect(() => {
+    console.log("[Trips] Component mounted, refreshing notifications");
+    // We don't need to check for LoggedUser here because the auth cookie will be sent regardless
+    refreshNotifications().then(success => {
+      console.log(`[Trips] Initial notification refresh ${success ? 'succeeded' : 'failed'}`);
+    });
+  }, [refreshNotifications]); // Remove LoggedUser dependency to avoid extra renders
 
   // Load sample trip invites if none exist yet
   useEffect(() => {
@@ -48,11 +58,11 @@ function Trips() {
           date: "3 days ago"
         }
       ];
-      
+
       sampleInvites.forEach(invite => addTripInvite(invite));
     }
   }, []);
-  
+
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {
@@ -69,15 +79,18 @@ function Trips() {
           navigate('/');
         }
       } else if (LoggedUser) {
-        // If viewing own trips, set viewingUser to LoggedUser
-        setViewingUser(LoggedUser);
+        // Only set viewingUser to LoggedUser if it's not already set to prevent extra renders
+        if (!viewingUser || viewingUser.id !== LoggedUser.id) {
+          console.log("Setting viewingUser to LoggedUser");
+          setViewingUser(LoggedUser);
+        }
       }
     };
-    
+
     if (!isUserLoading) {
       fetchUserByTag();
     }
-  }, [userTag, LoggedUser, isUserLoading, navigate]);
+  }, [userTag, LoggedUser, isUserLoading, navigate, viewingUser]);
 
   // Generate placeholder image as a fallback
   const generatePlaceholderImage = (seed) => {
@@ -103,11 +116,11 @@ function Trips() {
       const response = await axiosPlace.post("/places/photo", {
         gRPC: photo.name,
       });
-      
+
       if (response.status === 429) {
         return getPhotoUrl(place); // Retry if rate limited
       }
-      
+
       const photoUrl = response.data?.uri;
       setPhotoCache(prev => ({
         ...prev,
@@ -145,12 +158,19 @@ function Trips() {
   // Fetch user trips
   useEffect(() => {
     const fetchTrips = async () => {
+      // Prevent duplicate fetches while one is in progress
+      if (fetchingTripsRef.current) {
+        console.log('Trip fetch already in progress, skipping');
+        return;
+      }
+
       try {
+        fetchingTripsRef.current = true;
         setLoading(true);
-        
+
         // Determine which user's trips to fetch
         const userToFetch = viewingUser || LoggedUser;
-        
+
         // Check if we have a user to fetch trips for
         if (!userToFetch) {
           console.log('No user to fetch trips for');
@@ -158,25 +178,75 @@ function Trips() {
           setLoading(false);
           return;
         }
-        
-        // get the trips for the user we're viewing
-        const userTripsResponse = await axiosUser.get(`/trips/users/${userToFetch.id}`);
-        console.log('User trips response:', userTripsResponse.data);
-        
-        // The response will be an array of user-trip associations
-        if (userTripsResponse.data && Array.isArray(userTripsResponse.data)) {
-          const userTrips = userTripsResponse.data;
+
+        let userTrips = [];
+
+        try {
+          // Different approach based on whether viewing own trips or someone else's
+          console.log('Fetching own trips');
+          const myTripsResponse = await axiosUser.get(`/trip-info/trips/${userToFetch.id}`);
+          console.log('My trips data:', myTripsResponse.data);
           
-          // Fetch trip details for each trip
-          const tripDetailsPromises = userTrips.map(async (userTrip) => {
-            try {
-              if (!userTrip || !userTrip.trip_id) {
-                console.error('Invalid user trip data:', userTrip);
+          // The trip_ids are actually inside data.data.trip_ids
+          if (myTripsResponse.data && myTripsResponse.data.data && myTripsResponse.data.data.trip_ids) {
+            console.log('Trip IDs array:', myTripsResponse.data.data.trip_ids);
+            
+            // Create user trips objects from the trip_ids array
+            userTrips = myTripsResponse.data.data.trip_ids.map(tripId => {
+              // Ensure tripId is a string
+              if (tripId === null || tripId === undefined) {
+                console.warn('Found null or undefined trip ID in response');
                 return null;
               }
               
-              console.log(`Fetching trip details for trip ID: ${userTrip.trip_id}`);
-              const tripResponse = await axiosInstance.get(`/trips/${userTrip.trip_id}`);
+              return {
+                trip_id: String(tripId), // Ensure it's a string
+                status: 'owner' // Default status, can be updated if you have status data
+              };
+            }).filter(trip => trip !== null); // Remove any null entries
+            
+            console.log('Transformed user trips:', userTrips);
+          } else {
+            console.log('No trip_ids found in response');
+            userTrips = [];
+          }
+        } catch (fetchError) {
+          console.error('Error fetching user trips list:', fetchError);
+          setNotification({
+            message: "Could not load trips. Please try again later.",
+            type: "error"
+          });
+          setTrips([]);
+          setLoading(false);
+          return;
+        }
+
+        if (!userTrips || !userTrips.length) {
+          console.log('No trips found for user');
+          setTrips([]);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch trip details for each trip
+        const tripDetailsPromises = userTrips.map(async (userTrip) => {
+          try {
+            if (!userTrip || !userTrip.trip_id) {
+              console.error('Invalid user trip data:', userTrip);
+              return null;
+            }
+            
+            const tripId = userTrip.trip_id;
+            console.log(`Fetching trip details for trip ID: ${tripId}`);
+            
+            // Make sure tripId is a valid format before fetching
+            if (!tripId || typeof tripId !== 'string' || tripId.trim() === '') {
+              console.error('Invalid trip ID format:', tripId);
+              return null;
+            }
+            
+            try {
+              const tripResponse = await axiosInstance.get(`/trips/${tripId}`);
               console.log('Trip details response:', tripResponse.data);
               
               // The response structure follows the ResponseBody format with nested itinerary
@@ -196,7 +266,7 @@ function Trips() {
                 const imageUrl = await getFirstPhotoUrl(itinerary);
                 
                 return {
-                  id: userTrip.trip_id,
+                  id: tripId,
                   name: itinerary.name || 'Unnamed Trip',
                   date: formatTripDates(itinerary.start_date, itinerary.end_date),
                   days: itinerary.days ? itinerary.days.length : 0,
@@ -210,47 +280,64 @@ function Trips() {
                 console.error('Invalid trip response structure:', tripResponse.data);
                 return null;
               }
-            } catch (error) {
-              console.error(`Error fetching trip ${userTrip?.trip_id}:`, error);
-              return null;
+            } catch (tripError) {
+              console.error(`Error fetching trip ${tripId}:`, tripError);
+              // Create a placeholder trip with minimal data when details fetch fails
+              return {
+                id: tripId,
+                name: 'Trip data unavailable',
+                date: 'Unknown dates',
+                days: 0,
+                people: 1,
+                status: userTrip.status,
+                destinations: 0,
+                image: generatePlaceholderImage('error-trip'),
+                markers: []
+              };
             }
-          });
-          
-          const tripDetails = await Promise.all(tripDetailsPromises);
-          const validTrips = tripDetails.filter(trip => trip !== null);
-          console.log('Processed trips:', validTrips);
-          setTrips(validTrips);
-        } else {
-          console.error('Invalid user trips response:', userTripsResponse.data);
-          setTrips([]);
-        }
+          } catch (error) {
+            console.error(`Error processing trip:`, error);
+            return null;
+          }
+        });
+
+        const tripDetails = await Promise.all(tripDetailsPromises);
+        const validTrips = tripDetails.filter(trip => trip !== null);
+        console.log('Processed trips:', validTrips);
+        setTrips(validTrips);
       } catch (error) {
         console.error("Error fetching user trips:", error);
         setTrips([]);
+        setNotification({
+          message: "Failed to load trips. Please try refreshing the page.",
+          type: "error"
+        });
       } finally {
         setLoading(false);
+        fetchingTripsRef.current = false;
       }
     };
-    
+
     // Only fetch trips when we have a user to fetch for
     if (!isUserLoading && (viewingUser || LoggedUser)) {
+      console.log("Triggering trip fetch - dependencies changed");
       fetchTrips();
     }
-  }, [viewingUser, LoggedUser, isUserLoading]);
+  }, [viewingUser, LoggedUser, isUserLoading]); // Removed isViewingOwnTrips dependency
 
   // Format trip dates for display
   const formatTripDates = (startDate, endDate) => {
     try {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      
+
       // Format as "Apr 19 - Apr 20, 2025"
       const startMonth = start.toLocaleString('default', { month: 'short' });
       const endMonth = end.toLocaleString('default', { month: 'short' });
       const startDay = start.getDate();
       const endDay = end.getDate();
       const year = end.getFullYear();
-      
+
       if (startMonth === endMonth) {
         return `${startMonth} ${startDay} - ${endDay}, ${year}`;
       }
@@ -264,7 +351,7 @@ function Trips() {
   const extractMarkers = (itinerary) => {
     try {
       const markers = [];
-      
+
       if (itinerary.days) {
         itinerary.days.forEach(day => {
           ['morning_activities', 'afternoon_activities', 'evening_activities'].forEach(timeSlot => {
@@ -282,7 +369,7 @@ function Trips() {
           });
         });
       }
-      
+
       return markers;
     } catch (error) {
       return [];
@@ -294,13 +381,13 @@ function Trips() {
     try {
       if (!itinerary || !itinerary.days) return 0;
       const uniquePlaceIds = new Set();
-      
+
       itinerary.days.forEach(day => {
         if (!day) return;
-        
+
         ['morning_activities', 'afternoon_activities', 'evening_activities'].forEach(timeSlot => {
           if (!day[timeSlot]) return;
-          
+
           day[timeSlot].forEach(activity => {
             if (activity && activity.place && activity.place.id) {
               uniquePlaceIds.add(activity.place.id);
@@ -308,7 +395,7 @@ function Trips() {
           });
         });
       });
-      
+
       return uniquePlaceIds.size;
     } catch (error) {
       console.error("Error counting destinations:", error);
@@ -370,7 +457,7 @@ function Trips() {
                 <h1 className="text-2xl font-bold">Trips</h1>
               </div>
               <div className="flex items-center">
-                <button 
+                <button
                   className="p-2 px-4 relative bg-gray-100 rounded-full hover:bg-gray-200 flex items-center"
                   onClick={() => setShowInbox(!showInbox)}
                 >
@@ -401,7 +488,7 @@ function Trips() {
                   placeholder="Search..."
                 />
               </div>
-              
+
               {isUserLoading ? (
                 <div className="text-center py-10">
                   <p className="text-gray-500">Loading user information...</p>
@@ -435,7 +522,7 @@ function Trips() {
               )}
             </div>
           </div>
-          
+
           <div className="w-3/7 h-screen relative">
             {/* Map component */}
             {!showInbox && (
@@ -444,7 +531,7 @@ function Trips() {
                 markers={allMarkers}
               />
             )}
-            
+
             {/* Inbox component with animation */}
             <AnimatePresence>
               {showInbox && (
@@ -455,7 +542,7 @@ function Trips() {
                   transition={{ type: "spring", damping: 20 }}
                   className="absolute right-0 top-0 h-full w-full bg-white shadow-lg z-50 overflow-y-auto motion-container"
                 >
-                  <InboxComponent 
+                  <InboxComponent
                     onClose={() => setShowInbox(false)}
                     setNotification={setNotification}
                   />
@@ -465,7 +552,7 @@ function Trips() {
           </div>
         </div>
       </div>
-      
+
       {notification && (
         <Notification
           type={notification.type}
