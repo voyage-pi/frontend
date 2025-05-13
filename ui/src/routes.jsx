@@ -14,67 +14,97 @@ export const routesList = [
     {
       path: "/",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Trips</title>
           </Helmet>
-          {/* AuthProvider is used to provide authentication context to the Trips component */}
-          {/* This allows the Trips component to access the authentication state and user information */}
-          {/* The AuthProvider component wraps the Trips component, allowing it to access the authentication context */}
-          <AuthProvider>
-            <Trips />
-          </AuthProvider>
-        </>
+          <Trips />
+        </AuthProvider>
+      ),
+    },
+    
+    // User-specific routes with :userTag parameter
+    {
+      path: "/:userTag",
+      element: (
+        <AuthProvider>
+          <Helmet>
+            <title>Voyage - User Trips</title>
+          </Helmet>
+          <Trips />
+        </AuthProvider>
       ),
     },
     
     {
       path: "/saved",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Saved</title>
           </Helmet>
           <Saved />
-        </>
+        </AuthProvider>
+      ),
+    },
+    
+    {
+      path: "/:userTag/saved",
+      element: (
+        <AuthProvider>
+          <Helmet>
+            <title>Voyage - User Saved</title>
+          </Helmet>
+          <Saved />
+        </AuthProvider>
       ),
     },
 
     {
       path: "/friends",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Friends</title>
           </Helmet>
           <Friends />
-        </>
+        </AuthProvider>
+      ),
+    },
+    
+    {
+      path: "/:userTag/friends",
+      element: (
+        <AuthProvider>
+          <Helmet>
+            <title>Voyage - User Friends</title>
+          </Helmet>
+          <Friends />
+        </AuthProvider>
       ),
     },
 
     {
       path: "/forms",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Forms</title>
           </Helmet>
           <Forms />
-        </>
+        </AuthProvider>
       ),
     },
 
     {
       path:"/itinerary/:tripId",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Itinerary</title>
           </Helmet>
-          <AuthProvider>
-            <Itinerary />
-          </AuthProvider>
-        </>
+          <Itinerary />
+        </AuthProvider>
       ),
     },
 
@@ -95,24 +125,24 @@ export const routesList = [
     {
       path: "/login",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Login</title>
           </Helmet>
           <Login />
-        </>
+        </AuthProvider>
       ),
     },
 
     {
       path: "/register",
       element: (
-        <>
+        <AuthProvider>
           <Helmet>
             <title>Voyage - Register</title>
           </Helmet>
           <Register />
-        </>
+        </AuthProvider>
       ),
     }
 ];
@@ -120,11 +150,11 @@ export const routesList = [
 routesList.push({
   path: "*",
   element: (
-    <>
+    <AuthProvider>
       <Helmet>
         <title>Voyage - Page Not Found</title>
       </Helmet>
       <NotFound />
-    </>
+    </AuthProvider>
   ),
 });

@@ -1,11 +1,13 @@
 import axios from "axios";
 
+// Create axios instances with default config
 export const axiosInstance = axios.create({
   baseURL: "/api/v1/trip-management/api", // Updated to include /api prefix
   timeout: 40000,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true // Enable sending cookies
 });
 
 export const axiosPlace = axios.create({
@@ -14,6 +16,7 @@ export const axiosPlace = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true
 });
 
 export const axiosMaps = axios.create({
@@ -30,6 +33,7 @@ export const axiosUser = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true
 });
 
 export const axiosRecommendation = axios.create({
@@ -38,4 +42,5 @@ export const axiosRecommendation = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true
 });
