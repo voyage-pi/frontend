@@ -12,14 +12,29 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
   const baseUrl = window.location.origin;
   const shareableLink = LoggedUser ? `${baseUrl}/${LoggedUser.tag}` : `${baseUrl}`;
   
-  // Handle copy to clipboard
+  // Handle copy to clipboard without selecting text
   const handleCopy = () => {
-    if (linkInputRef.current) {
-      linkInputRef.current.select();
+    try {
+      // Copy text directly without selecting
       navigator.clipboard.writeText(shareableLink);
       setCopied(true);
       
       // Reset copied state after 2 seconds
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (err) {
+      // Fallback method if direct clipboard access fails
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = shareableLink;
+      tempTextArea.style.position = 'absolute';
+      tempTextArea.style.left = '-9999px';
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+      setCopied(true);
+      
       setTimeout(() => {
         setCopied(false);
       }, 2000);
@@ -29,12 +44,6 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
   // Control modal visibility
   useEffect(() => {
     if (isOpen) {
-      // Focus the input when modal opens
-      if (linkInputRef.current) {
-        setTimeout(() => {
-          linkInputRef.current.focus();
-        }, 100);
-      }
       // Prevent background scrolling when modal is open
       document.body.classList.add('overflow-hidden');
     } else {
@@ -66,7 +75,7 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div 
-        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto relative"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-xl w-[500px] mx-auto relative"
         onClick={e => e.stopPropagation()}
       >
         <button 
@@ -85,6 +94,7 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
               readOnly
               value={shareableLink}
               className="input input-bordered join-item w-full"
+              onClick={(e) => e.target.blur()} // Blur the input on click to prevent automatic selection
             />
             <button 
               className="btn btn-primary join-item"
@@ -93,10 +103,8 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
               {copied ? <FaCheck size={16} /> : <FaCopy size={16} />}
             </button>
           </div>
-          <label className="label">
-            <span className="label-text-alt">Share this link with friends to show them your profile.</span>
-          </label>
         </div>
+        
         <div className="flex justify-end mt-4">
           <button className="btn" onClick={onClose}>Close</button>
         </div>
