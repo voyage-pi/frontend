@@ -10,7 +10,7 @@ const FriendCard = ({ friend, onClick, selected }) => {
       {/* Cover Photo */}
       <div className="h-24 bg-gray-200 w-full overflow-hidden">
         <img 
-          src={friend.coverImage || "https://images.unsplash.com/photo-1476067897447-d0c5df27b5df?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"} 
+          src={friend.banner_url} 
           alt="Cover" 
           className="w-full h-full object-cover"
         />
@@ -20,7 +20,7 @@ const FriendCard = ({ friend, onClick, selected }) => {
         {/* Profile Photo */}
         <div className="absolute -top-12 left-4 border-4 border-white rounded-full overflow-hidden shadow-sm transition-transform duration-300">
           <img 
-            src={friend.image} 
+            src={friend.avatar_url} 
             alt={friend.name} 
             className="w-20 h-20 object-cover"
           />

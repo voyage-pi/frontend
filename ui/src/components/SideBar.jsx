@@ -288,14 +288,14 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <div
                                     className={`rounded-full text-primary/90 bg-white border-1 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
                                     <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>
-                                        <img src={LoggedUser?.image} alt="User Avatar"/>
+                                        <img src={LoggedUser?.avatar_url} alt="User Avatar"/>
                                         </span>
                                 </div>
                             </div>
 
                             <div className={`text-start mt-4 w-full text-secondary transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
                                 <div className="font-bold text-2xl">{LoggedUser?.name}</div>
-                                <p className="text-base opacity-70">{LoggedUser?.tag}</p>
+                                <p className="text-base opacity-70">@{LoggedUser?.tag}</p>
 
                                 <div className="flex justify-between mt-4 text-base">
                                     {userStats.map(({ label, count }, index) => (
