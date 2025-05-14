@@ -223,13 +223,15 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                     className="max-w-48 transition-all duration-400 ease-in-out cursor-pointer" 
                                 />
                             </div>
-                            <button
-                                onClick={toggleSidebar}
-                                className="pl-7 text-primary hover:scale-105 transition-transform duration-200 ease-in-out"
-                                disabled={isTransitioning}
-                            >
-                                <FaChevronLeft size={16} />
-                            </button>
+                            <div className="pl-7 flex items-center">
+                                <button
+                                    onClick={toggleSidebar}
+                                    className="text-primary hover:scale-130 transition-transform duration-200 ease-in-out p-1"
+                                    disabled={isTransitioning}
+                                >
+                                    <FaChevronLeft size={16} />
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <div
