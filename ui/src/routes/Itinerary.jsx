@@ -65,7 +65,6 @@ function Itinerary() {
   const [tripType, setTripType] = useState();
   const [stops, setStops] = useState([]);
   const [distancePill, setDistancePill] = useState([]);
-  const [duration, setDuration] = useState([]);
 
   useEffect(() => {
     // Generate a unique cursor ID on component mount
@@ -467,7 +466,7 @@ function Itinerary() {
     )}/400/300`;
   };
   const processRoadData = async (data) => {
-    const responseItinerary = data.itinerary.itinerary;
+    const responseItinerary = data.itinerary;
     setItinerary(responseItinerary);
     let all_stops = [];
     let routesRoad = [];
@@ -478,6 +477,7 @@ function Itinerary() {
         all_stops.push({
           id: stop.id,
           place: stop.place,
+          order: stop.index,
           image: imageUrl,
         });
 
@@ -503,7 +503,6 @@ function Itinerary() {
     );
     setStops(all_stops);
     let totalDistance = 0;
-    let totalDuration = 0;
     routesRoad.push({
       polylines: responseItinerary.routes.map((route) => ({
         polylineEncoded: route.polylineEncoded,
@@ -511,43 +510,32 @@ function Itinerary() {
         distance: route.distance,
       })),
     });
-    for (const r of routesRoad) {
-      console.log(r)
-      totalDistance = totalDistance + parseFloat(r.polylines.distance);
-      totalDuration = totalDistance + parseFloat(r.polylines.duration);
+    for (const r of routesRoad[0].polylines) {
+      totalDistance = totalDistance + parseFloat(r.distance);
     }
-    setTitle(responseItinerary.name)
+    setTitle(responseItinerary.name);
     setRoutes(routesRoad);
     setMarkers(markersRoad);
-    setDuration(totalDuration);
     setDistancePill(totalDistance);
     setTitle(responseItinerary.name);
     setLoading(false);
   };
   const processItineraryData = async (data) => {
-    console.log("=== Processing Itinerary Data ===");
-    console.log("Input data structure:", {
-      hasResponse: Boolean(data.response),
-      hasItinerary: Boolean(data.response?.itinerary),
-      itineraryType: typeof data.response?.itinerary,
-    });
 
-    if (data.response && data.response.itinerary) {
-      const responseItinerary = data.response.itinerary;
+    if (data && data.itinerary) {
+      const responseItinerary = data.itinerary;
       console.log("Processing itinerary data:", responseItinerary);
       setItinerary(responseItinerary);
       const calendar = [];
       const AllroutesData = [];
       const AllmarkersData = [];
       const imagePromises = [];
-
       if (responseItinerary.days) {
         setDays(responseItinerary.days);
         for (const day of responseItinerary.days) {
-          const dayActivities = [];
+          const dayActivities=[]
           const routesData = [];
           const markersData = [];
-
           if (day.morning_activities) {
             for (const activity of day.morning_activities) {
               const photoPromise = getPhotoUrl(activity.place).then(
@@ -558,6 +546,7 @@ function Itinerary() {
                     time: `${formatTime(activity.start_time)} - ${formatTime(
                       activity.end_time
                     )}`,
+                    unformatted_time:activity.start_time,
                     image: imageUrl,
                     transport: activity.transport || {},
                   });
@@ -590,6 +579,7 @@ function Itinerary() {
                     time: `${formatTime(activity.start_time)} - ${formatTime(
                       activity.end_time
                     )}`,
+                    unformatted_time:activity.start_time,
                     image: imageUrl,
                     transport: activity.transport || {},
                   });
@@ -622,8 +612,7 @@ function Itinerary() {
               })),
             });
           }
-
-          calendar.push(dayActivities);
+          calendar.push(dayActivities.sort((a, b) => new Date(a.unformatted_time).getTime() - new Date(b.unformatted_time).getTime()));
           AllroutesData.push(routesData);
           AllmarkersData.push(markersData);
         }
@@ -650,7 +639,6 @@ function Itinerary() {
       setBudget(responseItinerary.budget || 0);
       setLocation(locationTrip);
       setCalendar(calendar);
-
       setRoutes(AllroutesData);
       setMarkers(AllmarkersData);
     }
@@ -748,6 +736,7 @@ function Itinerary() {
       const trip_management_response = await axiosInstance.post("/save", {
         id: tripId,
         itinerary: itinerary,
+        trip_type:tripType
       });
 
       if (trip_management_response.status === 200) {
@@ -769,49 +758,62 @@ function Itinerary() {
   };
 
   const generateGoogleMapsUrl = (dayIndex) => {
-    if (!itinerary.days || !itinerary.days[dayIndex]) return null;
-
-    const day = itinerary.days[dayIndex];
     const waypoints = [];
     let origin = null;
     let destination = null;
-
-    // Process morning activities
-    if (day.morning_activities && day.morning_activities.length > 0) {
-      const firstActivity = day.morning_activities[0];
-      if (firstActivity.place.location) {
-        origin = `${firstActivity.place.location.latitude},${firstActivity.place.location.longitude}`;
+    if (tripType == "road") {
+      origin = `${stops[0].place.location.latitude},${stops[0].place.location.longitude}`;
+      destination = `${stops[stops.length-1].place.location.latitude},${stops[stops.length-1].place.location.longitude}`;
+      for (const stop of stops.slice(1, -1)) {
+        waypoints.push(
+          `${stop.place.location.latitude},${stop.place.location.longitude}`
+        );
       }
+      console.log(origin);
+      console.log(destination);
+      console.log(waypoints);
+    } else {
+      if (!itinerary.days || !itinerary.days[dayIndex]) return null;
 
-      // Add remaining morning activities as waypoints
-      day.morning_activities.slice(1).forEach((activity) => {
-        if (activity.place.location) {
-          waypoints.push(
-            `${activity.place.location.latitude},${activity.place.location.longitude}`
-          );
+      const day = itinerary.days[dayIndex];
+
+      // Process morning activities
+      if (day.morning_activities && day.morning_activities.length > 0) {
+        const firstActivity = day.morning_activities[0];
+        if (firstActivity.place.location) {
+          origin = `${firstActivity.place.location.latitude},${firstActivity.place.location.longitude}`;
         }
-      });
-    }
 
-    // Process afternoon activities
-    if (day.afternoon_activities && day.afternoon_activities.length > 0) {
-      day.afternoon_activities.forEach((activity) => {
-        if (activity.place.location) {
-          if (!origin) {
-            origin = `${activity.place.location.latitude},${activity.place.location.longitude}`;
-          } else {
+        // Add remaining morning activities as waypoints
+        day.morning_activities.slice(1).forEach((activity) => {
+          if (activity.place.location) {
             waypoints.push(
               `${activity.place.location.latitude},${activity.place.location.longitude}`
             );
           }
-        }
-      });
+        });
+      }
 
-      // Set the last activity as destination
-      const lastActivity =
-        day.afternoon_activities[day.afternoon_activities.length - 1];
-      if (lastActivity.place.location) {
-        destination = `${lastActivity.place.location.latitude},${lastActivity.place.location.longitude}`;
+      // Process afternoon activities
+      if (day.afternoon_activities && day.afternoon_activities.length > 0) {
+        day.afternoon_activities.forEach((activity) => {
+          if (activity.place.location) {
+            if (!origin) {
+              origin = `${activity.place.location.latitude},${activity.place.location.longitude}`;
+            } else {
+              waypoints.push(
+                `${activity.place.location.latitude},${activity.place.location.longitude}`
+              );
+            }
+          }
+        });
+
+        // Set the last activity as destination
+        const lastActivity =
+          day.afternoon_activities[day.afternoon_activities.length - 1];
+        if (lastActivity.place.location) {
+          destination = `${lastActivity.place.location.latitude},${lastActivity.place.location.longitude}`;
+        }
       }
     }
 
@@ -819,6 +821,7 @@ function Itinerary() {
 
     const waypointsStr =
       waypoints.length > 0 ? `&waypoints=${waypoints.join("|")}` : "";
+    console.log(waypointsStr);
     return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsStr}&travelmode=driving`;
   };
 
@@ -975,7 +978,11 @@ function Itinerary() {
               <div className="relative" ref={exportDropdownRef}>
                 <button
                   className="btn btn-md btn-white rounded-full btn-circle shadow-sm flex items-center justify-center"
-                  onClick={() => setExportDropdownOpen((open) => !open)}
+                  onClick={() =>
+                    tripType == "road"
+                      ? handleOpenInGoogleMaps()
+                      : setExportDropdownOpen((open) => !open)
+                  }
                   aria-haspopup="true"
                   aria-expanded={exportDropdownOpen}
                 >
@@ -983,7 +990,9 @@ function Itinerary() {
                 </button>
                 {exportDropdownOpen && (
                   <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-50">
-                    {itinerary.days && itinerary.days.length > 0 ? (
+                    {tripType !== "road" &&
+                    itinerary.days &&
+                    itinerary.days.length > 0 ? (
                       itinerary.days.map((_, idx) => (
                         <button
                           key={idx}
@@ -1008,7 +1017,7 @@ function Itinerary() {
 
             <div className="flex flex-row items-center justify-between pb-5">
               <div className="flex flex-row gap-x-5">
-                {!tripType == "road" && (
+                {tripType !== "road" && (
                   <div className="rounded-full border-1 border-secondary/10">
                     <div className="flex flex-row items-center gap-x-3 m-1">
                       <GoClock className="text-primary ml-1" />
@@ -1019,7 +1028,7 @@ function Itinerary() {
                     </div>
                   </div>
                 )}
-                {!tripType == "road" && (
+                { tripType !== "road" && (
                   <div className="rounded-full border-1 border-secondary/10">
                     <div className="flex flex-row items-center gap-x-3 m-1">
                       <GoPeople className="text-primary ml-1" />
@@ -1045,17 +1054,7 @@ function Itinerary() {
                     <div className="flex flex-row items-center gap-x-3 m-1">
                       <GiPathDistance className="text-primary ml-1" />
                       <div className="mr-2">
-                        <span> {distancePill} </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {tripType == "road" && (
-                  <div className="rounded-full border-1 border-secondary/10">
-                    <div className="flex flex-row items-center gap-x-3 m-1">
-                      <IoIosTimer className="text-primary ml-1" />
-                      <div className="mr-2">
-                        <span> {duration} </span>
+                        <span> {parseInt(distancePill / 1000) + " km"} </span>
                       </div>
                     </div>
                   </div>
@@ -1079,18 +1078,20 @@ function Itinerary() {
                 </div>
               ) : tripType == "road" ? (
                 <>
-                  {stops.map((item, index) => (
-                    <PlaceCard
-                      key={index}
-                      id={item.order}
-                      place={item.place.name}
-                      time={null}
-                      transport={""}
-                      image={item.image}
-                      onRefresh={() => {}}
-                      road={true}
-                    />
-                  ))}
+                  <div className="h-full overflow-y-auto">
+                    {stops.map((item, index) => (
+                      <PlaceCard
+                        key={index}
+                        id={item.order}
+                        place={item.place.name}
+                        time={null}
+                        transport={""}
+                        image={item.image}
+                        onRefresh={() => {}}
+                        road={true}
+                      />
+                    ))}
+                  </div>
                 </>
               ) : (
                 <>
@@ -1129,13 +1130,10 @@ function Itinerary() {
                         className="overflow-y-auto h-full"
                       >
                         {calendar[selectedDay]
-                          .sort((a, b) =>
-                            a.id < b.id ? -1 : a.id > b.id ? 1 : 0
-                          )
-                          .map((item) => (
+                          .map((item,index) => (
                             <PlaceCard
                               key={item.id}
-                              id={item.id}
+                              id={index}
                               place={item.place}
                               time={item.time}
                               transport={item.transport}
