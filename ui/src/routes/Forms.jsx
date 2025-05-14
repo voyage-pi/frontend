@@ -71,7 +71,7 @@ function Forms() {
     if (currentStep === 5) {
       // Check if current question has an answer
       const currentQuestionHasAnswer = answers[subQuestionIndex]?.answer !== undefined;
-      
+
       // If trying to proceed without an answer, show error
       if (!currentQuestionHasAnswer) {
         setShowError(true);
@@ -110,7 +110,7 @@ function Forms() {
         setCurrentStep(currentStep - 1);
       }
     }
-    
+
     if (currentStep === 6) {
       setCurrentStep(currentStep - 1);
     }
@@ -123,7 +123,7 @@ function Forms() {
       updated[subQuestionIndex].answer = rating;
       return updated;
     });
-    
+
     // Also save to localStorage for persistence and to be used in Itinerary
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     savedRatings[subQuestionIndex] = rating;
@@ -137,7 +137,7 @@ function Forms() {
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-    //const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
+    const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
 
     setIsNavigating(true);
 
@@ -146,7 +146,7 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
-    
+
     const tripType = localStorage.getItem("Trip Type")
     let obj = {}
     //add an object related to the trip type an append it to the sending data for the backend attributes
@@ -166,11 +166,14 @@ function Forms() {
     }
 
     // Format must-visit places for API
-    //const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
-    //  name: place.name,
-    //  latitude: place.position.lat,
-    //  longitude: place.position.lng
-    //}));f
+    const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
+      place_name: place.name,
+      coordinates: {
+        latitude: place.position.lat,
+        longitude: place.position.lng,
+      },
+      place_id: place.place_id,
+    }));
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
@@ -187,7 +190,10 @@ function Forms() {
           type: "scale",
         })),
       },
+      must_visit_places: formattedMustVisitPlaces,
     };
+
+    console.log("Form data before sending:", formData);
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
@@ -203,30 +209,30 @@ function Forms() {
       ) {
         setItinerary(response.data);
         const tripId = response.data.response.tripId;
-        navigate(`/itinerary/${tripId}`, { 
-          state: { 
+        navigate(`/itinerary/${tripId}`, {
+          state: {
             itineraryData: response.data,
-            userRatings: userRatings 
-          } 
+            userRatings: userRatings
+          }
         });
-        
+
         // Instead of clearing all localStorage, just remove specific keys
         // but keep userRatings for the preference sidebar
         const keysToRemove = [
-          "currentStep", "subQuestionIndex", "answers", 
-          "Start Date", "Trip Type", "radius", "Latitude", 
+          "currentStep", "subQuestionIndex", "answers",
+          "Start Date", "Trip Type", "radius", "Latitude",
           "Longitude", "Location", "Budget", "Duration"
         ];
-        
+
         keysToRemove.forEach(key => localStorage.removeItem(key));
-        
+
         answers.forEach(answer => {
           answer.answer = null;
         });
         setAnswers([...answers]);
         setCurrentStep(1);
         setSubQuestionIndex(0);
-        
+
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -249,10 +255,10 @@ function Forms() {
       <div className="flex justify-center w-full">
         <div className="flex justify-center items-center flex-col w-full px-4">
           <div className="mb-4">
-            <img 
-              src={VoyageLogo} 
-              alt="Voyage Logo" 
-              className="h-30 cursor-pointer" 
+            <img
+              src={VoyageLogo}
+              alt="Voyage Logo"
+              className="h-30 cursor-pointer"
               onClick={handleLeave}
             />
           </div>
