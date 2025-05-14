@@ -69,13 +69,10 @@ function Register() {
       setIsLoading(true);
       setRegisterStatus(null);
       
-      // Add @ prefix to the tag if it doesn't already have one
-      const tagWithPrefix = formData.tag.startsWith('@') ? formData.tag : `@${formData.tag}`;
-      
       const response = await axiosUser.post('/user/register', {
         name: formData.username,
         email: formData.email,
-        tag: tagWithPrefix, 
+        tag: formData.tag,
         password: formData.password
       });
       
