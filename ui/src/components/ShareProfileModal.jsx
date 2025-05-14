@@ -12,19 +12,15 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
   const baseUrl = window.location.origin;
   const shareableLink = LoggedUser ? `${baseUrl}/${LoggedUser.tag}` : `${baseUrl}`;
   
-  // Handle copy to clipboard without selecting text
   const handleCopy = () => {
     try {
-      // Copy text directly without selecting
       navigator.clipboard.writeText(shareableLink);
       setCopied(true);
       
-      // Reset copied state after 2 seconds
       setTimeout(() => {
         setCopied(false);
       }, 2000);
     } catch (err) {
-      // Fallback method if direct clipboard access fails
       const tempTextArea = document.createElement('textarea');
       tempTextArea.value = shareableLink;
       tempTextArea.style.position = 'absolute';
@@ -41,18 +37,14 @@ const ShareProfileModal = ({ isOpen, onClose }) => {
     }
   };
   
-  // Control modal visibility
   useEffect(() => {
     if (isOpen) {
-      // Prevent background scrolling when modal is open
       document.body.classList.add('overflow-hidden');
     } else {
-      // Restore scrolling when modal is closed
       document.body.classList.remove('overflow-hidden');
     }
   }, [isOpen]);
   
-  // Handle ESC key manually for closing
   useEffect(() => {
     const handleEscKey = (event) => {
       if (event.key === 'Escape' && isOpen) {
