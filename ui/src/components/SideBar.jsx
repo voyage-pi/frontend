@@ -310,7 +310,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <NavLink to="/forms">
                                     <button className="btn btn-primary border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
                                         <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-2">
-                                            <span className="text-primary text-2xl font-light">+</span>
+                                            <span className="text-primary flex items-center justify-center leading-none" style={{ fontSize: "20px" }}>+</span>
                                         </div>
                                         <span className="text-primary-content text-lg font-bold">Create</span>
                                     </button>
@@ -320,7 +320,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                             {!isExpanded && (
                                 <NavLink to="/forms">
                                     <button className="btn btn-primary border-none rounded-full mt-51 w-7 h-7 flex items-center justify-center p-0 transition-all duration-400 ease-in-out">
-                                        <span className="text-primary-content text-2xl font-light">+</span>
+                                        <span className="text-primary-content flex items-center justify-center leading-none" style={{ fontSize: "20px" }}>+</span>
                                     </button>
                                 </NavLink>
                             )}
