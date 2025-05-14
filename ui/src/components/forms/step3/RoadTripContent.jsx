@@ -48,11 +48,12 @@ const RoadTripContent = () => {
         console.log(response.data.routes);
         setRoute(response.data.routes);
         //store the origin and destination in local storage such has the route
-        localStorage.setItem("Location","Driving from "+currentTextOrigin+" to "+currentTextDes);
-        localStorage.setItem("route",response.data.routes[0].polylineEncoded);
+        localStorage.setItem(
+          "Location",
+          "Driving from " + currentTextOrigin + " to " + currentTextDes
+        );
+        localStorage.setItem("route", response.data.routes[0].polylineEncoded);
       }
-
-
     };
     routing();
   }, [markersDes, markersOrigin]);
@@ -60,34 +61,54 @@ const RoadTripContent = () => {
   const handleSelectLocation = async (location, origin) => {
     if (origin) {
       setSelectedLocationOrigin(location);
-      setCurrentTextOrigin(location);
+      setCurrentTextOrigin(location.text);
       setShowOrigin(false);
     } else {
       setSelectedLocationDes(location);
-      setCurrentTextDes(location);
+      setCurrentTextDes(location.text);
       setShowDes(false);
     }
 
     try {
       const response = await axiosPlace.post("/search/", {
-        place_name: location,
+        place_name: location.text,
       });
       let m = {
         position: {
           lat: response.data.latitude,
           lng: response.data.longitude,
         },
-        title: location,
+        title: location.text,
         address: "",
         image: "",
       };
-      console.log("Markers", {...m.position});
       if (origin) {
-
-        localStorage.setItem("origin", JSON.stringify({latitude:m.position.lat, longitude:m.position.lng}));
+        localStorage.setItem(
+          "origin",
+          JSON.stringify({
+            id: location.place_id,
+            name: location.text,
+            types: [],
+            location: {
+              latitude: m.position.lat,
+              longitude: m.position.lng,
+            },
+          })
+        );
         setMarkersOrigin([m]);
       } else {
-        localStorage.setItem("destination", JSON.stringify({latitude:m.position.lat, longitude:m.position.lng}));
+        localStorage.setItem(
+          "destination",
+          JSON.stringify({
+            id: location.place_id,
+            name: location.text,
+            types: [],
+            location: {
+              latitude: m.position.lat,
+              longitude: m.position.lng,
+            },
+          })
+        );
         setMarkersDes([m]);
       }
     } catch (error) {
@@ -120,8 +141,7 @@ const RoadTripContent = () => {
         key: Date.now(),
       });
       console.error("Search error:", error);
-    }
-    finally{
+    } finally {
       origin ? setLoadingOrigin(false) : setLoadingDes(false);
     }
   };
@@ -170,7 +190,7 @@ const RoadTripContent = () => {
     } else if (key === "Enter") {
       let currentSelectedSuggestion =
         suggestionlist[origin ? suggestionHoveredOrigin : suggestionHoveredDes];
-      handleSelectLocation(currentSelectedSuggestion.text, origin);
+      handleSelectLocation(currentSelectedSuggestion, origin);
     }
   };
 
@@ -209,11 +229,10 @@ const RoadTripContent = () => {
               placeholder="Origin"
             />
 
-            {
-            loadingOrigin && currentTextOrigin.length > 3 && (
-            <div className="absolute right-2 top-1/2 translate-y-[-50%] rounded-md">
-              <LoadingAnimation width={"40px"} height={"40px"} />
-            </div>
+            {loadingOrigin && currentTextOrigin.length > 3 && (
+              <div className="absolute right-2 top-1/2 translate-y-[-50%] rounded-md">
+                <LoadingAnimation width={"40px"} height={"40px"} />
+              </div>
             )}
             <div
               className={`${
@@ -244,7 +263,7 @@ const RoadTripContent = () => {
                       } 
                         
   `}
-                    onClick={() => handleSelectLocation(location.text, true)}
+                    onClick={() => handleSelectLocation(location, true)}
                   >
                     <FaMapMarkerAlt
                       className={`mr-3 ${
@@ -273,11 +292,10 @@ const RoadTripContent = () => {
               className="pl-10 p-3 w-full border border-gray-200 rounded-lg focus:outline-none"
               placeholder="Destination"
             />
-            {
-            loadingDes && currentTextDes.length > 3 && (
-            <div className="absolute right-2 top-1/2 translate-y-[-50%] rounded-md">
-              <LoadingAnimation width={"40px"} height={"40px"} />
-            </div>
+            {loadingDes && currentTextDes.length > 3 && (
+              <div className="absolute right-2 top-1/2 translate-y-[-50%] rounded-md">
+                <LoadingAnimation width={"40px"} height={"40px"} />
+              </div>
             )}
             <div
               className={`${
@@ -308,7 +326,7 @@ const RoadTripContent = () => {
                       } 
                         
   `}
-                    onClick={() => handleSelectLocation(location.text, false)}
+                    onClick={() => handleSelectLocation(location, false)}
                   >
                     <FaMapMarkerAlt
                       className={`mr-3 ${

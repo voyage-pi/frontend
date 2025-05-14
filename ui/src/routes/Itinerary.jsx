@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
 import { FaRegFloppyDisk, FaMapLocationDot } from "react-icons/fa6";
 import { HiOutlineTrash } from "react-icons/hi2";
+import { IoIosTimer } from "react-icons/io";
+import { GiPathDistance } from "react-icons/gi";
 import { axiosRecommendation } from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import Notification from "../components/Notification";
@@ -59,6 +61,11 @@ function Itinerary() {
   // State for export dropdown
   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
   const exportDropdownRef = useRef(null);
+  // road states
+  const [tripType, setTripType] = useState();
+  const [stops, setStops] = useState([]);
+  const [distancePill, setDistancePill] = useState([]);
+  const [duration, setDuration] = useState([]);
 
   useEffect(() => {
     // Generate a unique cursor ID on component mount
@@ -341,7 +348,7 @@ function Itinerary() {
       axiosInstance
         .get(`/trips/${tripId}`)
         .then((response) => {
-          const data = response.data;
+          const data = response.data.response;
           console.log("Loaded itinerary data from API:", data);
 
           if (data.questions && data.questions.user123) {
@@ -353,7 +360,12 @@ function Itinerary() {
             }
           }
 
-          processItineraryData(data);
+          setTripType(data.itinerary.trip_type);
+          if (data.itinerary.trip_type == "road") {
+            processRoadData(data);
+          } else {
+            processItineraryData(data);
+          }
         })
         .catch((error) => {
           console.error("Error loading itinerary from API:", error);
@@ -392,7 +404,7 @@ function Itinerary() {
           fetch(`/api/v1/trip-management/api/trips/${tripId}`)
             .then((response) => response.json())
             .then((data) => {
-              processItineraryData(data);
+              if (localStorage.getItem("Trip Typ")) processItineraryData(data);
             })
             .catch((error) => console.error("Error refreshing trip:", error));
         }
@@ -454,7 +466,64 @@ function Itinerary() {
       cleanSeed
     )}/400/300`;
   };
+  const processRoadData = async (data) => {
+    const responseItinerary = data.itinerary.itinerary;
+    setItinerary(responseItinerary);
+    let all_stops = [];
+    let routesRoad = [];
+    let markersRoad = [];
+    let imagePromises = [];
+    for (const stop of responseItinerary.stops) {
+      const photoPromise = getPhotoUrl(stop.place).then((imageUrl) => {
+        all_stops.push({
+          id: stop.id,
+          place: stop.place,
+          image: imageUrl,
+        });
 
+        if (stop.place.location) {
+          markersRoad.push({
+            position: {
+              lat: stop.place.location.latitude,
+              lng: stop.place.location.longitude,
+            },
+            title: stop.place.name,
+            address: stop.place.name,
+            image: imageUrl,
+          });
+        }
+      });
+      imagePromises.push(photoPromise);
+    }
+
+    await Promise.all(imagePromises);
+
+    all_stops = all_stops.sort((a, b) =>
+      a.order < b.order ? -1 : a.order > b.order ? 1 : 0
+    );
+    setStops(all_stops);
+    let totalDistance = 0;
+    let totalDuration = 0;
+    routesRoad.push({
+      polylines: responseItinerary.routes.map((route) => ({
+        polylineEncoded: route.polylineEncoded,
+        duration: route.duration,
+        distance: route.distance,
+      })),
+    });
+    for (const r of routesRoad) {
+      console.log(r)
+      totalDistance = totalDistance + parseFloat(r.polylines.distance);
+      totalDuration = totalDistance + parseFloat(r.polylines.duration);
+    }
+    setTitle(responseItinerary.name)
+    setRoutes(routesRoad);
+    setMarkers(markersRoad);
+    setDuration(totalDuration);
+    setDistancePill(totalDistance);
+    setTitle(responseItinerary.name);
+    setLoading(false);
+  };
   const processItineraryData = async (data) => {
     console.log("=== Processing Itinerary Data ===");
     console.log("Input data structure:", {
@@ -713,29 +782,34 @@ function Itinerary() {
       if (firstActivity.place.location) {
         origin = `${firstActivity.place.location.latitude},${firstActivity.place.location.longitude}`;
       }
-      
+
       // Add remaining morning activities as waypoints
-      day.morning_activities.slice(1).forEach(activity => {
+      day.morning_activities.slice(1).forEach((activity) => {
         if (activity.place.location) {
-          waypoints.push(`${activity.place.location.latitude},${activity.place.location.longitude}`);
+          waypoints.push(
+            `${activity.place.location.latitude},${activity.place.location.longitude}`
+          );
         }
       });
     }
 
     // Process afternoon activities
     if (day.afternoon_activities && day.afternoon_activities.length > 0) {
-      day.afternoon_activities.forEach(activity => {
+      day.afternoon_activities.forEach((activity) => {
         if (activity.place.location) {
           if (!origin) {
             origin = `${activity.place.location.latitude},${activity.place.location.longitude}`;
           } else {
-            waypoints.push(`${activity.place.location.latitude},${activity.place.location.longitude}`);
+            waypoints.push(
+              `${activity.place.location.latitude},${activity.place.location.longitude}`
+            );
           }
         }
       });
 
       // Set the last activity as destination
-      const lastActivity = day.afternoon_activities[day.afternoon_activities.length - 1];
+      const lastActivity =
+        day.afternoon_activities[day.afternoon_activities.length - 1];
       if (lastActivity.place.location) {
         destination = `${lastActivity.place.location.latitude},${lastActivity.place.location.longitude}`;
       }
@@ -743,21 +817,25 @@ function Itinerary() {
 
     if (!origin || !destination) return null;
 
-    const waypointsStr = waypoints.length > 0 ? `&waypoints=${waypoints.join('|')}` : '';
+    const waypointsStr =
+      waypoints.length > 0 ? `&waypoints=${waypoints.join("|")}` : "";
     return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsStr}&travelmode=driving`;
   };
 
   const handleOpenInGoogleMaps = (dayIndex) => {
     const url = generateGoogleMapsUrl(dayIndex);
     if (url) {
-      window.open(url, '_blank');
+      window.open(url, "_blank");
     }
   };
 
   // Close dropdown if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (exportDropdownRef.current && !exportDropdownRef.current.contains(event.target)) {
+      if (
+        exportDropdownRef.current &&
+        !exportDropdownRef.current.contains(event.target)
+      ) {
         setExportDropdownOpen(false);
       }
     }
@@ -919,7 +997,9 @@ function Itinerary() {
                         </button>
                       ))
                     ) : (
-                      <div className="px-4 py-2 text-gray-400">No days to export</div>
+                      <div className="px-4 py-2 text-gray-400">
+                        No days to export
+                      </div>
                     )}
                   </div>
                 )}
@@ -928,33 +1008,58 @@ function Itinerary() {
 
             <div className="flex flex-row items-center justify-between pb-5">
               <div className="flex flex-row gap-x-5">
-                <div className="rounded-full border-1 border-secondary/10">
-                  <div className="flex flex-row items-center gap-x-3 m-1">
-                    <GoClock className="text-primary ml-1" />
-                    <div className="mr-2">
-                      <span className="font-bold"> {totalDays} </span>
-                      {totalDays === 1 ? "day" : "days"}
+                {!tripType == "road" && (
+                  <div className="rounded-full border-1 border-secondary/10">
+                    <div className="flex flex-row items-center gap-x-3 m-1">
+                      <GoClock className="text-primary ml-1" />
+                      <div className="mr-2">
+                        <span className="font-bold"> {totalDays} </span>
+                        {totalDays === 1 ? "day" : "days"}
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="rounded-full border-1 border-secondary/10">
-                  <div className="flex flex-row items-center gap-x-3 m-1">
-                    <GoPeople className="text-primary ml-1" />
-                    <div className="mr-2">
-                      <span className="font-bold"> {totalPeople} </span>
-                      {totalPeople === 1 ? "person" : "people"}
+                )}
+                {!tripType == "road" && (
+                  <div className="rounded-full border-1 border-secondary/10">
+                    <div className="flex flex-row items-center gap-x-3 m-1">
+                      <GoPeople className="text-primary ml-1" />
+                      <div className="mr-2">
+                        <span className="font-bold"> {totalPeople} </span>
+                        {totalPeople === 1 ? "person" : "people"}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="rounded-full border-1 border-secondary/10">
-                  <div className="flex flex-row items-center gap-x-3 m-1">
-                    <IoLocationOutline className="text-primary ml-1" />
-                    <div className="mr-2">
-                      <span> {locationName} </span>
+                )}
+                {!tripType == "road" && (
+                  <div className="rounded-full border-1 border-secondary/10">
+                    <div className="flex flex-row items-center gap-x-3 m-1">
+                      <IoLocationOutline className="text-primary ml-1" />
+                      <div className="mr-2">
+                        <span> {locationName} </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+                {tripType == "road" && (
+                  <div className="rounded-full border-1 border-secondary/10">
+                    <div className="flex flex-row items-center gap-x-3 m-1">
+                      <GiPathDistance className="text-primary ml-1" />
+                      <div className="mr-2">
+                        <span> {distancePill} </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {tripType == "road" && (
+                  <div className="rounded-full border-1 border-secondary/10">
+                    <div className="flex flex-row items-center gap-x-3 m-1">
+                      <IoIosTimer className="text-primary ml-1" />
+                      <div className="mr-2">
+                        <span> {duration} </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Preferences Button - now inline with the tags */}
@@ -972,6 +1077,21 @@ function Itinerary() {
                   <div className="w-full h-[100px] my-2 skeleton"></div>
                   <div className="w-full h-[100px] my-2 skeleton"></div>
                 </div>
+              ) : tripType == "road" ? (
+                <>
+                  {stops.map((item, index) => (
+                    <PlaceCard
+                      key={index}
+                      id={item.order}
+                      place={item.place.name}
+                      time={null}
+                      transport={""}
+                      image={item.image}
+                      onRefresh={() => {}}
+                      road={true}
+                    />
+                  ))}
+                </>
               ) : (
                 <>
                   <motion.div
@@ -1009,7 +1129,9 @@ function Itinerary() {
                         className="overflow-y-auto h-full"
                       >
                         {calendar[selectedDay]
-                          .sort((a, b) => a.id - b.id)
+                          .sort((a, b) =>
+                            a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+                          )
                           .map((item) => (
                             <PlaceCard
                               key={item.id}
@@ -1032,8 +1154,8 @@ function Itinerary() {
           {/* Right Side */}
           <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg h-[47rem]">
             <Map
-              polylines={routes[selectedDay]}
-              markers={markers[selectedDay]}
+              polylines={tripType !== "road" ? routes[selectedDay] : routes}
+              markers={tripType !== "road" ? markers[selectedDay] : markers}
             />
           </div>
         </div>
