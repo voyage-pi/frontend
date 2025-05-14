@@ -7,6 +7,7 @@ function Register() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    tag: "",
     password: "",
     confirmPassword: ""
   });
@@ -16,6 +17,7 @@ function Register() {
   const [placeholders, setPlaceholders] = useState({
     username: "John Doe",
     email: "john.doe@example.com",
+    tag: "johndoe",
     password: "••••••••",
     confirmPassword: "••••••••"
   });
@@ -24,10 +26,19 @@ function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    
+    if (name === "tag") {
+      const cleanValue = value.startsWith('@') ? value.substring(1) : value;
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: cleanValue
+      }));
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
     
     if (name === "password" || name === "confirmPassword") {
       setPasswordError("");
@@ -61,6 +72,7 @@ function Register() {
       const response = await axiosUser.post('/user/register', {
         name: formData.username,
         email: formData.email,
+        tag: formData.tag,
         password: formData.password
       });
       
@@ -130,6 +142,27 @@ function Register() {
                 className="input w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder={placeholders.email}
               />
+            </fieldset>
+
+            <fieldset className="fieldset">
+              <legend className="fieldset-legend block text-sm font-medium text-secondary">Tag</legend>
+              <div className="flex rounded-md">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-gray-50 text-gray-500 text-sm">
+                  @
+                </span>
+                <input
+                  type="text"
+                  id="tag"
+                  name="tag"
+                  value={formData.tag}
+                  onChange={handleChange}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  required
+                  className="input flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary"
+                  placeholder={placeholders.tag.replace('@', '')} 
+                />
+              </div>
             </fieldset>
             
             <fieldset className="fieldset">
