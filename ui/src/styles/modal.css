@@ -1,0 +1,21 @@
+.fixed.inset-0.bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(1px) !important;
+  z-index: 9999 !important;
+}
+
+body.overflow-hidden {
+  overflow: hidden !important;
+  padding-right: 0 !important; 
+}
+
+.fixed.inset-0 > div {
+  z-index: 10000 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+@media (max-width: 640px) {
+  .fixed.inset-0.bg-black\/60 {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+  }
+} 
