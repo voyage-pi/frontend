@@ -64,7 +64,7 @@ const Step2Content = ({ setCurrentStep }) => {
       title: 'Road Trip',
       iconInBox: true,
       text: "An adventure that takes you from one destination to another, with the journey being just as important as the destinations. Perfect for travelers who enjoy the freedom of the open road and the excitement of unexpected discoveries along your route.",
-      implemented: false,
+      implemented: true,
     },
     {
       id: 'zone',

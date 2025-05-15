@@ -26,7 +26,7 @@ const MustVisitPlacesContent = () => {
   }, []);
 
   useEffect(() => {
-    //localStorage.setItem("MustVisitPlaces", JSON.stringify(mustVisitPlaces));
+    localStorage.setItem("MustVisitPlaces", JSON.stringify(mustVisitPlaces));
   }, [mustVisitPlaces]);
 
   const addPlace = async (placeName) => {
@@ -39,14 +39,17 @@ const MustVisitPlacesContent = () => {
         place_name: placeName,
       });
 
+
       const newPlace = {
         name: placeName,
         position: {
           lat: response.data.latitude,
           lng: response.data.longitude,
         },
-        image: response.data.image || `https://source.unsplash.com/400x300/?${encodeURIComponent(placeName)}`,
+        place_id: response.data.place_id,
       };
+
+      console.log("New place added:", newPlace);
 
       setMustVisitPlaces(prev => [...prev, newPlace]);
       setCurrentText("");
@@ -76,12 +79,12 @@ const MustVisitPlacesContent = () => {
     const value = e.target.value;
     setLoading(value !== "");
     setCurrentText(value);
-    
+
     if (value === "") {
       setSuggestionList([]);
       return;
     }
-    
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -96,10 +99,10 @@ const MustVisitPlacesContent = () => {
   const handleSuggestionsSelection = (event) => {
     if (suggestionlist.length === 0)
       return;
-      
+
     let key = event.key;
     let suggestionsL = suggestionlist.length || 1;
-    
+
     if (key === "ArrowDown") {
       setSuggestionHovered(prev => (prev + 1) % suggestionsL);
     }
@@ -120,10 +123,10 @@ const MustVisitPlacesContent = () => {
   const getPlaceHeightClass = () => {
     const count = mustVisitPlaces.length;
     if (count === 0) return "";
-    if (count === 1) return "h-1/2"; 
-    if (count === 2) return "h-1/2"; 
-    if (count === 3) return "h-1/3"; 
-    return "h-1/3"; 
+    if (count === 1) return "h-1/2";
+    if (count === 2) return "h-1/2";
+    if (count === 3) return "h-1/3";
+    return "h-1/3";
   };
 
   const shouldAddScroll = mustVisitPlaces.length > 3;
@@ -133,7 +136,7 @@ const MustVisitPlacesContent = () => {
       <h2 className="text-3xl mb-10 text-center">
         Add <span className="text-primary">places</span> you must visit!
       </h2>
-      
+
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Side - Search Section */}
         <div className="flex-1">
@@ -185,34 +188,23 @@ const MustVisitPlacesContent = () => {
 
         {/* Right Side - Must Visit Places Box */}
         <div className="flex-1">
-          <div className=" h-84 w-full overflow-hidden">          
+          <div className=" h-84 w-full overflow-hidden">
             {mustVisitPlaces.length === 0 ? (
               <div className="flex items-center justify-center h-full w-full">
                 <div className="text-center text-gray-500">
                   No must-visit places added yet.
-                </div>  
+                </div>
               </div>
             ) : (
               <div className={`flex flex-col gap-y-4 ${shouldAddScroll ? 'overflow-y-auto' : ''} h-full w-full`}>
                 {mustVisitPlaces.map((place, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className={`rounded-lg overflow-hidden border border-gray-200 relative flex w-full ${getPlaceHeightClass()} ${index > 0 ? 'border-t' : ''}`}
                   >
-                    <div className="w-1/4 bg-gray-200 overflow-hidden">
-                      <img 
-                        src={place.image} 
-                        alt={place.name} 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                        }}
-                      />
-                    </div>
                     <div className="p-4 w-3/4 flex items-center">
                       <h4 className="text-lg font-medium">{place.name}</h4>
-                      <button 
+                      <button
                         onClick={() => removePlace(place.name)}
                         className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-red-100 transition-colors"
                       >

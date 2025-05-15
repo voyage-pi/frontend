@@ -223,13 +223,15 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                     className="max-w-48 transition-all duration-400 ease-in-out cursor-pointer" 
                                 />
                             </div>
-                            <button
-                                onClick={toggleSidebar}
-                                className="pl-7 text-primary hover:scale-105 transition-transform duration-200 ease-in-out"
-                                disabled={isTransitioning}
-                            >
-                                <FaChevronLeft size={16} />
-                            </button>
+                            <div className="pl-7 flex items-center">
+                                <button
+                                    onClick={toggleSidebar}
+                                    className="text-primary hover:scale-130 transition-transform duration-200 ease-in-out p-1"
+                                    disabled={isTransitioning}
+                                >
+                                    <FaChevronLeft size={16} />
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <div
@@ -288,14 +290,14 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <div
                                     className={`rounded-full text-primary/90 bg-white border-1 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
                                     <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>
-                                        <img src={LoggedUser?.image} alt="User Avatar"/>
+                                        <img src={LoggedUser?.avatar_url} alt="User Avatar"/>
                                         </span>
                                 </div>
                             </div>
 
                             <div className={`text-start mt-4 w-full text-secondary transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
                                 <div className="font-bold text-2xl">{LoggedUser?.name}</div>
-                                <p className="text-base opacity-70">{LoggedUser?.tag}</p>
+                                <p className="text-base opacity-70">@{LoggedUser?.tag}</p>
 
                                 <div className="flex justify-between mt-4 text-base">
                                     {userStats.map(({ label, count }, index) => (
@@ -308,7 +310,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                                 <NavLink to="/forms">
                                     <button className="btn btn-primary border-none rounded-full mt-10 w-full flex items-center justify-start gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out">
                                         <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-2">
-                                            <span className="text-primary text-2xl font-light">+</span>
+                                            <span className="text-primary flex items-center justify-center leading-none" style={{ fontSize: "20px" }}>+</span>
                                         </div>
                                         <span className="text-primary-content text-lg font-bold">Create</span>
                                     </button>
@@ -318,7 +320,7 @@ function SideBar({ onToggle, onMenuItemClick }) {
                             {!isExpanded && (
                                 <NavLink to="/forms">
                                     <button className="btn btn-primary border-none rounded-full mt-51 w-7 h-7 flex items-center justify-center p-0 transition-all duration-400 ease-in-out">
-                                        <span className="text-primary-content text-2xl font-light">+</span>
+                                        <span className="text-primary-content flex items-center justify-center leading-none" style={{ fontSize: "20px" }}>+</span>
                                     </button>
                                 </NavLink>
                             )}

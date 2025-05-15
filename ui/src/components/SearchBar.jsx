@@ -27,7 +27,7 @@ function SearchBar({
         onClick={onCreateNew}
       >
         <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center -ml-4">
-          <span className="text-primary text-3xl font-light">+</span>
+          <span className="text-primary flex items-center justify-center leading-none" style={{ fontSize: "20px" }}>+</span>
         </div>
         <span className="text-primary-content text-lg align-middle font-bold ml-2">{createButtonText}</span>
       </button>

@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react"
-import PageTemplate from "../components/PageTemplate"
-import StepIndicator from "../components/StepIndicator"
-import StepContent from "../components/forms/StepContent"
-import VoyageLogo from "../assets/voyage-complete-logo-navy.png"
-import questions from "../../public/questions.json"
-import { useNavigate } from "react-router-dom"
-import { axiosInstance } from "../utils/axiosInstance"
-import LoadingItinerary from "../components/LoadingItinerary"
+import { useState, useEffect } from "react";
+import PageTemplate from "../components/PageTemplate";
+import StepIndicator from "../components/StepIndicator";
+import StepContent from "../components/forms/StepContent";
+import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
+import questions from "../../public/questions.json";
+import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../utils/axiosInstance";
+import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
@@ -26,7 +26,6 @@ function Forms() {
   const [showError, setShowError] = useState(false)
   const [showLeaveButton, setShowLeaveButton] = useState(true)
 
-
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
@@ -42,16 +41,20 @@ function Forms() {
     if (savedSubQuestionIndex) {
       setSubQuestionIndex(savedSubQuestionIndex);
     }
-    
+
     if (savedStep6SubStep !== undefined) {
       setStep6SubStep(savedStep6SubStep);
     }
 
-    if (savedAnswers && Array.isArray(savedAnswers) && savedAnswers.length > 0) {
+    if (
+      savedAnswers &&
+      Array.isArray(savedAnswers) &&
+      savedAnswers.length > 0
+    ) {
       setAnswers(savedAnswers);
     } else {
       // If no saved answers, initialize from questions
-      setAnswers(questions.map(q => ({...q, answer: null}))); 
+      setAnswers(questions.map((q) => ({ ...q, answer: null })));
     }
 
     setIsInitialized(true);
@@ -68,17 +71,19 @@ function Forms() {
   }, [currentStep, subQuestionIndex, step6SubStep, answers, isInitialized]);
 
   // Calculate progress percentage for progress bar
-  const progressPercentage = currentStep === 5
-    ? Math.round(((subQuestionIndex) / totalSubQuestions) * 100)
-    : 0;
 
+  const progressPercentage =
+    currentStep === 5
+      ? Math.round((subQuestionIndex / totalSubQuestions) * 100)
+      : 0;
 
   const handleNext = () => {
     // For Step 5, check if the current question has an answer before allowing to proceed
     if (currentStep === 5) {
       // Check if current question has an answer
+
       const currentQuestionHasAnswer = answers[subQuestionIndex]?.answer !== undefined;
-      
+
       // If trying to proceed without an answer, show error
       if (!currentQuestionHasAnswer) {
         setShowError(true);
@@ -87,6 +92,10 @@ function Forms() {
     }
 
     if (currentStep < 5) {
+      if (localStorage.getItem("Trip Type") == "road") {
+        setCurrentStep(currentStep + 2);
+        return;
+      }
       setCurrentStep(currentStep + 1);
       return;
     }
@@ -123,11 +132,15 @@ function Forms() {
       if (subQuestionIndex > 0) {
         setSubQuestionIndex(subQuestionIndex - 1);
       } else {
+        if (localStorage.getItem("Trip Type") == "road") {
+          setCurrentStep(currentStep - 2);
+          return;
+        }
         setCurrentStep(currentStep - 1);
       }
       return;
     }
-    
+
     if (currentStep === 6) {
       if (step6SubStep === 1) {
         setStep6SubStep(0);
@@ -145,7 +158,7 @@ function Forms() {
       updated[subQuestionIndex].answer = rating;
       return updated;
     });
-    
+
     // Also save to localStorage for persistence and to be used in Itinerary
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     savedRatings[subQuestionIndex] = rating;
@@ -168,30 +181,41 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
-    
+
+
     const tripType = localStorage.getItem("Trip Type")
     let obj = {}
+
     //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
-      obj.radius = localStorage.getItem("radius")
+      obj.radius = localStorage.getItem("radius");
       obj.center = {
         latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-        longitude: parseFloat(localStorage.getItem("Longitude")) || 0
-      }
-    }
-    else if (tripType == "place") {
+        longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+      };
+      obj.type="zone"
+    } else if (tripType == "place") {
       obj.coordinates = {
         latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-        longitude: parseFloat(localStorage.getItem("Longitude")) || 0
-      }
-      obj.place_name = localStorage.getItem("Location")
+        longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+      };
+      obj.place_name = localStorage.getItem("Location");
+      obj.type="place"
+    } else if (tripType == "road") {
+      obj.origin = JSON.parse(localStorage.getItem("origin"));
+      obj.destination = JSON.parse(localStorage.getItem("destination"));
+      obj.polylines = localStorage.getItem("route");
+      obj.type="road"
     }
 
     // Format must-visit places for API
     const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
-      name: place.name,
-      latitude: place.position.lat,
-      longitude: place.position.lng
+      place_name: place.name,
+      coordinates: {
+        latitude: place.position.lat,
+        longitude: place.position.lng,
+      },
+      place_id: place.place_id,
     }));
 
     const formData = {
@@ -210,7 +234,10 @@ function Forms() {
           type: "scale",
         })),
       },
+      must_visit_places: formattedMustVisitPlaces,
     };
+
+    console.log("Form data before sending:", formData);
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
@@ -224,32 +251,33 @@ function Forms() {
         response.data.response &&
         response.data.response.itinerary
       ) {
-        setItinerary(response.data);
+        //setItinerary(response.data);
         const tripId = response.data.response.tripId;
-        navigate(`/itinerary/${tripId}`, { 
-          state: { 
+        navigate(`/itinerary/${tripId}`, {
+          state: {
             itineraryData: response.data,
-            userRatings: userRatings 
-          } 
+            userRatings: userRatings
+          }
         });
-        
-        // Clear all localStorage items related to the form
+
+        // Instead of clearing all localStorage, just remove specific keys
+        // but keep userRatings for the preference sidebar
         const keysToRemove = [
-          "currentStep", "subQuestionIndex", "step6SubStep", "answers", 
-          "Start Date", "Trip Type", "radius", "Latitude", 
+          "currentStep", "subQuestionIndex", "step6SubStep", "answers",
+          "Start Date", "Trip Type", "radius", "Latitude",
           "Longitude", "Location", "Budget", "Duration",
           "userRatings", "MustVisitPlaces" // Also clear userRatings and MustVisitPlaces
         ];
-        
+
         keysToRemove.forEach(key => localStorage.removeItem(key));
-        
-        // Reset the answers state to initial state
-        const resetAnswers = questions.map(q => ({...q, answer: null}));
-        setAnswers(resetAnswers);
+
+        answers.forEach(answer => {
+          answer.answer = null;
+        });
+        setAnswers([...answers]);
         setCurrentStep(1);
         setSubQuestionIndex(0);
         setStep6SubStep(0);
-        
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -272,10 +300,10 @@ function Forms() {
       <div className="flex justify-center w-full">
         <div className="flex justify-center items-center flex-col w-full px-4">
           <div className="mb-4">
-            <img 
-              src={VoyageLogo} 
-              alt="Voyage Logo" 
-              className="h-30 cursor-pointer" 
+            <img
+              src={VoyageLogo}
+              alt="Voyage Logo"
+              className="h-30 cursor-pointer"
               onClick={handleLeave}
             />
           </div>
@@ -325,11 +353,18 @@ function Forms() {
 
               {/* Modified Next/Finish button logic */}
               {(currentStep >= 3 && currentStep < 5) ||
-                (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1) ? (
+              (currentStep === 5 &&
+                subQuestionIndex < totalSubQuestions - 1) ? (
                 <button
                   onClick={handleNext}
-                  className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${currentStep === 5 && !answers[subQuestionIndex]?.answer ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  disabled={currentStep === 5 && !answers[subQuestionIndex]?.answer}
+                  className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${
+                    currentStep === 5 && !answers[subQuestionIndex]?.answer
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  disabled={
+                    currentStep === 5 && !answers[subQuestionIndex]?.answer
+                  }
                 >
                   Next <TiArrowRight className="ml-1" />
                 </button>

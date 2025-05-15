@@ -1,15 +1,26 @@
 import axios from "axios";
 
+// Create axios instances with default config
 export const axiosInstance = axios.create({
   baseURL: "/api/v1/trip-management/api", // Updated to include /api prefix
   timeout: 40000,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true // Enable sending cookies
 });
 
 export const axiosPlace = axios.create({
   baseURL: "/api/v1/place-wrapper", // Updated to use the nginx proxy path
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true
+});
+
+export const axiosMaps = axios.create({
+  baseURL: "/api/v1/maps-wrapper/", // Updated to use the nginx proxy path
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -22,6 +33,7 @@ export const axiosUser = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true
 });
 
 export const axiosRecommendation = axios.create({
@@ -30,4 +42,5 @@ export const axiosRecommendation = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true
 });
