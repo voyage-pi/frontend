@@ -478,7 +478,7 @@ function Trips() {
                 tabs={tabs}
               />
             </div>
-            <div className="px-6 pt-4 overflow-y-auto">
+            <div className="px-6 pt-4 overflow-y-auto h-[calc(100vh-180px)] relative">
               <div className="mb-4">
                 <SearchHeader
                   searchTerm={searchTerm}
@@ -506,10 +506,11 @@ function Trips() {
                   <p className="text-gray-500">No trips found.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-2 gap-y-5">
+                <div className="flex flex-wrap gap-x-8 gap-y-4 pb-8 overflow-visible justify-center items-center">
                   {filteredTrips.map((trip) => (
                     <TripCard
                       key={trip.id}
+                      id={trip.id}
                       image={trip.image}
                       days={trip.days}
                       people={trip.people}
