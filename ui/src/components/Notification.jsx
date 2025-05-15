@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Notification = ({ type, text, onClose, options = {} }) => {
+const Notification = ({ type, text, message, onClose, options = {} }) => {
+  const displayText = message || text; // Use message if provided, otherwise fall back to text
+  
   const defaultOptions = {
     position: "top-right",
     autoClose: 5000,
@@ -18,19 +20,19 @@ const Notification = ({ type, text, onClose, options = {} }) => {
   const showNotification = () => {
     switch (type) {
       case 'success':
-        toast.success(text, defaultOptions);
+        toast.success(displayText, defaultOptions);
         break;
       case 'error':
-        toast.error(text, defaultOptions);
+        toast.error(displayText, defaultOptions);
         break;
       case 'info':
-        toast.info(text, defaultOptions);
+        toast.info(displayText, defaultOptions);
         break;
       case 'warning':
-        toast.warning(text, defaultOptions);
+        toast.warning(displayText, defaultOptions);
         break;
       default:
-        toast(text, defaultOptions);
+        toast(displayText, defaultOptions);
     }
   };
 
