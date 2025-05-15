@@ -12,18 +12,18 @@ import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
 
 function Forms() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const totalSteps = 5;
-  const [answers, setAnswers] = useState([]);
-  const [subQuestionIndex, setSubQuestionIndex] = useState(0);
-  const totalSubQuestions = questions.length;
-  const navigate = useNavigate();
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [itinerary, setItinerary] = useState(null);
-  const [isStep5Valid, setIsStep5Valid] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [showLeaveButton, setShowLeaveButton] = useState(true);
+  const [currentStep, setCurrentStep] = useState(1)
+  const [isInitialized, setIsInitialized] = useState(false)
+  const totalSteps = 6
+  const [answers, setAnswers] = useState([...questions])
+  const [subQuestionIndex, setSubQuestionIndex] = useState(0)
+  const totalSubQuestions = answers.length
+  const navigate = useNavigate()
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [itinerary, setItinerary] = useState(null)
+  const [isStep5Valid, setIsStep5Valid] = useState(false)
+  const [showError, setShowError] = useState(false)
+  const [showLeaveButton, setShowLeaveButton] = useState(true)
 
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
@@ -74,8 +74,8 @@ function Forms() {
     // For Step 5, check if the current question has an answer before allowing to proceed
     if (currentStep === 5) {
       // Check if current question has an answer
-      const currentQuestionHasAnswer =
-        answers[subQuestionIndex]?.answer !== undefined;
+
+      const currentQuestionHasAnswer = answers[subQuestionIndex]?.answer !== undefined;
 
       // If trying to proceed without an answer, show error
       if (!currentQuestionHasAnswer) {
@@ -97,12 +97,10 @@ function Forms() {
       if (subQuestionIndex < totalSubQuestions - 1) {
         setSubQuestionIndex(subQuestionIndex + 1);
       } else {
-        if (currentStep < totalSteps) {
-          setCurrentStep(currentStep + 1);
-        } else {
-          console.log("All done with step 5 questions.");
-        }
+        // When all questions in step 5 are done, go to step 6
+        setCurrentStep(currentStep + 1);
       }
+      return;
     }
   };
 
@@ -124,6 +122,10 @@ function Forms() {
         }
         setCurrentStep(currentStep - 1);
       }
+    }
+
+    if (currentStep === 6) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -148,6 +150,7 @@ function Forms() {
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
 
     setIsNavigating(true);
 
@@ -156,8 +159,11 @@ function Forms() {
     const formattedDate = startDate.toISOString();
 
     console.log("User Ratings:", userRatings);
-    const tripType = localStorage.getItem("Trip Type");
-    let obj = {};
+
+
+    const tripType = localStorage.getItem("Trip Type")
+    let obj = {}
+
     //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
       obj.radius = localStorage.getItem("radius");
@@ -180,6 +186,16 @@ function Forms() {
       obj.type="road"
     }
 
+    // Format must-visit places for API
+    const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
+      place_name: place.name,
+      coordinates: {
+        latitude: place.position.lat,
+        longitude: place.position.lng,
+      },
+      place_id: place.place_id,
+    }));
+
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       dateStart: formattedDate,
@@ -195,7 +211,10 @@ function Forms() {
           type: "scale",
         })),
       },
+      must_visit_places: formattedMustVisitPlaces,
     };
+
+    console.log("Form data before sending:", formData);
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
@@ -214,31 +233,24 @@ function Forms() {
         navigate(`/itinerary/${tripId}`, {
           state: {
             itineraryData: response.data,
-            userRatings: userRatings,
-          },
+            userRatings: userRatings
+          }
         });
 
-        // Clear all localStorage items related to the form
+        // Instead of clearing all localStorage, just remove specific keys
+        // but keep userRatings for the preference sidebar
         const keysToRemove = [
-          "currentStep",
-          "subQuestionIndex",
-          "answers",
-          "Start Date",
-          "Trip Type",
-          "radius",
-          "Latitude",
-          "Longitude",
-          "Location",
-          "Budget",
-          "Duration",
-          "userRatings", // Also clear userRatings
+          "currentStep", "subQuestionIndex", "answers",
+          "Start Date", "Trip Type", "radius", "Latitude",
+          "Longitude", "Location", "Budget", "Duration","userRatings",
         ];
 
-        keysToRemove.forEach((key) => localStorage.removeItem(key));
+        keysToRemove.forEach(key => localStorage.removeItem(key));
 
-        // Reset the answers state to initial state
-        const resetAnswers = questions.map((q) => ({ ...q, answer: null }));
-        setAnswers(resetAnswers);
+        answers.forEach(answer => {
+          answer.answer = null;
+        });
+        setAnswers([...answers]);
         setCurrentStep(1);
         setSubQuestionIndex(0);
       } else {
@@ -330,6 +342,13 @@ function Forms() {
                   Next <TiArrowRight className="ml-1" />
                 </button>
               ) : currentStep === 5 ? (
+                <button
+                  onClick={handleNext}
+                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+                >
+                  Next <TiArrowRight className="ml-1" />
+                </button>
+              ) : currentStep === 6 ? (
                 <button className="btn btn-primary" onClick={handleFinish}>
                   Finish
                 </button>
