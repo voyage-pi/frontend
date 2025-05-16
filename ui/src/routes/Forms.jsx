@@ -218,15 +218,8 @@ function Forms() {
       obj.type = "road";
     }
 
-    // Format must-visit places for API
-    const formattedMustVisitPlaces = mustVisitPlaces.map((place) => ({
-      place_name: place.name,
-      coordinates: {
-        latitude: place.position.lat,
-        longitude: place.position.lng,
-      },
-      place_id: place.place_id,
-    }));
+    // Format must-visit places for API (List[PlaceInfo])
+    const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => (obj.place));
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
