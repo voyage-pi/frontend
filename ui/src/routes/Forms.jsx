@@ -12,19 +12,19 @@ import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
 
 function Forms() {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const totalSteps = 6
-  const [answers, setAnswers] = useState([...questions])
-  const [subQuestionIndex, setSubQuestionIndex] = useState(0)
-  const [step6SubStep, setStep6SubStep] = useState(0)
-  const totalSubQuestions = questions.length
-  const navigate = useNavigate()
-  const [isNavigating, setIsNavigating] = useState(false)
-  const [itinerary, setItinerary] = useState(null)
-  const [isStep5Valid, setIsStep5Valid] = useState(false)
-  const [showError, setShowError] = useState(false)
-  const [showLeaveButton, setShowLeaveButton] = useState(true)
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const totalSteps = 6;
+  const [answers, setAnswers] = useState([...questions]);
+  const [subQuestionIndex, setSubQuestionIndex] = useState(0);
+  const [step6SubStep, setStep6SubStep] = useState(0);
+  const totalSubQuestions = questions.length;
+  const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [itinerary, setItinerary] = useState(null);
+  const [isStep5Valid, setIsStep5Valid] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showLeaveButton, setShowLeaveButton] = useState(true);
 
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
@@ -32,7 +32,8 @@ function Forms() {
     const savedSubQuestionIndex =
       parseInt(localStorage.getItem("subQuestionIndex")) || 0;
     const savedAnswers = JSON.parse(localStorage.getItem("answers"));
-    const savedStep6SubStep = parseInt(localStorage.getItem("step6SubStep")) || 0;
+    const savedStep6SubStep =
+      parseInt(localStorage.getItem("step6SubStep")) || 0;
 
     if (savedStep) {
       setCurrentStep(savedStep);
@@ -82,7 +83,8 @@ function Forms() {
     if (currentStep === 5) {
       // Check if current question has an answer
 
-      const currentQuestionHasAnswer = answers[subQuestionIndex]?.answer !== undefined;
+      const currentQuestionHasAnswer =
+        answers[subQuestionIndex]?.answer !== undefined;
 
       // If trying to proceed without an answer, show error
       if (!currentQuestionHasAnswer) {
@@ -172,19 +174,27 @@ function Forms() {
 
   const handleFinish = async () => {
     const userRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-    const mustVisitPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
+    const mustVisitPlaces =
+      JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
+    const keywords = JSON.parse(localStorage.getItem("Keywords")) || [];
 
     setIsNavigating(true);
 
     // Formatação da data para ISO string
-    const startDate = new Date(localStorage.getItem("Start Date"));
+    const storedStartDate = localStorage.getItem("Start Date");
+    const startDate = storedStartDate ? new Date(storedStartDate) : new Date();
     const formattedDate = startDate.toISOString();
+
+    // Make sure duration is at least 1 day
+    const duration = Math.max(
+      1,
+      parseInt(localStorage.getItem("Duration")) || 1
+    );
 
     console.log("User Ratings:", userRatings);
 
-
-    const tripType = localStorage.getItem("Trip Type")
-    let obj = {}
+    const tripType = localStorage.getItem("Trip Type");
+    let obj = {};
 
     //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
@@ -193,23 +203,23 @@ function Forms() {
         latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
         longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
       };
-      obj.type="zone"
+      obj.type = "zone";
     } else if (tripType == "place") {
       obj.coordinates = {
         latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
         longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
       };
       obj.place_name = localStorage.getItem("Location");
-      obj.type="place"
+      obj.type = "place";
     } else if (tripType == "road") {
       obj.origin = JSON.parse(localStorage.getItem("origin"));
       obj.destination = JSON.parse(localStorage.getItem("destination"));
       obj.polylines = localStorage.getItem("route");
-      obj.type="road"
+      obj.type = "road";
     }
 
     // Format must-visit places for API
-    const formattedMustVisitPlaces = mustVisitPlaces.map(place => ({
+    const formattedMustVisitPlaces = mustVisitPlaces.map((place) => ({
       place_name: place.name,
       coordinates: {
         latitude: place.position.lat,
@@ -220,13 +230,13 @@ function Forms() {
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
-      dateStart: formattedDate,
-      duration: parseInt(localStorage.getItem("Duration")) || 0,
+      startDate: formattedDate,
+      duration: duration,
       tripType: tripType,
-      users: ["user123"],
       display_name: localStorage.getItem("Location"),
       data_type: obj,
       must_visit_places: formattedMustVisitPlaces,
+      keywords: keywords,
       questions: {
         user123: userRatings.map((answer, index) => ({
           question_id: index,
@@ -234,7 +244,6 @@ function Forms() {
           type: "scale",
         })),
       },
-      must_visit_places: formattedMustVisitPlaces,
     };
 
     console.log("Form data before sending:", formData);
@@ -256,22 +265,33 @@ function Forms() {
         navigate(`/itinerary/${tripId}`, {
           state: {
             itineraryData: response.data,
-            userRatings: userRatings
-          }
+            userRatings: userRatings,
+          },
         });
 
         // Instead of clearing all localStorage, just remove specific keys
         // but keep userRatings for the preference sidebar
         const keysToRemove = [
-          "currentStep", "subQuestionIndex", "step6SubStep", "answers",
-          "Start Date", "Trip Type", "radius", "Latitude",
-          "Longitude", "Location", "Budget", "Duration",
-          "userRatings", "MustVisitPlaces" // Also clear userRatings and MustVisitPlaces
+          "currentStep",
+          "subQuestionIndex",
+          "step6SubStep",
+          "answers",
+          "Start Date",
+          "Trip Type",
+          "radius",
+          "Latitude",
+          "Longitude",
+          "Location",
+          "Budget",
+          "Duration",
+          "userRatings",
+          "MustVisitPlaces",
+          "Keywords", // Also clear userRatings, MustVisitPlaces, and Keywords
         ];
 
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+        keysToRemove.forEach((key) => localStorage.removeItem(key));
 
-        answers.forEach(answer => {
+        answers.forEach((answer) => {
           answer.answer = null;
         });
         setAnswers([...answers]);
@@ -407,4 +427,4 @@ function Forms() {
   );
 }
 
-export default Forms
+export default Forms;
