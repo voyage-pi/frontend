@@ -115,9 +115,8 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     try {
       console.log(`Making API call to accept friend request from user_id=${requestId}`);
       
-      // The PATCH call is all we need - it handles the acceptance of the request
-      const response = await axiosUser.patch('/friends/requests', {
-        friend_id: requestId  // Now we only need to provide the friend_id (sender)
+      const response = await axiosUser.post('/friends/accept', {
+        friend_id: parseInt(requestId)  // Now we only need to provide the friend_id (sender)
       });
       
       console.log("API response:", response);

@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaMapMarkerAlt, FaGlobeAmericas, FaPlane } from "react-icons/fa";
+import { axiosUser } from "../utils/axiosInstance";
 
 const FriendCard = ({ friend, onClick, selected }) => {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axiosUser.get(`/trip-info/stats/${friend.friend_id || friend.id}`);
+        setStats(res.data.data);
+      } catch (e) {
+        setStats(null);
+      }
+    };
+    fetchStats();
+  }, [friend]);
+
   return (
     <div 
       className={`w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-102 ${selected ? 'border-1 border-primary/30' : 'border border-gray-100'}`}
@@ -34,15 +49,15 @@ const FriendCard = ({ friend, onClick, selected }) => {
           <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-2">
             <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
               <FaPlane className="text-primary" />
-              <span>{friend.trips || 0} trips</span>
+              <span>{stats ? stats.total_trips : 0} trips</span>
             </div>
             <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
               <FaGlobeAmericas className="text-primary" />
-              <span>{friend.countries || 0} countries</span>
+              <span>{stats ? stats.countries_visited : 0} countries</span>
             </div>
             <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
               <FaMapMarkerAlt className="text-primary" />
-              <span>{friend.cities || 0} cities</span>
+              <span>{stats ? stats.cities_visited : 0} cities</span>
             </div>
           </div>
           

@@ -735,8 +735,12 @@ function Itinerary() {
       }
       const trip_management_response = await axiosInstance.post("/save", {
         id: tripId,
-        itinerary: itinerary,
-        trip_type:tripType
+        itinerary: {
+          ...itinerary,
+          country: itinerary.country,
+          city: itinerary.city
+        },
+        trip_type: tripType
       });
 
       if (trip_management_response.status === 200) {

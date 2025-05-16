@@ -4,7 +4,6 @@ import {
     FaHeart,
     FaUsers,
     FaEarthAmericas,
-    FaShareNodes,
     FaGear,
     FaChevronLeft,
     FaChevronRight,
@@ -398,17 +397,6 @@ function SideBar({ onToggle, onMenuItemClick }) {
                 <ul className="p-0">
                     {!isGuest && (
                         <>
-                            <li>
-                                <a 
-                                    className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
-                                    onClick={() => handleBottomItemClick("Share")}
-                                >
-                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isExpanded ? "-ml-1" : ""} transition-all duration-400 ease-in-out`}>
-                                        <FaShareNodes size={22} />
-                                    </div>
-                                    <span className={`transition-all duration-400 ease-in-out ${isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0 overflow-hidden"}`}>Share</span>
-                                </a>
-                            </li>
                             <li>
                                 <a 
                                     className="flex items-center gap-3 py-2 cursor-pointer hover:opacity-95"
