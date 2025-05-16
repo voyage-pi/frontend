@@ -831,6 +831,41 @@ function Itinerary() {
       window.open(url, "_blank");
     }
   };
+  
+  const handleDeleteActivity = async (activityId) => {
+    try {
+      const response = await axiosInstance.delete(`/trip/${tripId}/activity/${activityId}`);
+      console.log("Activity deleted successfully:", response.data);
+      
+      if (response.data.response && response.data.response.itinerary) {
+        const newItineraryData = {
+          response: {
+            itinerary: response.data.response.itinerary,
+          },
+        };
+        console.log("New itinerary data after deletion:", newItineraryData);
+        await processItineraryData(newItineraryData);
+        
+        // Set the timestamp of this update
+        const updateTimestamp = new Date().toISOString();
+        setLastUpdateTimestamp(updateTimestamp);
+        
+        // Broadcast the update to other users
+        await supabase.channel(`trip-${tripId}`).send({
+          type: "broadcast",
+          event: "trip-update",
+          payload: {
+            tripId: tripId,
+            timestamp: updateTimestamp,
+          },
+        });
+      } else {
+        console.error("Invalid response structure:", response.data);
+      }
+    } catch (error) {
+      console.error("Error deleting activity:", error);
+    }
+  };
 
   // Close dropdown if clicked outside
   useEffect(() => {
@@ -1140,6 +1175,7 @@ function Itinerary() {
                               image={item.image}
                               onRefresh={() => handleRefreshActivity(item.id)}
                               refreshing={refreshingActivity === item.id}
+                              onDelete={() => handleDeleteActivity(item.id)}
                             />
                           ))}
                       </motion.div>

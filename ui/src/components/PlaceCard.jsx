@@ -12,22 +12,21 @@ const PlaceCard = ({
   onRefresh,
   road=false,
   refreshing = false,
+  onDelete,
+
 }) => {
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
 
-  // Fallback image if the provided one fails to load
   const fallbackImage = `https://picsum.photos/seed/${encodeURIComponent(
     place
   )}/200/200`;
 
-  // Always update the image when the prop changes
   useEffect(() => {
     setImgSrc(image);
     setImgError(false);
   }, [image]);
 
-  // Pre-check if the image is from Google Maps or is a problematic URL
   useEffect(() => {
     if (
       typeof image === "string" &&
@@ -40,6 +39,7 @@ const PlaceCard = ({
     }
   }, [image]);
   const delayCard = 0.2;
+
 
   return (
     <motion.div
@@ -104,7 +104,7 @@ const PlaceCard = ({
           >
             <TfiReload className="text-primary text-lg" />
           </div>}
-          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm" onClick={onDelete}>
             <HiOutlineTrash className="text-primary text-xl" />
           </div>
         </div>
