@@ -46,7 +46,6 @@ const MustVisitPlacesContent = () => {
       const id = response.data.place_id;
       const place_response = await axiosPlace.get("/places/" + id);
       const current_place = place_response.data;
-      console.log(current_place);
       const promise = getPhotoUrl(current_place).then((imageURL) => {
         const newPlace = {
           place: current_place,
@@ -242,7 +241,7 @@ const MustVisitPlacesContent = () => {
                   >
                     <img className="w-full brightness-50" src={place.image} alt="image" />
                     <div className="absolute top-[50%] translate-x-[-50%] left-[50%] text-white text-center translate-y-[-50%] w-full text-2xl">
-                      {place.place.name}
+                      {place.place?.name}
                     </div>
                     <button
                       onClick={() => removePlace(place)}

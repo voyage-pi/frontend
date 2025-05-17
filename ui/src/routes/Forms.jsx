@@ -3,9 +3,8 @@ import PageTemplate from "../components/PageTemplate";
 import StepIndicator from "../components/StepIndicator";
 import StepContent from "../components/forms/StepContent";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
-import questions from "../../public/questions.json";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../utils/axiosInstance";
+import { axiosInstance, axiosUser } from "../utils/axiosInstance";
 import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
@@ -15,55 +14,52 @@ function Forms() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isInitialized, setIsInitialized] = useState(false);
   const totalSteps = 6;
-  const [answers, setAnswers] = useState([...questions]);
+  const [answers, setAnswers] = useState([]);
   const [subQuestionIndex, setSubQuestionIndex] = useState(0);
   const [step6SubStep, setStep6SubStep] = useState(0);
-  const totalSubQuestions = questions.length;
+  const [totalSubQuestions, setTotalSubQuestions] = useState(0);
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
-  const [itinerary, setItinerary] = useState(null);
   const [isStep5Valid, setIsStep5Valid] = useState(false);
   const [showError, setShowError] = useState(false);
   const [showLeaveButton, setShowLeaveButton] = useState(true);
   const [isGroup, setIsGroup] = useState(false);
 
+  const getQuestions = async () => {
+    const response = await axiosUser.get("/questions/");
+    return response.data;
+  };
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
-    const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
-    const savedSubQuestionIndex =
-      parseInt(localStorage.getItem("subQuestionIndex")) || 0;
-    const savedAnswers = JSON.parse(localStorage.getItem("answers"));
-    const savedStep6SubStep =
-      parseInt(localStorage.getItem("step6SubStep")) || 0;
-    const savedIsGroup = localStorage.getItem("isGroup") === "true";
+    const initialize = async () => {
+      const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
+      const savedSubQuestionIndex =
+        parseInt(localStorage.getItem("subQuestionIndex")) || 0;
+      const savedStep6SubStep =
+        parseInt(localStorage.getItem("step6SubStep")) || 0;
 
-    if (savedStep) {
-      setCurrentStep(savedStep);
-    }
+      if (savedStep) {
+        setCurrentStep(savedStep);
+      }
 
-    if (savedSubQuestionIndex) {
-      setSubQuestionIndex(savedSubQuestionIndex);
-    }
+      if (savedSubQuestionIndex && savedSubQuestionIndex>=0) {
+        setSubQuestionIndex(savedSubQuestionIndex);
+      }
 
-    if (savedStep6SubStep !== undefined) {
-      setStep6SubStep(savedStep6SubStep);
-    }
 
-    if (savedIsGroup !== undefined) {
-      setIsGroup(savedIsGroup);
-    }
-
-    if (
-      savedAnswers &&
-      Array.isArray(savedAnswers) &&
-      savedAnswers.length > 0
-    ) {
-      setAnswers(savedAnswers);
-    } else {
-      // If no saved answers, initialize from questions
-      setAnswers(questions.map((q) => ({ ...q, answer: null })));
-    }
-
+      if (savedStep6SubStep !== undefined) {
+        setStep6SubStep(savedStep6SubStep);
+      }
+      try {
+          const qs = await getQuestions();
+          setTotalSubQuestions(qs.length);
+          const QA = qs.map((q) => ({ ...q, answers: null }));
+          setAnswers(QA);
+      } catch (error) {
+        console.error("Failed to fetch questions:", error);
+      }
+    };
+    initialize();
     setIsInitialized(true);
   }, []);
 
@@ -225,6 +221,8 @@ function Forms() {
       obj.type = "road";
     }
 
+    // Format must-visit places for API (List[PlaceInfo])
+    const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => obj.place);
     // Parse location for country and city
     const location = localStorage.getItem("Location") || "";
     let locationParts;
@@ -243,16 +241,6 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
-
-    // Format must-visit places for API
-    const formattedMustVisitPlaces = mustVisitPlaces.map((place) => ({
-      place_name: place.name,
-      coordinates: {
-        latitude: place.position.lat,
-        longitude: place.position.lng,
-      },
-      place_id: place.place_id,
-    }));
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
