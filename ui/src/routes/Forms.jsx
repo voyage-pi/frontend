@@ -247,6 +247,7 @@ function Forms() {
       place_id: place.place_id,
     }));
 
+
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       startDate: formattedDate,

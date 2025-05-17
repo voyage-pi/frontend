@@ -705,6 +705,97 @@ function Itinerary() {
     }
   };
 
+  const handleDeleteActivity = async (activityId) => {
+    try {
+      setNotification({
+        type: "info",
+        text: "Deleting activity...",
+        key: Date.now(),
+      });
+
+      const response = await axiosInstance.delete(
+        `/trip/${tripId}/activity/${activityId}`
+      );
+
+      console.log("Response from delete activity:", response.data);
+
+      // Check for various possible response structures
+      let itineraryData = null;
+      if (response.data.response?.itinerary) {
+        itineraryData = response.data.response.itinerary;
+      } else if (response.data.data?.itinerary) {
+        itineraryData = response.data.data.itinerary;
+      } else if (response.data.itinerary) {
+        itineraryData = response.data.itinerary;
+      }
+
+      if (itineraryData) {
+        const newItineraryData = {
+          response: {
+            itinerary: itineraryData,
+          },
+        };
+        await processItineraryData(newItineraryData);
+
+        // Set the timestamp of this update
+        const updateTimestamp = new Date().toISOString();
+        setLastUpdateTimestamp(updateTimestamp);
+
+        // Broadcast the update to other users
+        await supabase.channel(`trip-${tripId}`).send({
+          type: "broadcast",
+          event: "trip-update",
+          payload: {
+            tripId: tripId,
+            timestamp: updateTimestamp,
+          },
+        });
+
+        setNotification({
+          type: "success",
+          text: "Activity deleted successfully",
+          key: Date.now(),
+        });
+      } else {
+        // If the API call succeeded but we couldn't parse the itinerary data,
+        // we'll reload the trip data completely to ensure the UI is updated
+        console.log("Could not find itinerary in response, reloading trip data");
+        
+        try {
+          const tripResponse = await axiosInstance.get(`/trips/${tripId}`);
+          if (tripResponse.data && tripResponse.data.response) {
+            const data = tripResponse.data.response;
+            if (data.itinerary.trip_type === "road") {
+              processRoadData(data);
+            } else {
+              processItineraryData(data);
+            }
+            
+            setNotification({
+              type: "success",
+              text: "Activity deleted successfully",
+              key: Date.now(),
+            });
+          }
+        } catch (reloadError) {
+          console.error("Error reloading trip data:", reloadError);
+          setNotification({
+            type: "error",
+            text: "Activity deleted but failed to update the view. Please refresh the page.",
+            key: Date.now(),
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting activity:", error);
+      setNotification({
+        type: "error",
+        text: "Error deleting activity: " + (error.response?.data?.message || error.message),
+        key: Date.now(),
+      });
+    }
+  };
+
   const handlePreferencesUpdated = async (newItineraryData) => {
     try {
       console.log("Received updated itinerary data:", newItineraryData);
@@ -1092,6 +1183,7 @@ function Itinerary() {
                         transport={""}
                         image={item.image}
                         onRefresh={() => {}}
+                        onDelete={tripType === "road" ? null : () => handleDeleteActivity(item.id)}
                         road={true}
                       />
                     ))}
@@ -1137,12 +1229,13 @@ function Itinerary() {
                           .map((item,index) => (
                             <PlaceCard
                               key={item.id}
-                              id={index}
+                              id={item.id}
                               place={item.place}
                               time={item.time}
                               transport={item.transport}
                               image={item.image}
                               onRefresh={() => handleRefreshActivity(item.id)}
+                              onDelete={() => handleDeleteActivity(item.id)}
                               refreshing={refreshingActivity === item.id}
                             />
                           ))}

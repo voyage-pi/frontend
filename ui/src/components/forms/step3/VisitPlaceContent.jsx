@@ -120,7 +120,6 @@ const VisitPlaceContent = () => {
   }
 
   const MouseHover = (idx) => {
-
     setSuggestionHovered(idx)
   }
 
@@ -180,7 +179,6 @@ const VisitPlaceContent = () => {
                       : "bg-gray-50"
                       }
                      ${suggestionHovered === idx && selectedLocation != location ? "translate-x-2 border-primary border-1" : ""} 
-                      
 `}
                     onClick={() => handleSelectLocation(location.text)}
                   >

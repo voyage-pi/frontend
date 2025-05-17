@@ -8,7 +8,7 @@ import LoadingAnimation from "../../LoadingAnimation";
 import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 import { motion } from "motion/react";
-import { AnimatePresence, calcLength } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 const RoadTripContent = () => {
   const [selectedLocationOrigin, setSelectedLocationOrigin] = useState("");

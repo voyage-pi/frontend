@@ -10,6 +10,7 @@ const PlaceCard = ({
   transport,
   image,
   onRefresh,
+  onDelete,
   road=false,
   refreshing = false,
 }) => {
@@ -104,7 +105,10 @@ const PlaceCard = ({
           >
             <TfiReload className="text-primary text-lg" />
           </div>}
-          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+          <div 
+            className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
+            onClick={() => onDelete && onDelete(id)}
+          >
             <HiOutlineTrash className="text-primary text-xl" />
           </div>
         </div>

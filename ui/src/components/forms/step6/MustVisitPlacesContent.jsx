@@ -3,6 +3,7 @@ import { FaMapMarkerAlt, FaTrash } from "react-icons/fa";
 import { FaSistrix } from "react-icons/fa6";
 import { axiosPlace } from "../../../utils/axiosInstance";
 import LoadingAnimation from "../../LoadingAnimation";
+import { motion } from "motion/react";
 
 const MustVisitPlacesContent = () => {
   const [suggestionlist, setSuggestionList] = useState([]);
@@ -10,10 +11,13 @@ const MustVisitPlacesContent = () => {
   const [loading, setLoading] = useState(false);
   const [suggestionHovered, setSuggestionHovered] = useState(-1);
   const [mustVisitPlaces, setMustVisitPlaces] = useState([]);
+  // Cache for photo URLs
+  const [photoCache, setPhotoCache] = useState({});
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const savedPlaces = JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
+    const savedPlaces =
+      JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
     if (savedPlaces.length > 0) {
       setMustVisitPlaces(savedPlaces);
     }
@@ -30,7 +34,7 @@ const MustVisitPlacesContent = () => {
   }, [mustVisitPlaces]);
 
   const addPlace = async (placeName) => {
-    if (mustVisitPlaces.some(place => place.name === placeName)) {
+    if (mustVisitPlaces.some((place) => place.name === placeName)) {
       return;
     }
 
@@ -39,28 +43,69 @@ const MustVisitPlacesContent = () => {
         place_name: placeName,
       });
 
-
-      const newPlace = {
-        name: placeName,
-        position: {
-          lat: response.data.latitude,
-          lng: response.data.longitude,
-        },
-        place_id: response.data.place_id,
-      };
-
-      console.log("New place added:", newPlace);
-
-      setMustVisitPlaces(prev => [...prev, newPlace]);
+      const id = response.data.place_id;
+      const place_response = await axiosPlace.get("/places/" + id);
+      const current_place = place_response.data;
+      console.log(current_place);
+      const promise = getPhotoUrl(current_place).then((imageURL) => {
+        const newPlace = {
+          place: current_place,
+          image: imageURL,
+        };
+        setMustVisitPlaces((prev) => [...prev, newPlace]);
+      });
       setCurrentText("");
       setSuggestionList([]);
+      await Promise(promise);
     } catch (error) {
       console.error("Add place error:", error);
     }
   };
 
-  const removePlace = (placeName) => {
-    setMustVisitPlaces(prev => prev.filter(place => place.name !== placeName));
+  const generatePlaceholderImage = (seed) => {
+    const seedStr = typeof seed === "string" ? seed : "place";
+    const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, "");
+    return `https://picsum.photos/seed/${encodeURIComponent(
+      cleanSeed
+    )}/400/300`;
+  };
+
+  const getPhotoUrl = async (place) => {
+    if (!place || !place.photos || !place.photos.length) {
+      console.log("No photos available for", place?.name);
+      return generatePlaceholderImage(place ? place.name : "place");
+    }
+
+    const placeId = place.id || place.name;
+    if (photoCache[placeId]) {
+      return photoCache[placeId];
+    }
+
+    const photo = place.photos[0];
+    try {
+      const response = await axiosPlace.post("/places/photo", {
+        gRPC: photo.name,
+      });
+      console.log(response);
+      if (response.status == 429) {
+        return getPhotoUrl(place);
+      }
+      const photoUrl = response.data?.uri;
+      setPhotoCache((prev) => ({
+        [placeId]: photoUrl,
+      }));
+
+      return photoUrl;
+    } catch (error) {
+      console.error("Error fetching photo:", error);
+      return generatePlaceholderImage(place.name);
+    }
+  };
+
+  const removePlace = (placeIndexed) => {
+    setMustVisitPlaces((prev) =>
+      prev.filter((place) => place !== placeIndexed)
+    );
   };
 
   const autocompleteSearch = async () => {
@@ -97,19 +142,18 @@ const MustVisitPlacesContent = () => {
   };
 
   const handleSuggestionsSelection = (event) => {
-    if (suggestionlist.length === 0)
-      return;
+    if (suggestionlist.length === 0) return;
 
     let key = event.key;
     let suggestionsL = suggestionlist.length || 1;
 
     if (key === "ArrowDown") {
-      setSuggestionHovered(prev => (prev + 1) % suggestionsL);
-    }
-    else if (key === "ArrowUp") {
-      setSuggestionHovered(prev => ((prev <= 0 ? suggestionsL : prev) - 1) % suggestionsL);
-    }
-    else if (key === "Enter") {
+      setSuggestionHovered((prev) => (prev + 1) % suggestionsL);
+    } else if (key === "ArrowUp") {
+      setSuggestionHovered(
+        (prev) => ((prev <= 0 ? suggestionsL : prev) - 1) % suggestionsL
+      );
+    } else if (key === "Enter") {
       if (suggestionHovered >= 0 && suggestionHovered < suggestionlist.length) {
         addPlace(suggestionlist[suggestionHovered].text);
       }
@@ -119,17 +163,6 @@ const MustVisitPlacesContent = () => {
   const handleMouseHover = (idx) => {
     setSuggestionHovered(idx);
   };
-
-  const getPlaceHeightClass = () => {
-    const count = mustVisitPlaces.length;
-    if (count === 0) return "";
-    if (count === 1) return "h-1/2";
-    if (count === 2) return "h-1/2";
-    if (count === 3) return "h-1/3";
-    return "h-1/3";
-  };
-
-  const shouldAddScroll = mustVisitPlaces.length > 3;
 
   return (
     <div className="h-[25rem]">
@@ -169,7 +202,9 @@ const MustVisitPlacesContent = () => {
                     onMouseLeave={() => setSuggestionHovered(-1)}
                     key={location.place_id}
                     className={`transition-all ease-in-out flex items-center p-3 rounded-lg text-lg cursor-pointer ${
-                      suggestionHovered === idx ? "translate-x-2 border-primary border-1" : ""
+                      suggestionHovered === idx
+                        ? "translate-x-2 border-primary border-1"
+                        : ""
                     } bg-gray-50`}
                     onClick={() => addPlace(location.text)}
                   >
@@ -188,7 +223,7 @@ const MustVisitPlacesContent = () => {
 
         {/* Right Side - Must Visit Places Box */}
         <div className="flex-1">
-          <div className=" h-84 w-full overflow-hidden">
+          <div className=" h-84 w-full overflow-y-auto">
             {mustVisitPlaces.length === 0 ? (
               <div className="flex items-center justify-center h-full w-full">
                 <div className="text-center text-gray-500">
@@ -196,22 +231,26 @@ const MustVisitPlacesContent = () => {
                 </div>
               </div>
             ) : (
-              <div className={`flex flex-col gap-y-4 ${shouldAddScroll ? 'overflow-y-auto' : ''} h-full w-full`}>
+              <div className={`grid grid-cols-2 gap-2 overflow-y-auto w-full `}>
                 {mustVisitPlaces.map((place, index) => (
-                  <div
+                  <motion.div
                     key={index}
-                    className={`rounded-lg overflow-hidden border border-gray-200 relative flex w-full ${getPlaceHeightClass()} ${index > 0 ? 'border-t' : ''}`}
+                    animate={{
+                      opacity:1
+                    }}
+                    className="h-[150px] w-full rounded-2xl relative  overflow-hidden "
                   >
-                    <div className="p-4 w-3/4 flex items-center">
-                      <h4 className="text-lg font-medium">{place.name}</h4>
-                      <button
-                        onClick={() => removePlace(place.name)}
-                        className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-red-100 transition-colors"
-                      >
-                        <FaTrash className="text-red-500" />
-                      </button>
+                    <img className="w-full brightness-50" src={place.image} alt="image" />
+                    <div className="absolute top-[50%] translate-x-[-50%] left-[50%] text-white text-center translate-y-[-50%] w-full text-2xl">
+                      {place.place.name}
                     </div>
-                  </div>
+                    <button
+                      onClick={() => removePlace(place)}
+                      className="absolute top-0 right-0  bg-white p-2 cursor-pointer  rounded-full shadow-md hover:bg-red-100 transition-colors"
+                    >
+                      <FaTrash className="text-red-500" />
+                    </button>
+                  </motion.div>
                 ))}
               </div>
             )}
