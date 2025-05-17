@@ -3,7 +3,7 @@ import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
 import FriendsInviteComponent from './FriendsInvite';
 
-const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
+const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
   const [showFriendsInvite, setShowFriendsInvite] = useState(false);
@@ -15,13 +15,15 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
       if (savedSelection === 'group') {
         setShowFriendsInvite(true);
         setShowLeaveButton(false);
+        setIsGroup(true);
       } else {
         setShowLeaveButton(true);
+        setIsGroup(false);
       }
     } else {
       setShowLeaveButton(true);
     }
-  }, [setShowLeaveButton]);
+  }, [setShowLeaveButton, setIsGroup]);
 
   const handleCardClick = (card) => {
     if (lastNotificationId === card.id) {
@@ -34,11 +36,15 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
     if (card.id === 'group') {
       setShowFriendsInvite(true);
       setShowLeaveButton(false);
+      setIsGroup(true);
+      console.log("Selected group trip, setIsGroup(true)");
     } else {
       setShowLeaveButton(true);
+      setIsGroup(false);
       setTimeout(() => {
         setCurrentStep(2);
       }, 300);
+      console.log("Selected individual trip, setIsGroup(false)");
     }
   };
   
@@ -52,6 +58,7 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton }) => {
     setSelectedCard(null);
     localStorage.removeItem("Trip Dimension");
     setShowLeaveButton(true);
+    setIsGroup(false);
   };
   
   const cardData = [

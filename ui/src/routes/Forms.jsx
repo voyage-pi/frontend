@@ -23,6 +23,7 @@ function Forms() {
   const [isStep5Valid, setIsStep5Valid] = useState(false);
   const [showError, setShowError] = useState(false);
   const [showLeaveButton, setShowLeaveButton] = useState(true);
+  const [isGroup, setIsGroup] = useState(false);
 
   const getQuestions = async () => {
     const response = await axiosUser.get("/questions/");
@@ -44,6 +45,7 @@ function Forms() {
       if (savedSubQuestionIndex && savedSubQuestionIndex>=0) {
         setSubQuestionIndex(savedSubQuestionIndex);
       }
+
 
       if (savedStep6SubStep !== undefined) {
         setStep6SubStep(savedStep6SubStep);
@@ -68,8 +70,9 @@ function Forms() {
       localStorage.setItem("subQuestionIndex", subQuestionIndex);
       localStorage.setItem("step6SubStep", step6SubStep);
       localStorage.setItem("answers", JSON.stringify(answers));
+      localStorage.setItem("isGroup", isGroup);
     }
-  }, [currentStep, subQuestionIndex, step6SubStep, answers, isInitialized]);
+  }, [currentStep, subQuestionIndex, step6SubStep, answers, isGroup, isInitialized]);
 
   // Calculate progress percentage for progress bar
 
@@ -238,7 +241,7 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
-    
+
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       startDate: formattedDate,
@@ -257,8 +260,10 @@ function Forms() {
           type: "scale",
         })),
       },
+      is_group: isGroup,
     };
 
+    console.log("isGroup state before sending:", isGroup);
     console.log("Form data before sending:", formData);
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
@@ -304,7 +309,8 @@ function Forms() {
           "currentTextOrigin",
           "origin",
           "destination",
-          "route"
+          "route",
+          "isGroup"
         ];
 
         keysToRemove.forEach((key) => localStorage.removeItem(key));
@@ -316,6 +322,7 @@ function Forms() {
         setCurrentStep(1);
         setSubQuestionIndex(0);
         setStep6SubStep(0);
+        setIsGroup(false);
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -360,6 +367,8 @@ function Forms() {
               setShowLeaveButton={setShowLeaveButton}
               handleNext={handleNext}
               step6SubStep={step6SubStep}
+              setIsGroup={setIsGroup}
+              isGroup={isGroup}
             />
 
             {showError && (
