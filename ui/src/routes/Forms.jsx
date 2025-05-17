@@ -34,7 +34,6 @@ function Forms() {
       const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
       const savedSubQuestionIndex =
         parseInt(localStorage.getItem("subQuestionIndex")) || 0;
-      const savedAnswers = JSON.parse(localStorage.getItem("answers"));
       const savedStep6SubStep =
         parseInt(localStorage.getItem("step6SubStep")) || 0;
 
@@ -42,7 +41,7 @@ function Forms() {
         setCurrentStep(savedStep);
       }
 
-      if (savedSubQuestionIndex) {
+      if (savedSubQuestionIndex && savedSubQuestionIndex>=0) {
         setSubQuestionIndex(savedSubQuestionIndex);
       }
 
@@ -50,18 +49,10 @@ function Forms() {
         setStep6SubStep(savedStep6SubStep);
       }
       try {
-        if (
-          savedAnswers &&
-          Array.isArray(savedAnswers) &&
-          savedAnswers.length > 0
-        ) {
-          setAnswers(savedAnswers);
-        } else {
           const qs = await getQuestions();
           setTotalSubQuestions(qs.length);
           const QA = qs.map((q) => ({ ...q, answers: null }));
           setAnswers(QA);
-        }
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }
