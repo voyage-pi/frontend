@@ -53,6 +53,8 @@ const RoadTripContent = () => {
           "Driving from " + currentTextOrigin + " to " + currentTextDes
         );
         localStorage.setItem("route", response.data.routes[0].polylineEncoded);
+        localStorage.setItem("currentTextOrigin", currentTextOrigin);
+        localStorage.setItem("currentTextDes", currentTextDes);
       }
     };
     routing();

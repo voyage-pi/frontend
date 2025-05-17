@@ -310,10 +310,10 @@ function Friends() {
         } else {
           setSearchResults(response.data.map(user => ({
             id: user.id,
-            name: user.name || user.username || user.email?.split('@')[0],
-            username: user.username || `@${(user.name || '').toLowerCase().replace(' ', '_')}`,
+            name: user.name,
             email: user.email,
-            image: user.avatar_url || `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 99)}.jpg`,
+            tag: user.tag,
+            image: user.avatar_url,
           })));
         }
       } else {
@@ -359,7 +359,7 @@ function Friends() {
       const friendDisplayName = selectedUserToAdd ? selectedUserToAdd.name : friendEmail;
       
       const response = await axiosUser.post('/friends/requests', {
-        friend_id: friendIdentifier // Only need the friend_id now
+        friend_id: parseInt(friendIdentifier) //Only need the friend_id now
       });
       
       if (response.data) {
@@ -412,6 +412,16 @@ function Friends() {
   const handleNotificationClose = () => {
     setNotification(null);
   };
+
+  const [selectedFriendStats, setSelectedFriendStats] = useState(null);
+
+  useEffect(() => {
+    if (selectedFriend) {
+      axiosUser.get(`/trip-info/stats/${selectedFriend.friend_id || selectedFriend.id}`)
+        .then(res => setSelectedFriendStats(res.data.data))
+        .catch(() => setSelectedFriendStats(null));
+    }
+  }, [selectedFriend]);
 
   return (
     <PageTemplate>
@@ -531,19 +541,19 @@ function Friends() {
 
                 <div className="px-4 py-3 bg-white border-b border-gray-100 flex justify-between">
                   <div className="text-center flex flex-col items-center px-3">
-                    <div className="font-bold text-lg">{selectedFriend.trips || 0}</div>
+                    <div className="font-bold text-lg">{selectedFriendStats ? selectedFriendStats.total_trips : 0}</div>
                     <div className="text-xs text-gray-500">Trips</div>
                   </div>
                   <div className="text-center flex flex-col items-center px-3">
-                    <div className="font-bold text-lg">{selectedFriend.countries || 0}</div>
+                    <div className="font-bold text-lg">{selectedFriendStats ? selectedFriendStats.countries_visited : 0}</div>
                     <div className="text-xs text-gray-500">Countries</div>
                   </div>
                   <div className="text-center flex flex-col items-center px-3">
-                    <div className="font-bold text-lg">{selectedFriend.cities || 0}</div>
+                    <div className="font-bold text-lg">{selectedFriendStats ? selectedFriendStats.cities_visited : 0}</div>
                     <div className="text-xs text-gray-500">Cities</div>
                   </div>
                   <div className="text-center flex flex-col items-center px-3">
-                    <div className="font-bold text-lg">{selectedFriend.days || 0}</div>
+                    <div className="font-bold text-lg">{selectedFriendStats ? selectedFriendStats.total_days : 0}</div>
                     <div className="text-xs text-gray-500">Days</div>
                   </div>
                 </div>
@@ -556,12 +566,14 @@ function Friends() {
                     >
                       Trips Together
                     </button>
-                    <button 
-                      className={`py-3 px-4 flex-1 text-center font-medium ${activeTab === "all" ? "border-b-2 border-primary text-primary" : "text-gray-500"}`}
-                      onClick={() => setActiveTab("all")}
-                    >
-                      All Trips
-                    </button>
+                    {selectedFriend.show_trips && (
+                      <button 
+                        className={`py-3 px-4 flex-1 text-center font-medium ${activeTab === "all" ? "border-b-2 border-primary text-primary" : "text-gray-500"}`}
+                        onClick={() => setActiveTab("all")}
+                      >
+                        All Trips
+                      </button>
+                    )}
                   </div>
                 </div>
 
