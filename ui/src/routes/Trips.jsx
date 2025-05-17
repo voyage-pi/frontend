@@ -41,28 +41,6 @@ function Trips() {
     });
   }, [refreshNotifications]); // Remove LoggedUser dependency to avoid extra renders
 
-  // Load sample trip invites if none exist yet
-  useEffect(() => {
-    if (tripInviteCount === 0) {
-      const sampleInvites = [
-        {
-          id: 201,
-          tripName: "Weekend in Paris",
-          from: "John Smith",
-          date: "1 day ago"
-        },
-        {
-          id: 202,
-          tripName: "Tokyo Adventure",
-          from: "Sarah Lee",
-          date: "3 days ago"
-        }
-      ];
-
-      sampleInvites.forEach(invite => addTripInvite(invite));
-    }
-  }, []);
-
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {

@@ -51,12 +51,28 @@ export const AuthProvider = ({ children }) => {
     // Function to load user trip statistics
     const loadUserStats = async (userId) => {
         if (!userId) return null;
-        
+
         try {
             // Fetch user trip statistics
             const statsResponse = await axiosUser.get(`/trip-info/stats/${userId}`);
             console.log(`Trip stats for user ${userId}:`, statsResponse.data);
-            return statsResponse.data;
+
+            // Fetch user's friends
+            const friendsResponse = await axiosUser.get('/friends/users/');
+            console.log(`Friends for user ${userId}:`, friendsResponse.data);
+
+            // Process the stats response
+            const stats = statsResponse.data.data;
+            const friends = friendsResponse.data;
+            const friendCount = friends.length;
+
+            return {
+                trips: stats.total_trips || 0,
+                countries: stats.countries_visited || 0,
+                cities: stats.cities_visited || 0,
+                days: stats.total_days || 0,
+                friends: friendCount
+            };
         } catch (error) {
             console.error("Error fetching user stats:", error);
             return null;
@@ -83,10 +99,11 @@ export const AuthProvider = ({ children }) => {
                     if (!userData.stats) userData.stats = {};
                     
                     // Update stats with data from the API
-                    userData.stats.trips = stats.num_trips || 0;
-                    userData.stats.countries = stats.num_countries || 0;
-                    userData.stats.cities = stats.num_cities || 0;
-                    userData.stats.days = stats.num_days || 0;
+                    userData.stats.trips = stats.trips;
+                    userData.stats.countries = stats.countries;
+                    userData.stats.cities = stats.cities;
+                    userData.stats.days = stats.days;
+                    userData.stats.friends = stats.friends;
                 }
                 
                 // Process user data to ensure all fields are present
@@ -127,10 +144,11 @@ export const AuthProvider = ({ children }) => {
                         if (!userData.stats) userData.stats = {};
                         
                         // Update stats with data from the API
-                        userData.stats.trips = stats.num_trips || 0;
-                        userData.stats.countries = stats.num_countries || 0;
-                        userData.stats.cities = stats.num_cities || 0;
-                        userData.stats.days = stats.num_days || 0;
+                        userData.stats.trips = stats.trips;
+                        userData.stats.countries = stats.countries;
+                        userData.stats.cities = stats.cities;
+                        userData.stats.days = stats.days;
+                        userData.stats.friends = stats.friends;
                     }
                     
                     // Process user data to ensure all fields are present

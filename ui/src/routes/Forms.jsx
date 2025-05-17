@@ -229,13 +229,33 @@ function Forms() {
 
     // Format must-visit places for API (List[PlaceInfo])
     const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => obj.place);
+    // Parse location for country and city
+    const location = localStorage.getItem("Location") || "";
+    let locationParts;
+    let country;
+    let city;
 
+    if (localStorage.getItem("Trip Type") === "road") {
+      // For road trips, use the destination text
+      const destinationText = localStorage.getItem("currentTextDes") || "";
+      locationParts = destinationText.split(",").map((part) => part.trim());
+      country = locationParts[locationParts.length - 1] || null;
+      city = locationParts[locationParts.length - 2] || null;
+    } else {
+      // For place and zone trips, use the original location parsing
+      locationParts = location.split(",").map((part) => part.trim());
+      country = locationParts[locationParts.length - 1] || null;
+      city = locationParts[locationParts.length - 2] || null;
+    }
+    
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       startDate: formattedDate,
       duration: duration,
       tripType: tripType,
       display_name: localStorage.getItem("Location"),
+      country: country,
+      city: city,
       data_type: obj,
       must_visit_places: formattedMustVisitPlaces,
       keywords: keywords,
@@ -288,7 +308,12 @@ function Forms() {
           "Duration",
           "userRatings",
           "MustVisitPlaces",
-          "Keywords", // Also clear userRatings, MustVisitPlaces, and Keywords
+          "Keywords",
+          "currentTextDes",
+          "currentTextOrigin",
+          "origin",
+          "destination",
+          "route"
         ];
 
         keysToRemove.forEach((key) => localStorage.removeItem(key));

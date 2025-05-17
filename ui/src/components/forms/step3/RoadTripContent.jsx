@@ -8,7 +8,7 @@ import LoadingAnimation from "../../LoadingAnimation";
 import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 import { motion } from "motion/react";
-import { AnimatePresence, calcLength } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 const RoadTripContent = () => {
   const [selectedLocationOrigin, setSelectedLocationOrigin] = useState("");
@@ -53,6 +53,8 @@ const RoadTripContent = () => {
           "Driving from " + currentTextOrigin + " to " + currentTextDes
         );
         localStorage.setItem("route", response.data.routes[0].polylineEncoded);
+        localStorage.setItem("currentTextOrigin", currentTextOrigin);
+        localStorage.setItem("currentTextDes", currentTextDes);
       }
     };
     routing();
