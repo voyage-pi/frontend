@@ -824,14 +824,23 @@ function Itinerary() {
         });
         return;
       }
+      // Try to get is_group from itinerary or localStorage
+      let isGroup = false;
+      if (typeof itinerary.is_group !== 'undefined') {
+        isGroup = itinerary.is_group;
+      } else {
+        isGroup = localStorage.getItem("isGroup") === "true";
+      }
       const trip_management_response = await axiosInstance.post("/save", {
         id: tripId,
         itinerary: {
           ...itinerary,
           country: itinerary.country,
-          city: itinerary.city
+          city: itinerary.city,
+          is_group: isGroup // ensure is_group is present inside itinerary too
         },
-        trip_type: tripType
+        trip_type: tripType,
+        is_group: isGroup // <-- ensure is_group is present at the root
       });
 
       if (trip_management_response.status === 200) {

@@ -16,11 +16,12 @@ const StepContent = ({
   onValidationChange,
   setShowLeaveButton,
   handleNext,
-  step6SubStep
+  step6SubStep,
+  setIsGroup
 }) => {
   switch (currentStep) {
     case 1:
-      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} />
+      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} setIsGroup={setIsGroup} />
     case 2:
       return <Step2 setCurrentStep={setCurrentStep} />
     case 3:
