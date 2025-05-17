@@ -612,7 +612,7 @@ function Itinerary() {
               })),
             });
           }
-          calendar.push(dayActivities.sort((a, b) => new Date(a.unformatted_time).getTime() - new Date(b.unformatted_time).getTime()));
+          calendar.push(dayActivities);
           AllroutesData.push(routesData);
           AllmarkersData.push(markersData);
         }
@@ -1226,10 +1226,11 @@ function Itinerary() {
                         className="overflow-y-auto h-full"
                       >
                         {calendar[selectedDay]
+                          .sort((a,b)=> a.id < b.id ? -1 :(a.id >b.id ? 1 : 0))
                           .map((item,index) => (
                             <PlaceCard
                               key={item.id}
-                              id={item.id}
+                              id={index}
                               place={item.place}
                               time={item.time}
                               transport={item.transport}
