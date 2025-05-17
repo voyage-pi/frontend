@@ -148,6 +148,18 @@ export const routesList = [
 ];
 
 routesList.push({
+  path: "/not-found",
+  element: (
+    <AuthProvider>
+      <Helmet>
+        <title>Voyage - Page Not Found</title>
+      </Helmet>
+      <NotFound />
+    </AuthProvider>
+  ),
+});
+
+routesList.push({
   path: "*",
   element: (
     <AuthProvider>
