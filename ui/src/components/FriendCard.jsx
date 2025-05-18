@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaMapMarkerAlt, FaGlobeAmericas, FaPlane } from "react-icons/fa";
+import { axiosUser } from "../utils/axiosInstance";
 
 const FriendCard = ({ friend, onClick, selected }) => {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axiosUser.get(`/trip-info/stats/${friend.friend_id || friend.id}`);
+        setStats(res.data.data);
+      } catch (e) {
+        setStats(null);
+      }
+    };
+    fetchStats();
+  }, [friend]);
+
   return (
     <div 
       className={`w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-102 ${selected ? 'border-1 border-primary/30' : 'border border-gray-100'}`}
@@ -10,7 +25,7 @@ const FriendCard = ({ friend, onClick, selected }) => {
       {/* Cover Photo */}
       <div className="h-24 bg-gray-200 w-full overflow-hidden">
         <img 
-          src={friend.coverImage || "https://images.unsplash.com/photo-1476067897447-d0c5df27b5df?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"} 
+          src={friend.banner_url} 
           alt="Cover" 
           className="w-full h-full object-cover"
         />
@@ -20,7 +35,7 @@ const FriendCard = ({ friend, onClick, selected }) => {
         {/* Profile Photo */}
         <div className="absolute -top-12 left-4 border-4 border-white rounded-full overflow-hidden shadow-sm transition-transform duration-300">
           <img 
-            src={friend.image} 
+            src={friend.avatar_url} 
             alt={friend.name} 
             className="w-20 h-20 object-cover"
           />
@@ -34,15 +49,15 @@ const FriendCard = ({ friend, onClick, selected }) => {
           <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-2">
             <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
               <FaPlane className="text-primary" />
-              <span>{friend.trips || 0} trips</span>
+              <span>{stats ? stats.total_trips : 0} trips</span>
             </div>
             <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
               <FaGlobeAmericas className="text-primary" />
-              <span>{friend.countries || 0} countries</span>
+              <span>{stats ? stats.countries_visited : 0} countries</span>
             </div>
             <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
               <FaMapMarkerAlt className="text-primary" />
-              <span>{friend.cities || 0} cities</span>
+              <span>{stats ? stats.cities_visited : 0} cities</span>
             </div>
           </div>
           

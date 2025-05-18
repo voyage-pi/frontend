@@ -10,6 +10,8 @@ const PlaceCard = ({
   transport,
   image,
   onRefresh,
+  onDelete,
+  road=false,
   refreshing = false,
 }) => {
   const [imgError, setImgError] = useState(false);
@@ -97,13 +99,16 @@ const PlaceCard = ({
           </div>
         </div>
         <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
-          <div
+          {!road && <div
             className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
             onClick={() => onRefresh(id)}
           >
             <TfiReload className="text-primary text-lg" />
-          </div>
-          <div className="btn btn-sm btn-white rounded-full btn-circle shadow-sm">
+          </div>}
+          <div 
+            className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
+            onClick={() => onDelete && onDelete(id)}
+          >
             <HiOutlineTrash className="text-primary text-xl" />
           </div>
         </div>

@@ -4,6 +4,7 @@ import Step2 from "./Step2Content"
 import Step3 from "./Step3Content"
 import Step4 from "./Step4Content"
 import Step5Content from "./Step5Content"
+import Step6Content from "./Step6Content"
 
 const StepContent = ({
   currentStep,
@@ -14,11 +15,13 @@ const StepContent = ({
   onRatingSelect,
   onValidationChange,
   setShowLeaveButton,
-  handleNext
+  handleNext,
+  step6SubStep,
+  setIsGroup
 }) => {
   switch (currentStep) {
     case 1:
-      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} />
+      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} setIsGroup={setIsGroup} />
     case 2:
       return <Step2 setCurrentStep={setCurrentStep} />
     case 3:
@@ -36,6 +39,8 @@ const StepContent = ({
           handleNext={handleNext}
         />
       )
+    case 6:
+      return <Step6Content step6SubStep={step6SubStep} />
     default:
       return <div>Invalid step</div>
   }

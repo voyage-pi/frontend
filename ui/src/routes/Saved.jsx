@@ -35,39 +35,43 @@ function Saved() {
   // Mock saved places data
   const [savedPlaces, setSavedPlaces] = useState([
     { 
-      id: 1, 
+      key: 1, 
       name: "Estádio da Luz", 
       location: "Lisbon, Portugal", 
       image: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       type: "locations",
       position: { lat: 38.7528, lng: -9.1843 },
-      description: "A major stadium in Lisbon, home to Benfica football club. It hosted the UEFA Euro 2004 final and has a capacity of over 65,000 spectators."
+      description: "A major stadium in Lisbon, home to Benfica football club. It hosted the UEFA Euro 2004 final and has a capacity of over 65,000 spectators.",
+      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI"
     },
     { 
-      id: 2, 
+      key: 2, 
       name: "Livraria Lello", 
       location: "Porto, Portugal", 
       image: "https://images.unsplash.com/photo-1603984362497-0a878f607b92?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
       type: "attractions",
       position: { lat: 41.1473, lng: -8.6151 },
+      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI",
       description: "One of the oldest bookstores in Portugal and frequently rated as one of the most beautiful bookstores in the world. It's said to have inspired J.K. Rowling's Harry Potter."
     },
     { 
-      id: 3, 
+      key: 3, 
       name: "Disneyland Paris", 
       location: "Paris, France", 
       image: "https://images.unsplash.com/photo-1543158266-0066955977ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       type: "attractions",
       position: { lat: 48.8673, lng: 2.7813 },
+      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI",
       description: "A magical entertainment resort featuring two theme parks, many hotels, and a shopping, dining and entertainment complex."
     },
     { 
-      id: 4, 
+      key: 4, 
       name: "Taberna Londrina", 
       location: "London, UK", 
       image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
       type: "restaurants",
       position: { lat: 51.5074, lng: -0.1278 },
+      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI",
       description: "A cozy restaurant in central London offering traditional British cuisine with a modern twist, featuring locally sourced ingredients."
     },
   ]);
@@ -199,7 +203,7 @@ function Saved() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                   {filteredPlaces.map((place) => (
                     <TripCard
-                      key={place.id}
+                      key={place.key}
                       image={place.image}
                       name={place.name}
                       location={place.location}
@@ -208,6 +212,7 @@ function Saved() {
                       onToggleSave={() => handleToggleSave(place.id)}
                       onCardClick={handlePlaceClick}
                       placeData={place}
+                      id={place.id}
                     />
                   ))}
                 </div>

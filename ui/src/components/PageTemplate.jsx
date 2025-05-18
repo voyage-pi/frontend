@@ -1,19 +1,23 @@
 import SideBar from "./SideBar"
 import { useState } from "react"
 import Notification from "./Notification"
+import ShareProfileModal from "./ShareProfileModal"
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 function PageTemplate({ children, headerIcon, headerTitle, headerContent }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   const [notification, setNotification] = useState(null)
+  const [shareModalOpen, setShareModalOpen] = useState(false)
 
   const handleSidebarToggle = (expanded) => {
     setSidebarExpanded(expanded)
   }
 
   const handleMenuItemClick = (item) => {
-    if (['Friends', 'Saved', 'Share', 'Settings'].includes(item)) {
+    if (item === 'Share') {
+      setShareModalOpen(true)
+    } else if (['Friends', 'Saved', 'Settings'].includes(item)) {
       setNotification({
         type: 'info',
         text: `${item} feature coming soon!`,
@@ -65,6 +69,11 @@ function PageTemplate({ children, headerIcon, headerTitle, headerContent }) {
           }}
         />
       )}
+
+      <ShareProfileModal 
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+      />
     </div>
   )
 }

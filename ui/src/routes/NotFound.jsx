@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import voyageLogo from '../assets/voyage-logo.png';
 
 const NotFound = () => {
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-base-100 px-4">
             <div className="flex flex-col md:flex-row items-center justify-center gap-25 max-w-4xl">
@@ -19,7 +20,9 @@ const NotFound = () => {
                 <div className="text-center md:text-left">
                     <h1 className="text-8xl font-bold text-primary mb-2">404</h1>
                     <h2 className="text-xl font-semibold text-base-content tracking-wider mb-1">LOOKS LIKE YOU'RE LOST</h2>
-                    <p className="text-base-content opacity-70 mb-8">The page you are looking for is not available!</p>
+                    <p className="text-base-content opacity-70 mb-8">
+                        The page you are looking for is not available!
+                    </p>
 
                     <Link to="/" className="btn btn-primary inline-flex items-center gap-2">
                         GO TO HOME

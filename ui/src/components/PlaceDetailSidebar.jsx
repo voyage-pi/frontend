@@ -1,10 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaHeart, FaRegHeart, FaPhone, FaClock, FaStar } from "react-icons/fa";
 import { FaXmark, FaLocationDot, FaMap } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import Map from "./Map";
 
+// Generate placeholder image as a fallback
+const generatePlaceholderImage = (seed) => {
+  const seedStr = typeof seed === "string" ? seed : "place";
+  const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, "");
+  return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
+};
+
 function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
+  const [currentImage, setCurrentImage] = useState(place?.image || generatePlaceholderImage(place?.name));
+  const [imageError, setImageError] = useState(false);
+
+  // Update image when place changes
+  useEffect(() => {
+    if (place?.image) {
+      setCurrentImage(place.image);
+      setImageError(false);
+    } else {
+      setCurrentImage(generatePlaceholderImage(place?.name));
+    }
+  }, [place]);
+
+  const handleImageError = () => {
+    setImageError(true);
+    setCurrentImage(generatePlaceholderImage(place?.name));
+  };
+
   const marker = place ? {
     position: {
       lat: place.latitude || 48.8566,
@@ -12,7 +37,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
     },
     title: place.name,
     address: place.address,
-    image: place.image
+    image: currentImage
   } : null;
 
   const formatHours = (hours) => {
@@ -20,7 +45,18 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
       return [{ day: "Information not available", hours: "" }];
     }
 
-    return hours;
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return hours.map(period => {
+      const openDay = days[period.open.day];
+      const openTime = `${period.open.hour.toString().padStart(2, '0')}:${period.open.minute.toString().padStart(2, '0')}`;
+      const closeTime = period.close ? 
+        `${period.close.hour.toString().padStart(2, '0')}:${period.close.minute.toString().padStart(2, '0')}` : 
+        'Closed';
+      return {
+        day: openDay,
+        hours: `${openTime} - ${closeTime}`
+      };
+    });
   };
 
   return (
@@ -53,9 +89,11 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
               {/* Photo Section */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-4 overflow-hidden">
                 <img
-                  src={place.image}
+                  src={currentImage}
                   alt={place.name}
                   className="w-full h-52 object-cover"
+                  onError={handleImageError}
+                  referrerPolicy="no-referrer"
                 />
               </div>
 
@@ -84,10 +122,8 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                 </div>
               </div>
 
-              
-
               {/* Operating Hours Section */}
-              {place.openHours && (
+              {place.openHours && place.openHours.length > 0 && (
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
                   <div className="flex items-center mb-3">
                     <FaClock className="text-primary mr-2" />
@@ -121,7 +157,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
                               />
                             ))}
                           </div>
-                          <span className="font-medium">{review.author}</span>
+                          <span className="font-medium">{review.author_name}</span>
                         </div>
                         <p className="text-gray-700 text-sm">{review.text}</p>
                       </div>

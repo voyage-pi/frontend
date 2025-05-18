@@ -1,22 +1,55 @@
 import React, { useState } from "react";
 import { FaClock, FaUsers, FaLocationDot, FaEye, FaHeart } from "react-icons/fa6";
-import { FaRegHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { axiosPlace } from "../utils/axiosInstance";
+
+// Generate placeholder image as a fallback
+const generatePlaceholderImage = (seed) => {
+  const seedStr = typeof seed === "string" ? seed : "place";
+  const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, "");
+  return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
+};
+
+// Get photo URL using the same logic as Trips.jsx
+const getPhotoUrl = async (photo) => {
+  if (!photo || !photo.name) {
+    console.log("No photo available");
+    return generatePlaceholderImage("place");
+  }
+
+  try {
+    const response = await axiosPlace.post("/places/photo", {
+      gRPC: photo.name,
+    });
+
+    if (response.status === 429) {
+      return getPhotoUrl(photo); // Retry if rate limited
+    }
+
+    return response.data?.uri;
+  } catch (error) {
+    console.error("Error fetching photo:", error);
+    return generatePlaceholderImage("place");
+  }
+};
 
 function TripCard({ 
-  image, 
+  image,
   name, 
   date, 
   days, 
   people, 
   destinations, 
   location,
-  isSavedPlace = false,
+  isSavedPlace,
   isSaved,
   onToggleSave,
   onCardClick,
+  id,
   placeData
 }) {
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
   
   const handleHeartClick = (e) => {
     e.stopPropagation();
@@ -39,33 +72,71 @@ function TripCard({
     document.body.classList.remove('overflow-hidden');
   };
   
-  const handleCardClick = () => {
+  const handleCardClick = async () => {
     if (isSavedPlace && onCardClick) {
-      onCardClick(placeData || {
-        id: Math.random(),
-        name,
-        location,
-        image,
-        isSaved
-      });
+      try {
+        // Fetch place details from backend
+        const response = await axiosPlace.get(`/places/${id}`);
+        const placeDetails = response.data;
+        
+        // Get the first photo URL
+        let photoUrl = image; // Default to the provided image
+        if (placeDetails.photos && placeDetails.photos.length > 0) {
+          photoUrl = await getPhotoUrl(placeDetails.photos[0]);
+        }
+        
+        // Format the place data for the sidebar
+        const formattedPlaceData = {
+          id: placeDetails.place_id,
+          name: placeDetails.name,
+          description: placeDetails.description,
+          address: placeDetails.address,
+          phone: placeDetails.phone_number,
+          rating: placeDetails.rating,
+          location: location,
+          image: photoUrl,
+          photos: placeDetails.photos,
+          latitude: placeDetails.location?.latitude,
+          longitude: placeDetails.location?.longitude,
+          openHours: placeDetails.opening_hours?.periods || [],
+          reviews: placeDetails.reviews || [],
+          isSaved: isSaved
+        };
+        
+        onCardClick(formattedPlaceData);
+      } catch (error) {
+        console.error("Error fetching place details:", error);
+        // Fallback to basic data if fetch fails
+        onCardClick(placeData || {
+          id: Math.random(),
+          name,
+          location,
+          image,
+          isSaved
+        });
+      }
+    } else {
+      navigate(`/itinerary/${id}`);
     }
   };
   
   return (
     <>
-      <div 
-        className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative cursor-pointer hover:shadow-md transition-all duration-300 transform hover:scale-102"
-        onClick={handleCardClick}
+    <div onClick={() => {
+      console.log(id);
+      handleCardClick();
+    }} className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative btn btn-ghost transition-transform duration-300 hover:scale-102 text-start group"
       >
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover absolute"
-        />
+      <img
+        src={image}
+        alt={name}
+        className="w-full h-full object-cover absolute"
+      />
+        
+      {/* Animated white overlay */}
+      <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-white via-white/80 to-transparent transform transition-all duration-300 ease-in-out group-hover:h-[70%]"></div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.1)_0%,transparent_40%,rgba(255,255,255,0.7)_70%,rgba(255,255,255,1)_100%)]"></div>
-
-        <div className="card-body relative z-10 flex flex-col justify-between h-[15rem] p-2 pb-6">
+        <div className="card-body relative z-10 flex flex-col justify-between h-[15rem] p-2 pb-4">
           <div className="flex flex-wrap gap-1">
             {!isSavedPlace && (
               <>
@@ -111,7 +182,7 @@ function TripCard({
           <div className="mt-auto text-secondary">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold mb-1">{name}</h2>
+                <h2 className="text-xl font-bold mb-1">{name}</h2>
                 {!isSavedPlace && date && <p className="text-secondary/70">{date}</p>}
                 {isSavedPlace && location && <p className="text-secondary/70">{location}</p>}
               </div>
