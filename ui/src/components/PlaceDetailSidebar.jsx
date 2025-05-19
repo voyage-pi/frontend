@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FaHeart, FaRegHeart, FaPhone, FaClock, FaStar } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaPhone, FaClock, FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaXmark, FaLocationDot, FaMap } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import Map from "./Map";
+import { axiosPlace } from "../utils/axiosInstance";
 
 // Generate placeholder image as a fallback
 const generatePlaceholderImage = (seed) => {
@@ -11,23 +12,78 @@ const generatePlaceholderImage = (seed) => {
   return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
 };
 
+// Get photo URL using the same logic as TripCard.jsx
+const getPhotoUrl = async (photo) => {
+  if (!photo || !photo.name) {
+    console.log("No photo available");
+    return generatePlaceholderImage("place");
+  }
+
+  try {
+    const response = await axiosPlace.post("/places/photo", {
+      gRPC: photo.name,
+    });
+
+    if (response.status === 429) {
+      return getPhotoUrl(photo); // Retry if rate limited
+    }
+
+    return response.data?.uri;
+  } catch (error) {
+    console.error("Error fetching photo:", error);
+    return generatePlaceholderImage("place");
+  }
+};
+
 function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
   const [currentImage, setCurrentImage] = useState(place?.image || generatePlaceholderImage(place?.name));
   const [imageError, setImageError] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [photoUrls, setPhotoUrls] = useState([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(true);
 
-  // Update image when place changes
+  // Fetch and process photos when place changes
   useEffect(() => {
-    if (place?.image) {
-      setCurrentImage(place.image);
-      setImageError(false);
-    } else {
-      setCurrentImage(generatePlaceholderImage(place?.name));
-    }
+    const fetchPhotos = async () => {
+      if (!place?.photos || place.photos.length === 0) {
+        setPhotoUrls([generatePlaceholderImage(place?.name)]);
+        setLoadingPhotos(false);
+        return;
+      }
+
+      setLoadingPhotos(true);
+      try {
+        // Get first 5 photos
+        const photosToFetch = place.photos.slice(0, 5);
+        const urls = await Promise.all(
+          photosToFetch.map(photo => getPhotoUrl(photo))
+        );
+        setPhotoUrls(urls);
+        setCurrentImage(urls[0]); // Set first photo as current
+      } catch (error) {
+        console.error("Error fetching photos:", error);
+        setPhotoUrls([generatePlaceholderImage(place?.name)]);
+      } finally {
+        setLoadingPhotos(false);
+      }
+    };
+
+    fetchPhotos();
   }, [place]);
 
   const handleImageError = () => {
     setImageError(true);
     setCurrentImage(generatePlaceholderImage(place?.name));
+  };
+
+  const nextPhoto = () => {
+    setCurrentPhotoIndex((prev) => (prev + 1) % photoUrls.length);
+    setCurrentImage(photoUrls[(currentPhotoIndex + 1) % photoUrls.length]);
+  };
+
+  const prevPhoto = () => {
+    setCurrentPhotoIndex((prev) => (prev - 1 + photoUrls.length) % photoUrls.length);
+    setCurrentImage(photoUrls[(currentPhotoIndex - 1 + photoUrls.length) % photoUrls.length]);
   };
 
   const marker = place ? {
@@ -86,15 +142,49 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
 
             {/* Place details */}
             <div className="flex-1 overflow-auto p-4 bg-gray-50">
-              {/* Photo Section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-4 overflow-hidden">
-                <img
-                  src={currentImage}
-                  alt={place.name}
-                  className="w-full h-52 object-cover"
-                  onError={handleImageError}
-                  referrerPolicy="no-referrer"
-                />
+              {/* Photo Carousel Section */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-4 overflow-hidden relative">
+                {loadingPhotos ? (
+                  <div className="w-full h-52 bg-gray-100 animate-pulse"></div>
+                ) : (
+                  <>
+                    <img
+                      src={currentImage}
+                      alt={place.name}
+                      className="w-full h-52 object-cover"
+                      onError={handleImageError}
+                      referrerPolicy="no-referrer"
+                    />
+                    {photoUrls.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevPhoto}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all"
+                        >
+                          <FaChevronLeft className="text-gray-700" />
+                        </button>
+                        <button
+                          onClick={nextPhoto}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all"
+                        >
+                          <FaChevronRight className="text-gray-700" />
+                        </button>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                          {photoUrls.map((_, index) => (
+                            <div
+                              key={index}
+                              className={`w-2 h-2 rounded-full transition-all ${
+                                index === currentPhotoIndex
+                                  ? "bg-white scale-125"
+                                  : "bg-white/50"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Main Info Section */}
