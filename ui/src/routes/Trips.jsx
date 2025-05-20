@@ -39,6 +39,28 @@ function Trips() {
     // eslint-disable-next-line
   }, []);
 
+  // Load sample trip invites if none exist yet
+  useEffect(() => {
+    if (tripInviteCount === 0) {
+      const sampleInvites = [
+        {
+          id: 201,
+          tripName: "Weekend in Paris",
+          from: "John Smith",
+          date: "1 day ago"
+        },
+        {
+          id: 202,
+          tripName: "Tokyo Adventure",
+          from: "Sarah Lee",
+          date: "3 days ago"
+        }
+      ];
+
+      sampleInvites.forEach(invite => addTripInvite(invite));
+    }
+  }, []);
+
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {
@@ -51,8 +73,14 @@ function Trips() {
           }
         } catch (error) {
           console.error("Error fetching user by tag:", error);
-          // If user not found, redirect to home
-          navigate('/');
+          if (error.response && error.response.status === 404) {
+            navigate('/not-found');
+          } else {
+            setNotification({
+              message: "Error loading user profile. Please try again later.",
+              type: "error"
+            });
+          }
         }
       } else if (LoggedUser) {
         // Only set viewingUser to LoggedUser if it's not already set to prevent extra renders
