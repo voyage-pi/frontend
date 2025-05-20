@@ -31,8 +31,8 @@ export const NotificationsProvider = ({ children }) => {
   
   // Refs to track state
   const initialDataLoaded = useRef(false);
-  const lastFetchTimeRef = useRef(0);
   const isFetchingRef = useRef(false);
+  const isFetchingTripInvitesRef = useRef(false);
   const retryTimeoutRef = useRef(null);
   const retryCountRef = useRef(0);
   
@@ -49,8 +49,8 @@ export const NotificationsProvider = ({ children }) => {
       
       if (auth?.LoggedUser?.id && !initialDataLoaded.current) {
         // User is definitely logged in, fetch immediately
-        console.log("[NotificationsContext] User logged in, fetching friend requests");
-        const success = await fetchFriendRequests();
+        console.log("[NotificationsContext] User logged in, fetching notifications");
+        const success = await refreshNotifications();
         if (success) {
           initialDataLoaded.current = true;
           retryCountRef.current = 0;
@@ -58,7 +58,7 @@ export const NotificationsProvider = ({ children }) => {
       } else if (auth?.isAuthenticated === true && !initialDataLoaded.current) {
         // Auth says we're authenticated but LoggedUser isn't loaded yet
         console.log("[NotificationsContext] Auth says we're authenticated but LoggedUser isn't loaded yet");
-        fetchFriendRequests();
+        refreshNotifications();
       } else if (!initialDataLoaded.current && retryCountRef.current < 3) {
         // Not loaded and under retry limit, schedule retry
         retryCountRef.current++;
@@ -81,24 +81,13 @@ export const NotificationsProvider = ({ children }) => {
   const fetchFriendRequests = useCallback(async () => {
     // Prevent concurrent fetches
     if (isFetchingRef.current) {
-      console.log("[NotificationsContext] Fetch already in progress, skipping");
+      console.log("[NotificationsContext] Friend requests fetch already in progress, skipping");
       return true;
     }
     
     try {
-      const now = Date.now();
-      const lastFetchTime = lastFetchTimeRef.current;
-      // Increase throttle to 5 seconds to prevent frequent calls
-      if (lastFetchTime && now - lastFetchTime < 5000) {
-        console.log("[NotificationsContext] Throttled, last fetch was recent");
-        return true;
-      }
-      
       // Set fetching flag to prevent duplicate calls
       isFetchingRef.current = true;
-      
-      // Update timestamp before request
-      updateLastFetchTime();
       
       console.log("[NotificationsContext] Fetching friend requests - API call starts");
       const response = await axiosUser.get('/friends/requests/received/users/');
@@ -172,8 +161,82 @@ export const NotificationsProvider = ({ children }) => {
   
   // Helper function to fetch trip invites
   const fetchTripInvites = useCallback(async () => {
-    // Placeholder implementation
-    return true;
+    // Prevent concurrent fetches
+    if (isFetchingTripInvitesRef.current) {
+      console.log("[NotificationsContext] Trip invites fetch already in progress, skipping");
+      return true;
+    }
+    
+    try {
+      // Set fetching flag to prevent duplicate calls
+      isFetchingTripInvitesRef.current = true;
+      
+      console.log("[NotificationsContext] Fetching trip invites - API call starts");
+      const response = await axiosUser.get('/trips/invitations');
+      console.log("[NotificationsContext] Response from fetchTripInvites:", response.data);
+      
+      // Clear existing invites only if we got a successful response
+      setNotifications(prev => ({ ...prev, tripInvites: [] }));
+      
+      // Messages with "No invitations found" are expected for empty results
+      if (response.data && typeof response.data === 'object' && response.data.message) {
+        initialDataLoaded.current = true;
+        return true;
+      }
+      
+      if (response.data && Array.isArray(response.data)) {
+        const uniqueInvites = new Map();
+        
+        for (const invite of response.data) {
+          try {
+            // Debug logging to see the invite structure
+            console.log("trip_id:", invite.trip_id);
+            console.log("user_id:", invite.user_id);
+            
+            // Fetch trip info for this invite
+            let tripData = null;
+            if (invite.trip_id) {
+              try {
+                const tripResponse = await axiosUser.get(`/trips/${invite.trip_id}`);
+                console.log("trip info:", tripResponse.data);
+                tripData = tripResponse.data.response;
+              } catch (error) {
+                console.error("Error fetching trip info:", error);
+              }
+            }
+            
+            const tripInvite = {
+              id: invite.trip_id,
+              trip_id: invite.trip_id,
+              tripName: tripData?.itinerary?.name || "Unnamed Trip",
+              date: invite.joined_trip_at ? new Date(invite.joined_trip_at).toLocaleDateString() : "recently",
+              inviteId: invite.id
+            };
+            
+            // Use Map to ensure uniqueness by ID
+            uniqueInvites.set(tripInvite.id, tripInvite);
+          } catch (error) {
+            console.error("Error processing individual invite:", error);
+          }
+        }
+        
+        // Add all unique invites at once instead of individually
+        setNotifications(prev => ({
+          ...prev,
+          tripInvites: [...Array.from(uniqueInvites.values())]
+        }));
+        
+        initialDataLoaded.current = true;
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Error fetching trip invites:", error);
+      return false;
+    } finally {
+      isFetchingTripInvitesRef.current = false;
+    }
   }, []);
   
   // Helper functions to manage notifications state

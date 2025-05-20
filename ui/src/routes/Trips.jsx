@@ -32,15 +32,6 @@ function Trips() {
 
   const { totalCount, addTripInvite, tripInviteCount, refreshNotifications } = useNotifications();
 
-  // Refresh notifications when component mounts
-  useEffect(() => {
-    console.log("[Trips] Component mounted, refreshing notifications");
-    // We don't need to check for LoggedUser here because the auth cookie will be sent regardless
-    refreshNotifications().then(success => {
-      console.log(`[Trips] Initial notification refresh ${success ? 'succeeded' : 'failed'}`);
-    });
-  }, [refreshNotifications]); // Remove LoggedUser dependency to avoid extra renders
-
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {
