@@ -17,11 +17,13 @@ const StepContent = ({
   setShowLeaveButton,
   handleNext,
   step6SubStep,
-  setIsGroup
+  setIsGroup,
+  addedUsers,
+  setAddedUsers
 }) => {
   switch (currentStep) {
     case 1:
-      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} setIsGroup={setIsGroup} />
+      return <Step1 setCurrentStep={setCurrentStep} setShowLeaveButton={setShowLeaveButton} setIsGroup={setIsGroup} addedUsers={addedUsers} setAddedUsers={setAddedUsers} />
     case 2:
       return <Step2 setCurrentStep={setCurrentStep} />
     case 3:
