@@ -307,7 +307,11 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
                     </div>
                     <div>
                       <h3 className="font-medium">{invite.tripName}</h3>
-                      <p className="text-gray-500 text-xs">From: {invite.from}</p>
+                      <p className="text-gray-500 text-xs">
+                        Participants: {invite.participants && invite.participants.length > 0
+                          ? invite.participants.join(', ')
+                          : 'No participants'}
+                      </p>
                       <p className="text-gray-400 text-xs mt-1">Sent {invite.date}</p>
                     </div>
                   </div>

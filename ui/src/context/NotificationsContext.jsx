@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { axiosUser } from '../utils/axiosInstance';
+import { axiosUser, axiosInstance } from '../utils/axiosInstance';
 
 // Create context with default values to avoid undefined errors
 const NotificationsContext = createContext({
@@ -197,18 +197,38 @@ export const NotificationsProvider = ({ children }) => {
             let tripData = null;
             if (invite.trip_id) {
               try {
-                const tripResponse = await axiosUser.get(`/trips/${invite.trip_id}`);
+                const tripResponse = await axiosInstance.get(`/trips/${invite.trip_id}`);
                 console.log("trip info:", tripResponse.data);
                 tripData = tripResponse.data.response;
               } catch (error) {
                 console.error("Error fetching trip info:", error);
               }
             }
-            
+
+            // Fetch trip participants and get tags for each
+            let participants = [];
+            try {
+              const tripParticipants = await axiosUser.get(`/trips/participants/${invite.trip_id}`);
+              // For each participant, fetch their tag
+              participants = await Promise.all(
+                tripParticipants.data.map(async (p) => {
+                  try {
+                    const userInfo = await axiosUser.get(`/user/${p.user_id}`);
+                    return userInfo.data.tag || userInfo.data.name || `User ${p.user_id}`;
+                  } catch (error) {
+                    return `User ${p.user_id}`;
+                  }
+                })
+              );
+            } catch (error) {
+              console.error("Error fetching trip participants or tags:", error);
+            }
+
             const tripInvite = {
               id: invite.trip_id,
               trip_id: invite.trip_id,
               tripName: tripData?.itinerary?.name || "Unnamed Trip",
+              participants,
               date: invite.joined_trip_at ? new Date(invite.joined_trip_at).toLocaleDateString() : "recently",
               inviteId: invite.id
             };

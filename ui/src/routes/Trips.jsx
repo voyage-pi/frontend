@@ -32,6 +32,13 @@ function Trips() {
 
   const { totalCount, addTripInvite, tripInviteCount, refreshNotifications } = useNotifications();
 
+  useEffect(() => {
+    // Fetch notifications when Inbox opens
+    refreshNotifications();
+    // Only run on mount
+    // eslint-disable-next-line
+  }, []);
+
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {
