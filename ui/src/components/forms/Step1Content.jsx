@@ -3,7 +3,7 @@ import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
 import FriendsInviteComponent from './FriendsInvite';
 
-const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup }) => {
+const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUsers, setAddedUsers }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
   const [showFriendsInvite, setShowFriendsInvite] = useState(false);
@@ -79,7 +79,7 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup }) => {
   ];
 
   if (showFriendsInvite) {
-    return <FriendsInviteComponent onNext={handleFriendsInviteNext} onBack={handleFriendsInviteBack} />;
+    return <FriendsInviteComponent onNext={handleFriendsInviteNext} onBack={handleFriendsInviteBack} addedUsers={addedUsers} setAddedUsers={setAddedUsers} />;
   }
 
   return (

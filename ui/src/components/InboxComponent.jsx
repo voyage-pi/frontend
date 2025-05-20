@@ -15,8 +15,8 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     removeTripInvite,
     friendRequestCount,
     tripInviteCount,
-    refreshNotifications,
-    isRefreshing
+    isRefreshing,
+    refreshNotifications
   } = useNotifications();
   
   // Debug log to check user information
@@ -24,62 +24,6 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     console.log("[InboxComponent] Auth context:", auth);
     console.log("[InboxComponent] Using user ID:", userId);
   }, [auth, userId]);
-  
-  // Fetch requests once when the component opens with a proper dependency array
-  useEffect(() => {
-    const fetchRequests = async () => {
-      console.log("[InboxComponent] Component mounted, attempting to fetch notifications");
-      
-      try {
-        // We call refreshNotifications even if userId is not yet available,
-        // because authentication may work via cookies
-        const success = await refreshNotifications();
-        console.log(`[InboxComponent] Initial notification refresh ${success ? 'succeeded' : 'failed'}`);
-        
-        if (!success && userId) {
-          // We have a userId but the refresh failed, try again after a delay
-          setTimeout(() => {
-            console.log("[InboxComponent] Retrying notification refresh...");
-            refreshNotifications();
-          }, 1500);
-        }
-      } catch (error) {
-        console.error("[InboxComponent] Error fetching friend requests:", error);
-      }
-    };
-    
-    fetchRequests();
-  }, [refreshNotifications]); // userId removed from deps to prevent multiple fetches
-  
-  const handleRefresh = useCallback(async () => {
-    if (isRefreshing) {
-      console.log("[InboxComponent] Already refreshing, ignoring refresh request");
-      return;
-    }
-    
-    try {
-      console.log("[InboxComponent] Manually refreshing notifications");
-      const success = await refreshNotifications();
-      
-      if (success) {
-        setNotification({
-          type: 'info',
-          message: 'Notifications refreshed'
-        });
-      } else {
-        setNotification({
-          type: 'warning',
-          message: 'Could not refresh notifications'
-        });
-      }
-    } catch (error) {
-      console.error("[InboxComponent] Error refreshing notifications:", error);
-      setNotification({
-        type: 'error',
-        message: 'Failed to refresh notifications'
-      });
-    }
-  }, [isRefreshing, refreshNotifications, setNotification]);
   
   const handleAcceptFriendRequest = useCallback(async (requestId, name) => {
     if (!userId) {
@@ -128,12 +72,6 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
           type: 'success',
           message: `You are now friends with ${name}!`,
         });
-        
-        // Wait a moment for the DB update to complete, then refresh notifications
-        setTimeout(async () => {
-          console.log("Refreshing notifications after accepting friend request");
-          await refreshNotifications();
-        }, 1000);
       }
     } catch (error) {
       console.error("Error accepting friend request:", error);
@@ -142,7 +80,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         message: error.response?.data?.message || `Failed to accept friend request from ${name}. Please try again.`,
       });
     }
-  }, [userId, removeFriendRequest, setNotification, refreshNotifications]);
+  }, [userId, removeFriendRequest, setNotification]);
   
   const handleRejectFriendRequest = useCallback(async (requestId, name) => {
     if (!userId) {
@@ -170,9 +108,6 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
           type: 'info',
           message: `Friend request from ${name} declined`,
         });
-        
-        // Refresh notifications after rejecting to ensure UI is up to date
-        await refreshNotifications();
       }
     } catch (error) {
       console.error("Error rejecting friend request:", error);
@@ -181,23 +116,99 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         message: `Failed to decline friend request from ${name}. Please try again.`,
       });
     }
-  }, [userId, removeFriendRequest, setNotification, refreshNotifications]);
+  }, [userId, removeFriendRequest, setNotification]);
   
-  const handleAcceptTripInvite = useCallback((inviteId, tripName) => {
-    removeTripInvite(inviteId);
-    setNotification({
-      type: 'success',
-      message: `You joined trip "${tripName}"!`,
-    });
-  }, [removeTripInvite, setNotification]);
+  const handleAcceptTripInvite = useCallback(async (inviteId, tripName) => {
+    if (!userId) {
+      setNotification({
+        type: 'error',
+        message: 'You need to be logged in to accept trip invitations',
+      });
+      return;
+    }
+
+    try {
+      console.log(`Accepting trip invite ${inviteId}`);
+      
+      // API call to accept trip invite
+      const response = await axiosUser.post(`/trips/accept/${inviteId}`);
+      
+      if (response.data) {
+        // Remove from UI immediately
+        removeTripInvite(inviteId);
+        setNotification({
+          type: 'success',
+          message: `You joined trip "${tripName}"!`,
+        });
+      }
+    } catch (error) {
+      console.error("Error accepting trip invite:", error);
+      setNotification({
+        type: 'error',
+        message: error.response?.data?.message || `Failed to accept trip invitation to "${tripName}". Please try again.`,
+      });
+    }
+  }, [userId, removeTripInvite, setNotification]);
   
-  const handleRejectTripInvite = useCallback((inviteId, tripName) => {
-    removeTripInvite(inviteId);
-    setNotification({
-      type: 'info',
-      message: `Trip invitation to "${tripName}" declined`,
-    });
-  }, [removeTripInvite, setNotification]);
+  const handleRejectTripInvite = useCallback(async (inviteId, tripName) => {
+    if (!userId) {
+      setNotification({
+        type: 'error',
+        message: 'You need to be logged in to reject trip invitations',
+      });
+      return;
+    }
+
+    try {
+      console.log(`Rejecting trip invite ${inviteId}`);
+      
+      // API call to reject trip invite
+      const response = await axiosUser.post(`/trips/reject/${inviteId}`);
+      
+      if (response.data) {
+        // Remove from UI immediately
+        removeTripInvite(inviteId);
+        setNotification({
+          type: 'info',
+          message: `Trip invitation to "${tripName}" declined`,
+        });
+      }
+    } catch (error) {
+      console.error("Error rejecting trip invite:", error);
+      setNotification({
+        type: 'error',
+        message: `Failed to decline trip invitation to "${tripName}". Please try again.`,
+      });
+    }
+  }, [userId, removeTripInvite, setNotification]);
+
+  const handleRefresh = useCallback(async () => {
+    if (isRefreshing) {
+      console.log("[InboxComponent] Already refreshing, ignoring refresh request");
+      return;
+    }
+    try {
+      console.log("[InboxComponent] Manually refreshing notifications");
+      const success = await refreshNotifications();
+      if (success) {
+        setNotification({
+          type: 'info',
+          message: 'Notifications refreshed'
+        });
+      } else {
+        setNotification({
+          type: 'warning',
+          message: 'Could not refresh notifications'
+        });
+      }
+    } catch (error) {
+      console.error("[InboxComponent] Error refreshing notifications:", error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to refresh notifications'
+      });
+    }
+  }, [isRefreshing, refreshNotifications, setNotification]);
 
   return (
     <div className="flex flex-col h-full">
@@ -296,7 +307,11 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
                     </div>
                     <div>
                       <h3 className="font-medium">{invite.tripName}</h3>
-                      <p className="text-gray-500 text-xs">From: {invite.from}</p>
+                      <p className="text-gray-500 text-xs">
+                        Participants: {invite.participants && invite.participants.length > 0
+                          ? invite.participants.join(', ')
+                          : 'No participants'}
+                      </p>
                       <p className="text-gray-400 text-xs mt-1">Sent {invite.date}</p>
                     </div>
                   </div>

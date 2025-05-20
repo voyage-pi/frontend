@@ -43,15 +43,13 @@ function Friends() {
     removeFriendRequest, 
     refreshNotifications
   } = useNotifications();
-  
-  // Refresh notifications when component mounts
+
   useEffect(() => {
-    console.log("[Friends] Component mounted, refreshing notifications");
-    // We don't need to check for LoggedUser here because the auth cookie will be sent regardless
-    refreshNotifications().then(success => {
-      console.log(`[Friends] Initial notification refresh ${success ? 'succeeded' : 'failed'}`);
-    });
-  }, [refreshNotifications]); // Remove LoggedUser dependency to avoid extra renders
+    // Fetch notifications when Inbox opens
+    refreshNotifications();
+    // Only run on mount
+    // eslint-disable-next-line
+  }, []);
   
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
@@ -273,12 +271,6 @@ function Friends() {
     setShowInvites(prevState => {
       // Only close other panels if we're opening the invites panel
       if (!prevState) {
-        // Make sure we refresh notifications when opening the invites panel
-        console.log("[Friends] Refreshing notifications for inbox view");
-        refreshNotifications().then(success => {
-          console.log(`[Friends] Notification refresh for inbox ${success ? 'succeeded' : 'failed'}`);
-        });
-        
         // Close other panels
         setSelectedFriend(null);
         setShowAddFriend(false);

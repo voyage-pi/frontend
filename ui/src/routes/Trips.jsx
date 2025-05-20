@@ -32,14 +32,12 @@ function Trips() {
 
   const { totalCount, addTripInvite, tripInviteCount, refreshNotifications } = useNotifications();
 
-  // Refresh notifications when component mounts
   useEffect(() => {
-    console.log("[Trips] Component mounted, refreshing notifications");
-    // We don't need to check for LoggedUser here because the auth cookie will be sent regardless
-    refreshNotifications().then(success => {
-      console.log(`[Trips] Initial notification refresh ${success ? 'succeeded' : 'failed'}`);
-    });
-  }, [refreshNotifications]); // Remove LoggedUser dependency to avoid extra renders
+    // Fetch notifications when Inbox opens
+    refreshNotifications();
+    // Only run on mount
+    // eslint-disable-next-line
+  }, []);
 
   // Load sample trip invites if none exist yet
   useEffect(() => {

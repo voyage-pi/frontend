@@ -24,6 +24,7 @@ function Forms() {
   const [showError, setShowError] = useState(false);
   const [showLeaveButton, setShowLeaveButton] = useState(true);
   const [isGroup, setIsGroup] = useState(false);
+  const [addedUsers, setAddedUsers] = useState([]);
 
   const getQuestions = async () => {
     const response = await axiosUser.get("/questions/");
@@ -323,6 +324,15 @@ function Forms() {
         setSubQuestionIndex(0);
         setStep6SubStep(0);
         setIsGroup(false);
+
+        // After trip creation, send invitations to all addedUsers
+        for (const user of addedUsers) {
+          try {
+            await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
+          } catch (e) {
+            console.error(`Failed to invite user ${user.id}:`, e);
+          }
+        }
       } else {
         console.error("Invalid response structure:", response.data);
         setIsNavigating(false);
@@ -368,7 +378,8 @@ function Forms() {
               handleNext={handleNext}
               step6SubStep={step6SubStep}
               setIsGroup={setIsGroup}
-              isGroup={isGroup}
+              addedUsers={addedUsers}
+              setAddedUsers={setAddedUsers}
             />
 
             {showError && (
