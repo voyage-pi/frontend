@@ -521,9 +521,14 @@ function Itinerary() {
     setLoading(false);
   };
   const processItineraryData = async (data) => {
-
-    if (data && data.itinerary) {
-      const responseItinerary = data.itinerary;
+    console.log("data", data);
+    if (data) {
+      let responseItinerary = null;
+      if (data.response?.itinerary) {
+        responseItinerary = data.response.itinerary;
+      } else {
+        responseItinerary = data.itinerary;
+      }
       console.log("Processing itinerary data:", responseItinerary);
       setItinerary(responseItinerary);
       const calendar = [];
@@ -533,7 +538,7 @@ function Itinerary() {
       if (responseItinerary.days) {
         setDays(responseItinerary.days);
         for (const day of responseItinerary.days) {
-          const dayActivities=[]
+          const dayActivities = [];
           const routesData = [];
           const markersData = [];
           if (day.morning_activities) {
@@ -546,7 +551,7 @@ function Itinerary() {
                     time: `${formatTime(activity.start_time)} - ${formatTime(
                       activity.end_time
                     )}`,
-                    unformatted_time:activity.start_time,
+                    unformatted_time: activity.start_time,
                     image: imageUrl,
                     transport: activity.transport || {},
                   });
@@ -579,7 +584,7 @@ function Itinerary() {
                     time: `${formatTime(activity.start_time)} - ${formatTime(
                       activity.end_time
                     )}`,
-                    unformatted_time:activity.start_time,
+                    unformatted_time: activity.start_time,
                     image: imageUrl,
                     transport: activity.transport || {},
                   });
@@ -671,12 +676,11 @@ function Itinerary() {
 
       console.log("Updating itinerary");
       console.log("Response from refresh activity:", response.data);
-      console.log("Itinerary", response.data.response.itinerary);
 
-      if (response.data.response.itinerary) {
+      if (response.data.itinerary) {
         const newItineraryData = {
           response: {
-            itinerary: response.data.response.itinerary,
+            itinerary: response.data.itinerary,
           },
         };
         console.log("New itinerary data:", newItineraryData);
@@ -720,7 +724,7 @@ function Itinerary() {
       console.log("Response from delete activity:", response.data);
 
       // Check for various possible response structures
-      let itineraryData = null;
+      let itineraryData = response.data.itinerary;
       if (response.data.response?.itinerary) {
         itineraryData = response.data.response.itinerary;
       } else if (response.data.data?.itinerary) {
@@ -728,6 +732,8 @@ function Itinerary() {
       } else if (response.data.itinerary) {
         itineraryData = response.data.itinerary;
       }
+
+      console.log("itineraryData", itineraryData);
 
       if (itineraryData) {
         const newItineraryData = {
@@ -759,8 +765,10 @@ function Itinerary() {
       } else {
         // If the API call succeeded but we couldn't parse the itinerary data,
         // we'll reload the trip data completely to ensure the UI is updated
-        console.log("Could not find itinerary in response, reloading trip data");
-        
+        console.log(
+          "Could not find itinerary in response, reloading trip data"
+        );
+
         try {
           const tripResponse = await axiosInstance.get(`/trips/${tripId}`);
           if (tripResponse.data && tripResponse.data.response) {
@@ -770,7 +778,7 @@ function Itinerary() {
             } else {
               processItineraryData(data);
             }
-            
+
             setNotification({
               type: "success",
               text: "Activity deleted successfully",
@@ -790,7 +798,9 @@ function Itinerary() {
       console.error("Error deleting activity:", error);
       setNotification({
         type: "error",
-        text: "Error deleting activity: " + (error.response?.data?.message || error.message),
+        text:
+          "Error deleting activity: " +
+          (error.response?.data?.message || error.message),
         key: Date.now(),
       });
     }
@@ -826,7 +836,7 @@ function Itinerary() {
       }
       // Try to get is_group from itinerary or localStorage
       let isGroup = false;
-      if (typeof itinerary.is_group !== 'undefined') {
+      if (typeof itinerary.is_group !== "undefined") {
         isGroup = itinerary.is_group;
       } else {
         isGroup = localStorage.getItem("isGroup") === "true";
@@ -837,10 +847,10 @@ function Itinerary() {
           ...itinerary,
           country: itinerary.country,
           city: itinerary.city,
-          is_group: isGroup // ensure is_group is present inside itinerary too
+          is_group: isGroup, // ensure is_group is present inside itinerary too
         },
         trip_type: tripType,
-        is_group: isGroup // <-- ensure is_group is present at the root
+        is_group: isGroup, // <-- ensure is_group is present at the root
       });
 
       if (trip_management_response.status === 200) {
@@ -867,7 +877,9 @@ function Itinerary() {
     let destination = null;
     if (tripType == "road") {
       origin = `${stops[0].place.location.latitude},${stops[0].place.location.longitude}`;
-      destination = `${stops[stops.length-1].place.location.latitude},${stops[stops.length-1].place.location.longitude}`;
+      destination = `${stops[stops.length - 1].place.location.latitude},${
+        stops[stops.length - 1].place.location.longitude
+      }`;
       for (const stop of stops.slice(1, -1)) {
         waypoints.push(
           `${stop.place.location.latitude},${stop.place.location.longitude}`
@@ -1132,7 +1144,7 @@ function Itinerary() {
                     </div>
                   </div>
                 )}
-                { tripType !== "road" && (
+                {tripType !== "road" && (
                   <div className="rounded-full border-1 border-secondary/10">
                     <div className="flex flex-row items-center gap-x-3 m-1">
                       <GoPeople className="text-primary ml-1" />
@@ -1192,7 +1204,11 @@ function Itinerary() {
                         transport={""}
                         image={item.image}
                         onRefresh={() => {}}
-                        onDelete={tripType === "road" ? null : () => handleDeleteActivity(item.id)}
+                        onDelete={
+                          tripType === "road"
+                            ? null
+                            : () => handleDeleteActivity(item.id)
+                        }
                         road={true}
                       />
                     ))}
@@ -1235,8 +1251,10 @@ function Itinerary() {
                         className="overflow-y-auto h-full"
                       >
                         {calendar[selectedDay]
-                          .sort((a,b)=> a.id < b.id ? -1 :(a.id >b.id ? 1 : 0))
-                          .map((item,index) => (
+                          .sort((a, b) =>
+                            a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+                          )
+                          .map((item, index) => (
                             <PlaceCard
                               key={item.id}
                               id={index}
