@@ -6,7 +6,15 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   server: {
     port: 5173,
-    host: "0.0.0.0", // Add this to allow connections from outside the container
+    host: "0.0.0.0",
+    watch: {
+      usePolling: true,
+    },
+    hmr: {
+      host: "localhost",
+      port: 24678,
+      protocol: "ws",
+    },
   },
   plugins: [react(), tailwindcss()],
 });
