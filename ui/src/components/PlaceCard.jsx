@@ -13,6 +13,7 @@ const PlaceCard = ({
   onDelete,
   road=false,
   refreshing = false,
+  onClick
 }) => {
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
@@ -54,7 +55,10 @@ const PlaceCard = ({
       className="flex flex-col"
     >
       <div className="flex flex-row items-center">
-        <div className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full">
+        <div 
+          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full"
+          onClick={onClick}
+        >
           <div className="flex items-center">
             <div className="flex flex-col gap-1">
               {[0, 1, 2].map((row) => (
@@ -101,13 +105,19 @@ const PlaceCard = ({
         <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
           {!road && <div
             className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
-            onClick={() => onRefresh(id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRefresh(id);
+            }}
           >
             <TfiReload className="text-primary text-lg" />
           </div>}
           <div 
             className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
-            onClick={() => onDelete && onDelete(id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete && onDelete(id);
+            }}
           >
             <HiOutlineTrash className="text-primary text-xl" />
           </div>

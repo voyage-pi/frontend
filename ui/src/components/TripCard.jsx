@@ -3,35 +3,6 @@ import { FaClock, FaUsers, FaLocationDot, FaEye, FaHeart } from "react-icons/fa6
 import { useNavigate } from "react-router-dom";
 import { axiosPlace } from "../utils/axiosInstance";
 
-// Generate placeholder image as a fallback
-const generatePlaceholderImage = (seed) => {
-  const seedStr = typeof seed === "string" ? seed : "place";
-  const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, "");
-  return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
-};
-
-// Get photo URL using the same logic as Trips.jsx
-const getPhotoUrl = async (photo) => {
-  if (!photo || !photo.name) {
-    console.log("No photo available");
-    return generatePlaceholderImage("place");
-  }
-
-  try {
-    const response = await axiosPlace.post("/places/photo", {
-      gRPC: photo.name,
-    });
-
-    if (response.status === 429) {
-      return getPhotoUrl(photo); // Retry if rate limited
-    }
-
-    return response.data?.uri;
-  } catch (error) {
-    console.error("Error fetching photo:", error);
-    return generatePlaceholderImage("place");
-  }
-};
 
 function TripCard({ 
   image,
@@ -79,12 +50,6 @@ function TripCard({
         const response = await axiosPlace.get(`/places/${id}`);
         const placeDetails = response.data;
         
-        // Get the first photo URL
-        let photoUrl = image; // Default to the provided image
-        if (placeDetails.photos && placeDetails.photos.length > 0) {
-          photoUrl = await getPhotoUrl(placeDetails.photos[0]);
-        }
-        
         // Format the place data for the sidebar
         const formattedPlaceData = {
           id: placeDetails.place_id,
@@ -94,7 +59,6 @@ function TripCard({
           phone: placeDetails.phone_number,
           rating: placeDetails.rating,
           location: location,
-          image: photoUrl,
           photos: placeDetails.photos,
           latitude: placeDetails.location?.latitude,
           longitude: placeDetails.location?.longitude,

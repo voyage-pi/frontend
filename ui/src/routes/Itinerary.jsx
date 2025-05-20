@@ -8,6 +8,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import Map from "../components/Map";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "../components/PlaceCard";
+import PlaceDetailSidebar from "../components/PlaceDetailSidebar";
 import { FaRegFloppyDisk, FaMapLocationDot } from "react-icons/fa6";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { IoIosTimer } from "react-icons/io";
@@ -65,6 +66,9 @@ function Itinerary() {
   const [tripType, setTripType] = useState();
   const [stops, setStops] = useState([]);
   const [distancePill, setDistancePill] = useState([]);
+
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [isPlaceSidebarOpen, setIsPlaceSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Generate a unique cursor ID on component mount
@@ -956,6 +960,45 @@ function Itinerary() {
     };
   }, [exportDropdownOpen]);
 
+  const handlePlaceClick = async (place) => {
+    try {
+      // Fetch place details from backend
+      const response = await axiosPlace.get(`/places/${place.id}`);
+      const placeDetails = response.data;
+      
+      // Format the place data for the sidebar
+      const formattedPlaceData = {
+        id: placeDetails.place_id,
+        name: placeDetails.name,
+        description: placeDetails.description,
+        address: placeDetails.address,
+        phone: placeDetails.phone_number,
+        rating: placeDetails.rating,
+        location: place.location,
+        photos: placeDetails.photos,
+        latitude: placeDetails.location?.latitude,
+        longitude: placeDetails.location?.longitude,
+        openHours: placeDetails.opening_hours?.periods || [],
+        reviews: placeDetails.reviews || [],
+        isSaved: false // You might want to check if this place is saved
+      };
+      
+      setSelectedPlace(formattedPlaceData);
+      setIsPlaceSidebarOpen(true);
+    } catch (error) {
+      console.error("Error fetching place details:", error);
+      // Fallback to basic data if fetch fails
+      setSelectedPlace({
+        id: place.id,
+        name: place.place,
+        location: place.location,
+        image: place.image,
+        isSaved: false
+      });
+      setIsPlaceSidebarOpen(true);
+    }
+  };
+
   return (
     <PageTemplate>
       <PreferencesSidebar
@@ -964,6 +1007,7 @@ function Itinerary() {
         tripId={tripId}
         onPreferencesUpdated={handlePreferencesUpdated}
       />
+
 
       <div
         ref={pageRef}
@@ -1194,6 +1238,7 @@ function Itinerary() {
                         onRefresh={() => {}}
                         onDelete={tripType === "road" ? null : () => handleDeleteActivity(item.id)}
                         road={true}
+                        onClick={() => handlePlaceClick(item)}
                       />
                     ))}
                   </div>
@@ -1247,6 +1292,7 @@ function Itinerary() {
                               onRefresh={() => handleRefreshActivity(item.id)}
                               onDelete={() => handleDeleteActivity(item.id)}
                               refreshing={refreshingActivity === item.id}
+                              onClick={() => handlePlaceClick(item)}
                             />
                           ))}
                       </motion.div>
@@ -1261,6 +1307,15 @@ function Itinerary() {
             <Map
               polylines={tripType !== "road" ? routes[selectedDay] : routes}
               markers={tripType !== "road" ? markers[selectedDay] : markers}
+            />
+            <PlaceDetailSidebar
+              place={selectedPlace}
+              isOpen={isPlaceSidebarOpen}
+              onClose={() => setIsPlaceSidebarOpen(false)}
+              onToggleSave={() => {
+                // Implement save functionality if needed
+                console.log("Toggle save for place:", selectedPlace);
+              }}
             />
           </div>
         </div>
