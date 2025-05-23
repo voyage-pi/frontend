@@ -41,16 +41,10 @@ const Step5ContentPP = ({
         onValidationChange(true);
       }
       
-      if (handleNext && !isLastQuestion) {
+      if (handleNext) {
         setTimeout(() => {
           handleNext();
         }, 300);
-      } else if (isLastQuestion) {
-        // Show message that the user needs to press Finish
-        setShowLastQuestionInfo(true);
-        setTimeout(() => {
-          setShowLastQuestionInfo(false);
-        }, 3000);
       }
     }
   };
