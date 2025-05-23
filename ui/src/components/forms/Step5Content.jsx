@@ -3,43 +3,48 @@ import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6";
 import { FaUser, FaUserGroup } from "react-icons/fa6";
 import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
+import { useAuth } from "../../context/AuthContext";
+import NewPreferences from "./step4/NewPreferences";
 
-function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSelect, setCurrentStep, onValidationChange, handleNext}) {
+function Step5Content({
+  subQuestionIndex,
+  totalSubQuestions,
+  answers,
+  onRatingSelect,
+  setCurrentStep,
+  onValidationChange,
+  handleNext,
+}) {
   const [showNewPreferences, setShowNewPreferences] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [tripDimension, setTripDimension] = useState('individual');
-
+  const [tripDimension, setTripDimension] = useState("individual");
+  const [selectCreate, setSelectCreate] = useState(true);
+  const { isAuthenticated, LoggedUser } = useAuth();
   useEffect(() => {
     // Check if trip dimension is saved in localStorage
     const savedTripDimension = localStorage.getItem("Trip Dimension");
     if (savedTripDimension) {
       setTripDimension(savedTripDimension);
     }
-    
     // Check if preferences profile already exists
     const preferencesProfile = localStorage.getItem("Preferences Profile");
-    
+
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-    
+
     // If a profile already exists as "New" or if there are ratings for the current question
     if (preferencesProfile === "New" || savedRatings[subQuestionIndex]) {
-      setShowNewPreferences(true);
+      // verify if the user is logged in otherwise just continue, for preferences saving
+      if (!isAuthenticated) {
+        setShowNewPreferences(true);
+      }
     }
   }, [subQuestionIndex]);
 
-  const handleNewPreferencesClick = () => {
-    setShowNewPreferences(true);
-    localStorage.setItem("Preferences Profile", "New");
-  };
-
   const handleSingularTasteClick = () => {
-    setShowNewPreferences(true);
     localStorage.setItem("Preferences Profile", "Singular");
   };
 
   const handleCombinedGroupClick = () => {
-    setShowNewPreferences(true);
-    localStorage.setItem("Preferences Profile", "Combined");
   };
 
   const handleRatingSelect = (rating) => {
@@ -48,7 +53,7 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
     localStorage.setItem("userRatings", JSON.stringify(savedRatings)); // Save the updated array
 
     if (onRatingSelect) {
-      onRatingSelect(rating); 
+      onRatingSelect(rating);
     }
   };
 
@@ -62,35 +67,38 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
   if (showNewPreferences) {
     const currentQuestion = answers[subQuestionIndex];
     return (
-      <div className="p-6">
-        <Step5ContentPP
-          currentQuestion={currentQuestion}
-          subQuestionIndex={subQuestionIndex}
-          totalSubQuestions={totalSubQuestions}
-          onRatingSelect={handleRatingSelect}
-          onValidationChange={handleValidationChange}
-          handleNext={handleNext}
-        />
-      </div>
+      <NewPreferences
+        questionsStep5={{
+          currentQuestion,
+          subQuestionIndex,
+          totalSubQuestions,
+          handleRatingSelect,
+          handleValidationChange,
+          handleNext,
+        }}
+      />
     );
   }
 
+  // verify if there is a user logged in
+  // then make a reques tto get all the preferences
+
   // Different options based on trip dimension
-  if (tripDimension === 'group') {
+  if (tripDimension === "group") {
     const groupCardData = [
       {
-        id: 'singular',
+        id: "singular",
         icon: FaUser,
-        title: 'Singular Taste Profile',
+        title: "Singular Taste Profile",
         onClick: handleSingularTasteClick,
-        text: 'Create a single preference profile for the entire group based on one person\'s choices. This is useful when one person is making decisions for the group or when the group has similar preferences.'
+        text: "Create a single preference profile for the entire group based on one person's choices. This is useful when one person is making decisions for the group or when the group has similar preferences.",
       },
       {
-        id: 'combined',
+        id: "combined",
         icon: FaUserGroup,
-        title: 'Combined Group Preferences',
+        title: "Combined Group Preferences",
         onClick: handleCombinedGroupClick,
-        text: 'Create a combined profile that takes into account preferences from all group members. This option is ideal for groups with diverse tastes, ensuring that recommendations satisfy the majority of the group.'
+        text: "Create a combined profile that takes into account preferences from all group members. This option is ideal for groups with diverse tastes, ensuring that recommendations satisfy the majority of the group.",
       },
     ];
 
@@ -118,15 +126,16 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
   // Default options for individual trips
   const individualCardData = [
     {
-      id: 'reuse',
+      id: "reuse",
       icon: FaRecycle,
-      title: 'Reuse Preferences Profile',
+      title: "Reuse Preferences Profile",
+      onClick: () => setShowNewPreferences(false),
     },
     {
-      id: 'new',
+      id: "new",
       icon: FaFileCirclePlus,
-      title: 'New Preferences Profile',
-      onClick: handleNewPreferencesClick,
+      title: "New Preferences Profile",
+      onClick: () => setShowNewPreferences(true),
     },
   ];
 
@@ -138,8 +147,8 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
             key={card.id}
             icon={card.icon}
             title={card.title}
-            selected={false} 
-            onClick={card.onClick || (() => { })} 
+            selected={false}
+            onClick={card.onClick || (() => {})}
             iconSize={100}
             infoSize={25}
             text={card.text}

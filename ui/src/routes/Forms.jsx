@@ -9,6 +9,7 @@ import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
+import { useAuth } from "../context/AuthContext";
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -19,6 +20,7 @@ function Forms() {
   const [step6SubStep, setStep6SubStep] = useState(0);
   const [totalSubQuestions, setTotalSubQuestions] = useState(0);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [isNavigating, setIsNavigating] = useState(false);
   const [isStep5Valid, setIsStep5Valid] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -43,19 +45,18 @@ function Forms() {
         setCurrentStep(savedStep);
       }
 
-      if (savedSubQuestionIndex && savedSubQuestionIndex>=0) {
+      if (savedSubQuestionIndex && savedSubQuestionIndex >= 0) {
         setSubQuestionIndex(savedSubQuestionIndex);
       }
-
 
       if (savedStep6SubStep !== undefined) {
         setStep6SubStep(savedStep6SubStep);
       }
       try {
-          const qs = await getQuestions();
-          setTotalSubQuestions(qs.length);
-          const QA = qs.map((q) => ({ ...q, answers: null }));
-          setAnswers(QA);
+        const qs = await getQuestions();
+        setTotalSubQuestions(qs.length);
+        const QA = qs.map((q) => ({ ...q, answers: null }));
+        setAnswers(QA);
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }
@@ -73,7 +74,14 @@ function Forms() {
       localStorage.setItem("answers", JSON.stringify(answers));
       localStorage.setItem("isGroup", isGroup);
     }
-  }, [currentStep, subQuestionIndex, step6SubStep, answers, isGroup, isInitialized]);
+  }, [
+    currentStep,
+    subQuestionIndex,
+    step6SubStep,
+    answers,
+    isGroup,
+    isInitialized,
+  ]);
 
   // Calculate progress percentage for progress bar
 
@@ -242,7 +250,6 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
-
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       startDate: formattedDate,
@@ -254,8 +261,8 @@ function Forms() {
       data_type: obj,
       must_visit_places: formattedMustVisitPlaces,
       keywords: keywords,
-      questions: {
-        user123: userRatings.map((answer, index) => ({
+      preferences: {
+        "questions": userRatings.map((answer, index) => ({
           question_id: index,
           value: parseInt(answer) || 0, // Garantindo que o valor seja número
           type: "scale",
@@ -263,9 +270,11 @@ function Forms() {
       },
       is_group: isGroup,
     };
-
-    console.log("isGroup state before sending:", isGroup);
-    console.log("Form data before sending:", formData);
+    // if it is authenticated add the preferencesName to the forms to create preferences profile
+    if (isAuthenticated) {
+      formData.preferences["preferencesName"] =
+        localStorage.getItem("preferencesName");
+    }
 
     console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
 
@@ -311,7 +320,8 @@ function Forms() {
           "origin",
           "destination",
           "route",
-          "isGroup"
+          "preferencesName",
+          "isGroup",
         ];
 
         keysToRemove.forEach((key) => localStorage.removeItem(key));
