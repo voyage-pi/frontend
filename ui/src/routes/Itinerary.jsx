@@ -38,7 +38,6 @@ function Itinerary() {
     itinerary,
     title,
     totalDays,
-    totalPeople,
     budget,
     locationName,
     calendar,
@@ -89,6 +88,27 @@ function Itinerary() {
     actions,
     showNotification,
   });
+
+  // State for participants count
+  const [totalPeople, setTotalPeople] = useState(0);
+
+  // Fetch participants count for this trip
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      if (!tripId) return;
+      try {
+        const res = await axiosUser.get(`/trips/participants/${tripId}`);
+        if (Array.isArray(res.data)) {
+          setTotalPeople(res.data.length);
+        } else {
+          setTotalPeople(0);
+        }
+      } catch (e) {
+        setTotalPeople(0);
+      }
+    };
+    fetchParticipants();
+  }, [tripId]);
 
   useEffect(() => {
     if (!loading && itinerary && itinerary.days && itinerary.days.length > 0) {
