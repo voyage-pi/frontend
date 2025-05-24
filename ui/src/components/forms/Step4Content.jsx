@@ -276,19 +276,26 @@ const Step4Content = () => {
             that you would like to spend
           </p>
 
-          <div className="flex items-center justify-center w-full mb-2">
+          {/* ← NEW: parent flex to center everything */}
+          <div className="flex justify-center items-baseline mb-2">
             <input
               type="number"
               value={budget}
               onChange={handleBudgetInputChange}
               min="0"
               max="2500"
-              className="text-error text-5xl font-bold bg-transparent outline-none focus:outline-none text-center w-auto"
-              style={{ appearance: 'textfield' }}
+              className="text-error text-5xl font-bold bg-transparent outline-none focus:outline-none text-right"
+              style={{
+                /* auto‐size by character count + 1 for padding */
+                width: `${budget.toString().length + 1}ch`,
+                appearance: 'textfield',
+              }}
             />
-            <span className="text-error text-5xl font-bold">€</span>
-            <span className="text-error text-5xl font-bold">
-              {budget >= 2500 ? "+" : ""}
+            <span
+              className="text-error text-5xl font-bold pointer-events-none"
+              style={{ lineHeight: 1 }}
+            >
+              €{budget >= 2500 ? '+' : ''}
             </span>
           </div>
 
