@@ -4,6 +4,7 @@ import VoyageIcon from "../../assets/voyage-logo.png";
 import RangeSlider from "../RangeSlider";
 import RangeDatePicker from "../RangeDatePicker";
 import "../../styles/RangeDatePicker.css";
+import Notification from "../Notification";
 
 const Step4Content = () => {
   const today = new Date();
@@ -19,6 +20,7 @@ const Step4Content = () => {
   const datePickerRef = useRef(null);
   const startFieldRef = useRef(null);
   const endFieldRef = useRef(null);
+  const [showDateErrorNotification, setShowDateErrorNotification] = useState(false);
 
   useEffect(() => {
     const savedStart = localStorage.getItem("Start Date");
@@ -56,19 +58,19 @@ const Step4Content = () => {
 
   const handleDateChange = useCallback(
     (start, end) => {
-      const todayDate = new Date();
-      todayDate.setHours(0, 0, 0, 0);
-
-      setStartDate(start || today);
-      if (end) setEndDate(end);
-
+      // If both dates are present and invalid, block update
       if (start && end && start > end) {
         setDateError("End date cannot be earlier than start date");
-      } else {
-        setDateError(null);
+        setShowDateErrorNotification(true);
+        setDateError(true);
+        return;
       }
+      // If only one date is present, allow update
+      if (start) setStartDate(start);
+      if (end) setEndDate(end);
+      setDateError(null);
     },
-    [today, activeField]
+    []
   );
 
   const calculateDays = (start, end) => {
@@ -92,6 +94,13 @@ const Step4Content = () => {
   const handleBudgetChange = (newBudget) => {
     setBudget(newBudget);
     // localStorage update is handled by the effect above
+  };
+
+  const handleBudgetInputChange = (e) => {
+    const value = parseInt(e.target.value) || 0;
+    // Ensure the value stays within the slider's range
+    const clampedValue = Math.min(Math.max(value, 0), 2500);
+    setBudget(clampedValue);
   };
 
   useEffect(() => {
@@ -148,6 +157,16 @@ const Step4Content = () => {
 
   return (
     <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
+      {/* Notification for invalid date range */}
+      {showDateErrorNotification && (
+        <Notification
+          type="error"
+          text="End date cannot be earlier than start date."
+          onClose={() => setShowDateErrorNotification(false)}
+          options={{ position: "top-right", autoClose: 3000, pauseOnHover: false }}
+        />
+      )}
+
       {/* Left Column - Dates */}
       <div className="flex-1" ref={datePickerRef}>
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
@@ -257,16 +276,34 @@ const Step4Content = () => {
             that you would like to spend
           </p>
 
-          <RangeSlider
-            value={budget}
-            onChange={handleBudgetChange}
-            min={0}
-            max={2500}
-            step={1}
-            currency="€"
-            rangeClassName="range range-error range-sm"
-            valueClassName="text-error text-5xl font-bold mb-6"
-          />
+          <div className="flex items-center justify-center w-full mb-2">
+            <input
+              type="number"
+              value={budget}
+              onChange={handleBudgetInputChange}
+              min="0"
+              max="2500"
+              className="text-error text-5xl font-bold bg-transparent outline-none focus:outline-none text-center w-auto"
+              style={{ appearance: 'textfield' }}
+            />
+            <span className="text-error text-5xl font-bold">€</span>
+            <span className="text-error text-5xl font-bold">
+              {budget >= 2500 ? "+" : ""}
+            </span>
+          </div>
+
+          <div className="w-full flex flex-col items-center gap-2">
+            <RangeSlider
+              value={budget}
+              onChange={handleBudgetChange}
+              min={0}
+              max={2500}
+              step={1}
+              rangeClassName="range range-error range-sm"
+              showLabels={true}
+              labelClassName="text-error text-lg font-bold"
+            />
+          </div>
         </div>
       </div>
     </div>
