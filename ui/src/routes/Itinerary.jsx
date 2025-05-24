@@ -408,6 +408,7 @@ function Itinerary() {
               exportDropdownOpen={exportDropdownOpen}
               setExportDropdownOpen={setExportDropdownOpen}
               generateGoogleMapsUrl={generateGoogleMapsUrl}
+              participants={tripData.participants}
             />
 
             <div className="h-[40rem] pr-2">
@@ -433,6 +434,7 @@ function Itinerary() {
                   onDeleteActivity={handleDeleteActivity}
                   tripType={tripType}
                   stops={stops}
+                  participants={tripData.participants}
                 />
               </div>
             </div>

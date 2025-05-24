@@ -17,6 +17,7 @@ const initialState = {
   tripType: undefined,
   stops: [],
   distancePill: [],
+  participants: [],
 };
 
 // Action types
@@ -38,8 +39,14 @@ function tripReducer(state, action) {
       return { ...state, tripType: action.payload };
 
     case ACTION_TYPES.PROCESS_ROAD_DATA:
-      const { itinerary, title, routes, markers, distancePill } =
-        action.payload;
+      const {
+        itinerary,
+        title,
+        routes,
+        markers,
+        distancePill,
+        participants: roadParticipants,
+      } = action.payload;
 
       return {
         ...state,
@@ -48,6 +55,7 @@ function tripReducer(state, action) {
         routes,
         markers,
         distancePill,
+        participants: roadParticipants,
         loading: false,
       };
 
@@ -69,6 +77,7 @@ function tripReducer(state, action) {
         days,
         routes: routesData,
         markers: markersData,
+        participants: itineraryParticipants,
       } = action.payload;
 
       return {
@@ -83,6 +92,7 @@ function tripReducer(state, action) {
         days,
         routes: routesData,
         markers: markersData,
+        participants: itineraryParticipants,
         loading: false,
       };
 
@@ -161,6 +171,7 @@ export function useTripData(tripId, getPhotoUrl) {
 
   const processRoadData = async (data) => {
     const responseItinerary = data.itinerary;
+    const tripParticipants = data.participants || [];
     let all_stops = [];
     let routesRoad = [];
     let markersRoad = [];
@@ -222,6 +233,7 @@ export function useTripData(tripId, getPhotoUrl) {
           routes: routesRoad,
           markers: markersRoad,
           distancePill: totalDistance,
+          participants: tripParticipants,
         },
       });
     }
@@ -231,10 +243,13 @@ export function useTripData(tripId, getPhotoUrl) {
     console.log("data", data);
     if (data) {
       let responseItinerary = null;
+      let tripParticipants = [];
       if (data.response?.itinerary) {
         responseItinerary = data.response.itinerary;
+        tripParticipants = data.response.participants || [];
       } else {
         responseItinerary = data.itinerary;
+        tripParticipants = data.participants || [];
       }
       console.log("Processing itinerary data:", responseItinerary);
 
@@ -364,6 +379,7 @@ export function useTripData(tripId, getPhotoUrl) {
             days,
             routes: AllroutesData,
             markers: AllmarkersData,
+            participants: tripParticipants,
           },
         });
       }
@@ -446,6 +462,7 @@ export function useTripData(tripId, getPhotoUrl) {
       tripType: state.tripType,
       stops: state.stops,
       distancePill: state.distancePill,
+      participants: state.participants,
     },
     actions: {
       processRoadData,
