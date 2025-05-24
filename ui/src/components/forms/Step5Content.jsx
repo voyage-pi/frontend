@@ -5,6 +5,7 @@ import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
 import { useAuth } from "../../context/AuthContext";
 import NewPreferences from "./step4/NewPreferences";
+import OldPreferences from "./step4/OldPreferences";
 
 function Step5Content({
   subQuestionIndex,
@@ -15,11 +16,11 @@ function Step5Content({
   onValidationChange,
   handleNext,
 }) {
-  const [showNewPreferences, setShowNewPreferences] = useState(false);
+  const [showNewPreferences, setShowNewPreferences] = useState(null);
   const [isValid, setIsValid] = useState(false);
   const [tripDimension, setTripDimension] = useState("individual");
-  const [selectCreate, setSelectCreate] = useState(true);
-  const { isAuthenticated, LoggedUser } = useAuth();
+  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
     // Check if trip dimension is saved in localStorage
     const savedTripDimension = localStorage.getItem("Trip Dimension");
@@ -44,8 +45,7 @@ function Step5Content({
     localStorage.setItem("Preferences Profile", "Singular");
   };
 
-  const handleCombinedGroupClick = () => {
-  };
+  const handleCombinedGroupClick = () => {};
 
   const handleRatingSelect = (rating) => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
@@ -64,24 +64,26 @@ function Step5Content({
     }
   };
 
-  if (showNewPreferences) {
-    const currentQuestion = answers[subQuestionIndex];
-    return (
-      <NewPreferences
-        questionsStep5={{
-          currentQuestion,
-          subQuestionIndex,
-          totalSubQuestions,
-          handleRatingSelect,
-          handleValidationChange,
-          handleNext,
-        }}
-      />
-    );
+  if (showNewPreferences!=null && tripDimension == "individual") {
+    
+    if (showNewPreferences) {
+      const currentQuestion = answers[subQuestionIndex];
+      return (
+        <NewPreferences
+          questionsStep5={{
+            currentQuestion,
+            subQuestionIndex,
+            totalSubQuestions,
+            handleRatingSelect,
+            handleValidationChange,
+            handleNext,
+          }}
+        />
+      );
+    } else if (!showNewPreferences && tripDimension !== "group") {
+      return (<OldPreferences setCurrentStep={setCurrentStep} />)
+    }
   }
-
-  // verify if there is a user logged in
-  // then make a reques tto get all the preferences
 
   // Different options based on trip dimension
   if (tripDimension === "group") {

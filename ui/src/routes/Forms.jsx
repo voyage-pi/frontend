@@ -55,7 +55,7 @@ function Forms() {
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-        const QA = qs.map((q) => ({ ...q, answers: null }));
+        const QA = qs.map((q) => ({ ...q}));
         setAnswers(QA);
       } catch (error) {
         console.error("Failed to fetch questions:", error);
@@ -250,6 +250,8 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
+    console.log("answers:", answers);
+
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
       startDate: formattedDate,
@@ -280,7 +282,6 @@ function Forms() {
 
     try {
       const response = await axiosInstance.post("/trips", formData);
-      console.log("Response:", response.data);
 
       // Ensure we have the complete response data with the correct structure
       if (
@@ -288,12 +289,12 @@ function Forms() {
         response.data.response &&
         response.data.response.itinerary
       ) {
-        //setItinerary(response.data);
+
         const tripId = response.data.response.tripId;
         navigate(`/itinerary/${tripId}`, {
           state: {
             itineraryData: response.data,
-            userRatings: userRatings,
+            preferences_id: response.data.response.preferences_id,
           },
         });
 
