@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
 
@@ -11,7 +11,7 @@ const PlaceCard = ({
   image,
   onRefresh,
   onDelete,
-  road=false,
+  road = false,
   refreshing = false,
   onClick
 }) => {
@@ -25,8 +25,10 @@ const PlaceCard = ({
 
   // Always update the image when the prop changes
   useEffect(() => {
-    setImgSrc(image);
-    setImgError(false);
+    if (image) {
+      setImgSrc(image);
+      setImgError(false);
+    }
   }, [image]);
 
   // Pre-check if the image is from Google Maps or is a problematic URL
@@ -41,53 +43,58 @@ const PlaceCard = ({
       setImgError(true);
     }
   }, [image]);
-  const delayCard = 0.2;
+  const delayCard = 0.08;
 
   return (
     <motion.div
-      initial={{ x: -100, opacity: 0 }}
+      initial={{ x: -30, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{
         delay: typeof id === "number" ? delayCard * id : 0,
-        duration: 0.3,
+        duration: 0.22,
         ease: "easeOut",
       }}
       className="flex flex-col"
     >
       <div className="flex flex-row items-center">
-        <div 
+        <motion.div
           className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full"
           onClick={onClick}
+          animate={refreshing ? { opacity: 0.7 } : { opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           <div className="flex items-center">
-            <div className="flex flex-col gap-1">
-              {[0, 1, 2].map((row) => (
-                <div key={`row-${row}`} className="flex gap-1">
-                  {[0, 1].map((col) => (
-                    <div
-                      key={`dot-${row}-${col}`}
-                      className="w-1 h-1 rounded-full bg-primary/80"
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
             {refreshing ? (
               <>
-                <div className="w-20 h-20 rounded-lg mr-4 ml-4 skeleton"></div>
+                <motion.div
+                  className="w-20 h-20 rounded-lg mr-4 ml-4 bg-gray-200"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
                 <div className="flex-1">
-                  <div className="h-4 w-32 skeleton mb-2"></div>
-                  <div className="h-3 w-24 skeleton"></div>
+                  <motion.div
+                    className="h-4 w-32 bg-gray-200 mb-2"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                  />
+                  <motion.div
+                    className="h-3 w-24 bg-gray-200"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+                  />
                 </div>
               </>
             ) : (
               <>
-                <img
+                <motion.img
                   src={imgError ? fallbackImage : imgSrc}
                   referrerPolicy="no-referrer"
                   alt={place}
                   className="w-20 h-20 object-cover rounded-lg mr-4 ml-4"
                   onError={() => setImgError(true)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
                 />
                 <div className="flex-1">
                   <h3 className="font-semibold">{place}</h3>
@@ -101,26 +108,38 @@ const PlaceCard = ({
               </>
             )}
           </div>
-        </div>
+        </motion.div>
         <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
-          {!road && <div
-            className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRefresh(id);
-            }}
-          >
-            <TfiReload className="text-primary text-lg" />
-          </div>}
-          <div 
+          {!road && (
+            <motion.div
+              className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRefresh(id);
+              }}
+              animate={refreshing ? { rotate: 360 } : {}}
+              transition={
+                refreshing
+                  ? { duration: 1, repeat: Infinity, ease: "linear" }
+                  : {}
+              }
+              whileHover={!refreshing ? { scale: 1.1 } : {}}
+              whileTap={!refreshing ? { scale: 0.9 } : {}}
+            >
+              <TfiReload className="text-primary text-lg" />
+            </motion.div>
+          )}
+          <motion.div
             className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
             onClick={(e) => {
               e.stopPropagation();
               onDelete && onDelete(id);
             }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             <HiOutlineTrash className="text-primary text-xl" />
-          </div>
+          </motion.div>
         </div>
       </div>
       {transport && transport.type && transport.duration ? (
