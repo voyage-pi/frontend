@@ -29,7 +29,7 @@ const NewPreferences = ({ questionsStep5 }) => {
       {!forward && isAuthenticated ? (
         <div className="text-center p-6 -mb-10">
           <h2 className="text-3xl mb-10">
-            Set a name for you preferences profile!
+            Set a name for your preferences profile!
           </h2>
           <div className="p-6 flex justify-center text-center">
             <input
