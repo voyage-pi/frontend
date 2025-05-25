@@ -259,7 +259,11 @@ function Forms() {
       },
       is_group: isGroup,
     };
-
+    // If the user is authenticated, include preferences name in the formData
+    if (isAuthenticated) {
+      formData.preferences["preferencesName"] =
+        localStorage.getItem("preferencesName");
+    }
     console.log("Creating trip via WebSocket:", formData);
 
     try {
