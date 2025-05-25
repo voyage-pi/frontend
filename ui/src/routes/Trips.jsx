@@ -39,28 +39,6 @@ function Trips() {
     // eslint-disable-next-line
   }, []);
 
-  // Load sample trip invites if none exist yet
-  useEffect(() => {
-    if (tripInviteCount === 0) {
-      const sampleInvites = [
-        {
-          id: 201,
-          tripName: "Weekend in Paris",
-          from: "John Smith",
-          date: "1 day ago"
-        },
-        {
-          id: 202,
-          tripName: "Tokyo Adventure",
-          from: "Sarah Lee",
-          date: "3 days ago"
-        }
-      ];
-
-      sampleInvites.forEach(invite => addTripInvite(invite));
-    }
-  }, []);
-
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {
@@ -251,8 +229,15 @@ function Trips() {
             
             try {
               const tripResponse = await axiosInstance.get(`/trips/${tripId}`);
-              console.log('Trip details response:', tripResponse.data);
-              
+              let peopleCount = 0;
+              try {
+                const participantsRes = await axiosUser.get(`/trips/participants/${tripId}`);
+                if (Array.isArray(participantsRes.data)) {
+                  peopleCount = participantsRes.data.length;
+                }
+              } catch (e) {
+                peopleCount = 0;
+              }
               // The response structure follows the ResponseBody format with nested itinerary
               if (tripResponse.data && tripResponse.data.response && tripResponse.data.response.itinerary) {
                 const itinerary = tripResponse.data.response.itinerary;
@@ -274,7 +259,7 @@ function Trips() {
                   name: itinerary.name || 'Unnamed Trip',
                   date: formatTripDates(itinerary.start_date, itinerary.end_date),
                   days: itinerary.days ? itinerary.days.length : 0,
-                  people: 1, // Default value
+                  people: peopleCount, // Use fetched people count
                   status: userTrip.status, // This comes directly from user_trips
                   destinations: getDestinationsCount(itinerary),
                   image: imageUrl,
@@ -292,7 +277,7 @@ function Trips() {
                 name: 'Trip data unavailable',
                 date: 'Unknown dates',
                 days: 0,
-                people: 1,
+                people: 0,
                 status: userTrip.status,
                 destinations: 0,
                 image: generatePlaceholderImage('error-trip'),

@@ -33,24 +33,16 @@ function Forms() {
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const initialize = async () => {
-      const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
-      const savedSubQuestionIndex =
-        parseInt(localStorage.getItem("subQuestionIndex")) || 0;
-      const savedStep6SubStep =
-        parseInt(localStorage.getItem("step6SubStep")) || 0;
+      // Always start at step 1 and clear any saved step data
+      setCurrentStep(1);
+      setSubQuestionIndex(0);
+      setStep6SubStep(0);
+      
+      // Clear saved step data from localStorage
+      localStorage.removeItem("currentStep");
+      localStorage.removeItem("subQuestionIndex");
+      localStorage.removeItem("step6SubStep");
 
-      if (savedStep) {
-        setCurrentStep(savedStep);
-      }
-
-      if (savedSubQuestionIndex && savedSubQuestionIndex>=0) {
-        setSubQuestionIndex(savedSubQuestionIndex);
-      }
-
-
-      if (savedStep6SubStep !== undefined) {
-        setStep6SubStep(savedStep6SubStep);
-      }
       try {
           const qs = await getQuestions();
           setTotalSubQuestions(qs.length);

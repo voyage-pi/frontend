@@ -6,6 +6,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import { GiPathDistance } from "react-icons/gi";
 import { FaRegFloppyDisk, FaMapLocationDot } from "react-icons/fa6";
 import PreferencesButton from "./PreferencesButton";
+import { useAuth } from "../context/AuthContext";
 
 function ItineraryHeader({
   title,
@@ -22,9 +23,17 @@ function ItineraryHeader({
   exportDropdownOpen,
   setExportDropdownOpen,
   generateGoogleMapsUrl,
+  participants,
 }) {
   const navigate = useNavigate();
   const exportDropdownRef = useRef(null);
+  const { LoggedUser } = useAuth();
+
+  const isParticipant =
+    (!LoggedUser && (!participants || participants.length === 0)) || // Allow editing for guest-created trips only when not logged in
+    (LoggedUser &&
+      participants &&
+      participants.some((p) => p.user_id === LoggedUser.id)); // Or if logged in user is a participant
 
   // Close dropdown if clicked outside
   useEffect(() => {
@@ -50,12 +59,14 @@ function ItineraryHeader({
     <div className="">
       <div className="flex flex-row mb-4 items-center gap-5">
         <h1 className="text-3xl font-bold">{title}</h1>
-        <div
-          className="btn btn-md btn-white rounded-full btn-circle shadow-sm"
-          onClick={onSaveTrip}
-        >
-          <FaRegFloppyDisk className="text-primary text-xl" />
-        </div>
+        {isParticipant && (
+          <div
+            className="btn btn-md btn-white rounded-full btn-circle shadow-sm"
+            onClick={onSaveTrip}
+          >
+            <FaRegFloppyDisk className="text-primary text-xl" />
+          </div>
+        )}
         <div className="relative" ref={exportDropdownRef}>
           <button
             className="btn btn-md btn-white rounded-full btn-circle shadow-sm flex items-center justify-center"
@@ -140,10 +151,12 @@ function ItineraryHeader({
           )}
         </div>
 
-        {/* Preferences Button - now inline with the tags */}
-        <div className="pr-2">
-          <PreferencesButton onClick={onPreferencesClick} />
-        </div>
+        {/* Preferences Button - only show for participants */}
+        {isParticipant && (
+          <div className="pr-2">
+            <PreferencesButton onClick={onPreferencesClick} />
+          </div>
+        )}
       </div>
     </div>
   );

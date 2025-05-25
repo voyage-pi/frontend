@@ -3,7 +3,8 @@ import { FaHeart, FaRegHeart, FaPhone, FaClock, FaStar, FaChevronLeft, FaChevron
 import { FaXmark, FaLocationDot, FaMap } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import Map from "./Map";
-import { axiosPlace } from "../utils/axiosInstance";
+import { axiosPlace, axiosUser } from "../utils/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 // Generate placeholder image as a fallback
 const generatePlaceholderImage = (seed) => {
@@ -35,12 +36,19 @@ const getPhotoUrl = async (photo) => {
   }
 };
 
-function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
+function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState }) {
+  const { isAuthenticated } = useAuth();
   const [currentImage, setCurrentImage] = useState(place?.image || generatePlaceholderImage(place?.name));
   const [imageError, setImageError] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [photoUrls, setPhotoUrls] = useState([]);
   const [loadingPhotos, setLoadingPhotos] = useState(true);
+  const [isSaved, setIsSaved] = useState(place?.isSaved || false);
+
+  // Check if place is saved when it changes
+  useEffect(() => {
+    setIsSaved(place?.isSaved || false);
+  }, [place]);
 
   // Fetch and process photos when place changes
   useEffect(() => {
@@ -84,6 +92,22 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
   const prevPhoto = () => {
     setCurrentPhotoIndex((prev) => (prev - 1 + photoUrls.length) % photoUrls.length);
     setCurrentImage(photoUrls[(currentPhotoIndex - 1 + photoUrls.length) % photoUrls.length]);
+  };
+
+  const handleToggleSave = async () => {
+    if (!isAuthenticated || !place || !place.id) {
+      // Handle non-authenticated state or invalid place
+      console.log("Cannot save: User not authenticated or invalid place");
+      return;
+    }
+
+    try {
+      // Call the provided toggle save function
+      await onToggleSave(place.id);
+      // The parent component will update the isSaved state via the place prop
+    } catch (error) {
+      console.error("Error toggling save state:", error);
+    }
   };
 
   const marker = place ? {
@@ -317,20 +341,31 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave }) {
               </div>
 
               {/* Save Button */}
-              <button
-                className="btn btn-primary w-full flex items-center justify-center gap-2 py-3 pt-3"
-                onClick={() => onToggleSave && onToggleSave(place.id)}
-              >
-                {place.isSaved ? (
-                  <>
-                    <FaHeart /> Remove from Saved
-                  </>
-                ) : (
-                  <>
-                    <FaRegHeart /> Add to Saved
-                  </>
-                )}
-              </button>
+              {isAuthenticated && (
+                <button
+                  className={`btn btn-primary w-full flex items-center justify-center gap-2 py-3 pt-3 ${savingState ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  onClick={handleToggleSave}
+                  disabled={savingState}
+                >
+                  {savingState ? (
+                    "Processing..."
+                  ) : isSaved ? (
+                    <>
+                      <FaHeart /> Remove from Saved
+                    </>
+                  ) : (
+                    <>
+                      <FaRegHeart /> Add to Saved
+                    </>
+                  )}
+                </button>
+              )}
+              
+              {!isAuthenticated && (
+                <div className="text-center text-gray-500 mb-4">
+                  Login to save this place to your favorites
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

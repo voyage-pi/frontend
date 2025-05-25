@@ -7,8 +7,10 @@ import "../../styles/RangeDatePicker.css";
 
 const Step4Content = () => {
   const today = new Date();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const tomorrow_tomorrow = new Date(today);
+  tomorrow_tomorrow.setDate(tomorrow_tomorrow.getDate() + 2);
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(tomorrow_tomorrow);
   const [budget, setBudget] = useState(332);
   const [dateError, setDateError] = useState(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
@@ -23,19 +25,28 @@ const Step4Content = () => {
     const savedEnd = localStorage.getItem("End Date");
     const savedBudget = localStorage.getItem("Budget");
 
-    // Only set dates if they were previously saved
-    if (savedStart) setStartDate(new Date(savedStart));
-    if (savedEnd) setEndDate(new Date(savedEnd));
+    if (savedStart && savedEnd) {
+      setStartDate(new Date(savedStart));
+      setEndDate(new Date(savedEnd));
+    }
     if (savedBudget) setBudget(parseInt(savedBudget, 10));
   }, []);
 
   useEffect(() => {
     // Only save dates to localStorage if they're not null
     if (startDate) {
-      localStorage.setItem("Start Date", startDate instanceof Date ? startDate.toISOString().split("T")[0] : startDate);
+      localStorage.setItem(
+        "Start Date",
+        startDate instanceof Date
+          ? startDate.toISOString().split("T")[0]
+          : startDate
+      );
     }
     if (endDate) {
-      localStorage.setItem("End Date", endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate);
+      localStorage.setItem(
+        "End Date",
+        endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate
+      );
     }
   }, [startDate, endDate]);
 
@@ -43,27 +54,33 @@ const Step4Content = () => {
     localStorage.setItem("Budget", budget);
   }, [budget]);
 
-  const handleDateChange = useCallback((start, end) => {
-    const todayDate = new Date();
-    todayDate.setHours(0, 0, 0, 0);
-    
-    setStartDate(start || today);
-    if (end) setEndDate(end);
-    
-    if (start && end && start > end) {
-      setDateError("End date cannot be earlier than start date");
-    } else {
-      setDateError(null);
-    }
-  }, [today, activeField]);
+  const handleDateChange = useCallback(
+    (start, end) => {
+      const todayDate = new Date();
+      todayDate.setHours(0, 0, 0, 0);
+
+      setStartDate(start || today);
+      if (end) setEndDate(end);
+
+      if (start && end && start > end) {
+        setDateError("End date cannot be earlier than start date");
+      } else {
+        setDateError(null);
+      }
+    },
+    [today, activeField]
+  );
 
   const calculateDays = (start, end) => {
     if (!start || !end) return 0;
     const startObj = new Date(start);
     const endObj = new Date(end);
     if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) return 0;
-    
-    return Math.max(1, Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1);
+
+    return Math.max(
+      1,
+      Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1
+    );
   };
   const days = calculateDays(startDate, endDate);
 
@@ -79,11 +96,14 @@ const Step4Content = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target)
+      ) {
         setIsCalendarVisible(false);
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -99,24 +119,24 @@ const Step4Content = () => {
 
   // Format date for display
   const formatDate = (date) => {
-    if (!date) return 'Select a date';
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    if (!date) return "Select a date";
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
   const CalendarIcon = () => (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      className="date-icon" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="#FF6B81" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="date-icon"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#FF6B81"
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     >
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -127,7 +147,7 @@ const Step4Content = () => {
   );
 
   return (
-    <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12"> 
+    <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">
       {/* Left Column - Dates */}
       <div className="flex-1" ref={datePickerRef}>
         <h2 className="text-2xl font-bold mb-6 text-center">Dates</h2>
@@ -153,20 +173,18 @@ const Step4Content = () => {
           </div>
         )}
 
-        <div className="flex flex-col" style={{ position: 'relative' }}>
+        <div className="flex flex-col" style={{ position: "relative" }}>
           {/* Start Date */}
-          <div 
+          <div
             ref={startFieldRef}
-            className="date-field mb-4" 
-            onClick={() => openCalendar(startFieldRef, 'start')}
+            className="date-field mb-4"
+            onClick={() => openCalendar(startFieldRef, "start")}
           >
             <div className="date-label">
               <CalendarIcon />
               <span>Start Date:</span>
             </div>
-            <div className="date-value">
-              {formatDate(startDate)}
-            </div>
+            <div className="date-value">{formatDate(startDate)}</div>
           </div>
 
           {/* Timeline visualization between dates */}
@@ -175,8 +193,14 @@ const Step4Content = () => {
               <div className="timeline-dot"></div>
               <div className="timeline-dot"></div>
               <div className="timeline-icon-container">
-                <img src={VoyageIcon} alt="Voyage Logo" className="timeline-icon" />
-                <span className="timeline-days">{days} {days === 1 ? "day" : "days"}</span>
+                <img
+                  src={VoyageIcon}
+                  alt="Voyage Logo"
+                  className="timeline-icon"
+                />
+                <span className="timeline-days">
+                  {days} {days === 1 ? "day" : "days"}
+                </span>
               </div>
               <div className="timeline-dot"></div>
               <div className="timeline-dot"></div>
@@ -184,28 +208,26 @@ const Step4Content = () => {
           </div>
 
           {/* End Date */}
-          <div 
+          <div
             ref={endFieldRef}
-            className="date-field mb-4" 
-            onClick={() => openCalendar(endFieldRef, 'end')}
+            className="date-field mb-4"
+            onClick={() => openCalendar(endFieldRef, "end")}
           >
             <div className="date-label">
               <CalendarIcon />
               <span>End Date:</span>
             </div>
-            <div className="date-value">
-              {formatDate(endDate)}
-            </div>
+            <div className="date-value">{formatDate(endDate)}</div>
           </div>
 
           {/* Calendar */}
           {isCalendarVisible && (
-            <div 
-              className="inline-calendar-container" 
+            <div
+              className="inline-calendar-container"
               style={{ top: `${calendarPosition}px` }}
             >
               <div className="calendar-card">
-                <RangeDatePicker 
+                <RangeDatePicker
                   startDate={startDate}
                   endDate={endDate}
                   onChange={handleDateChange}
@@ -221,32 +243,32 @@ const Step4Content = () => {
           )}
         </div>
       </div>
-      
+
       {/* Divider */}
       <div className="divider md:divider-horizontal mx-24"></div>
-      
-      {/* Right Column - Budget */}
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold mb-6 text-center">Budget</h2>
-          <div className="p-4">
-            <p className="text-center mb-14">
-              Give us the maximum value<br/>
-              that you would like to spend
-            </p>
 
-            <RangeSlider
-              value={budget}
-              onChange={handleBudgetChange}
-              min={0}
-              max={2500}
-              step={1}
-              currency="€"
-              rangeClassName="range range-error range-sm"
-              valueClassName="text-error text-5xl font-bold mb-6"
-            />
-          </div>
+      {/* Right Column - Budget */}
+      <div className="flex-1">
+        <h2 className="text-2xl font-bold mb-6 text-center">Budget</h2>
+        <div className="p-4">
+          <p className="text-center mb-14">
+            Give us the maximum value
+            <br />
+            that you would like to spend
+          </p>
+
+          <RangeSlider
+            value={budget}
+            onChange={handleBudgetChange}
+            min={0}
+            max={2500}
+            step={1}
+            currency="€"
+            rangeClassName="range range-error range-sm"
+            valueClassName="text-error text-5xl font-bold mb-6"
+          />
         </div>
-    
+      </div>
     </div>
   );
 };

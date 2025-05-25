@@ -39,7 +39,6 @@ function Itinerary() {
     itinerary,
     title,
     totalDays,
-    totalPeople,
     budget,
     locationName,
     calendar,
@@ -91,8 +90,30 @@ function Itinerary() {
     showNotification,
   });
 
+  // State for participants count
+  const [totalPeople, setTotalPeople] = useState(0);
+
+  // Fetch participants count for this trip
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      if (!tripId) return;
+      try {
+        const res = await axiosUser.get(`/trips/participants/${tripId}`);
+        if (Array.isArray(res.data)) {
+          setTotalPeople(res.data.length);
+        } else {
+          setTotalPeople(0);
+        }
+      } catch (e) {
+        setTotalPeople(0);
+      }
+    };
+    fetchParticipants();
+  }, [tripId]);
+
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isPlaceSidebarOpen, setIsPlaceSidebarOpen] = useState(false);
+  const [savingPlace, setSavingPlace] = useState(false);
 
   useEffect(() => {
     if (!loading && itinerary && itinerary.days && itinerary.days.length > 0) {
@@ -277,6 +298,20 @@ function Itinerary() {
       const response = await axiosPlace.get(`/places/${place.id}`);
       const placeDetails = response.data;
       
+      let isSaved = false;
+      
+      // Check if this place is saved by the user
+      if (isAuthenticated && placeDetails.place_id) {
+        try {
+          const savedResponse = await axiosUser.get('/places/user/favorite/check', { 
+            params: { place_id: placeDetails.place_id } 
+          });
+          isSaved = savedResponse.data?.is_saved || false;
+        } catch (error) {
+          console.error("Error checking if place is saved:", error);
+        }
+      }
+      
       // Format the place data for the sidebar
       const formattedPlaceData = {
         id: placeDetails.place_id,
@@ -291,22 +326,84 @@ function Itinerary() {
         longitude: placeDetails.location?.longitude,
         openHours: placeDetails.opening_hours?.periods || [],
         reviews: placeDetails.reviews || [],
-        isSaved: false // You might want to check if this place is saved
+        isSaved: isSaved
       };
       
       setSelectedPlace(formattedPlaceData);
       setIsPlaceSidebarOpen(true);
     } catch (error) {
       console.error("Error fetching place details:", error);
+      
+      // For fallback, also try to check if this place is saved
+      let isSaved = false;
+      if (isAuthenticated && place.id) {
+        try {
+          const savedResponse = await axiosUser.get('/places/user/favorite/check', { 
+            params: { place_id: place.id } 
+          });
+          isSaved = savedResponse.data?.is_saved || false;
+        } catch (err) {
+          console.error("Error checking if place is saved:", err);
+        }
+      }
+      
       // Fallback to basic data if fetch fails
       setSelectedPlace({
         id: place.id,
         name: place.place,
         location: place.location,
         image: place.image,
-        isSaved: false
+        isSaved: isSaved
       });
       setIsPlaceSidebarOpen(true);
+    }
+  };
+
+  const handleToggleSave = async (placeId) => {
+    if (!isAuthenticated) {
+      showNotification("error", "You need to be logged in to save places");
+      return;
+    }
+
+    if (!placeId) {
+      console.error("No place ID provided");
+      return;
+    }
+
+    setSavingPlace(true);
+    
+    try {
+      // Get current saved status from the selected place
+      const isSaved = selectedPlace?.isSaved || false;
+      
+      if (isSaved) {
+        // Remove from favorites
+        await axiosUser.delete('/places/user/favorite', { 
+          data: { place_id: placeId } 
+        });
+        
+        showNotification("success", "Place removed from saved places");
+      } else {
+        // Add to favorites
+        await axiosUser.post('/places/user/favorite', { 
+          place_id: placeId 
+        });
+        
+        showNotification("success", "Place added to saved places");
+      }
+      
+      // Update the selected place's saved status
+      if (selectedPlace && selectedPlace.id === placeId) {
+        setSelectedPlace(prev => ({
+          ...prev,
+          isSaved: !isSaved
+        }));
+      }
+    } catch (error) {
+      console.error("Error toggling place save:", error);
+      showNotification("error", "Failed to update saved places");
+    } finally {
+      setSavingPlace(false);
     }
   };
 
@@ -432,6 +529,7 @@ function Itinerary() {
               exportDropdownOpen={exportDropdownOpen}
               setExportDropdownOpen={setExportDropdownOpen}
               generateGoogleMapsUrl={generateGoogleMapsUrl}
+              participants={tripData.participants}
             />
 
             <div className="h-[40rem] pr-2">
@@ -457,6 +555,7 @@ function Itinerary() {
                   onDeleteActivity={handleDeleteActivity}
                   tripType={tripType}
                   stops={stops}
+                  participants={tripData.participants}
                   onPlaceClick={handlePlaceClick}
                 />
               </div>
@@ -474,10 +573,8 @@ function Itinerary() {
               place={selectedPlace}
               isOpen={isPlaceSidebarOpen}
               onClose={() => setIsPlaceSidebarOpen(false)}
-              onToggleSave={() => {
-                // Implement save functionality if needed
-                console.log("Toggle save for place:", selectedPlace);
-              }}
+              onToggleSave={handleToggleSave}
+              savingState={savingPlace}
             />
           </div>
         </div>

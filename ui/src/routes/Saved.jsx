@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { axiosUser } from "../utils/axiosInstance";
+import { axiosUser, axiosPlace } from "../utils/axiosInstance";
 import PageTemplate from "../components/PageTemplate";
 import { FaHeart } from "react-icons/fa";
 import TabBar from "../components/TabBar";
@@ -32,51 +32,108 @@ function Saved() {
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Mock saved places data
-  const [savedPlaces, setSavedPlaces] = useState([
-    { 
-      key: 1, 
-      name: "Estádio da Luz", 
-      location: "Lisbon, Portugal", 
-      image: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
-      type: "locations",
-      position: { lat: 38.7528, lng: -9.1843 },
-      description: "A major stadium in Lisbon, home to Benfica football club. It hosted the UEFA Euro 2004 final and has a capacity of over 65,000 spectators.",
-      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI"
-    },
-    { 
-      key: 2, 
-      name: "Livraria Lello", 
-      location: "Porto, Portugal", 
-      image: "https://images.unsplash.com/photo-1603984362497-0a878f607b92?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      type: "attractions",
-      position: { lat: 41.1473, lng: -8.6151 },
-      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI",
-      description: "One of the oldest bookstores in Portugal and frequently rated as one of the most beautiful bookstores in the world. It's said to have inspired J.K. Rowling's Harry Potter."
-    },
-    { 
-      key: 3, 
-      name: "Disneyland Paris", 
-      location: "Paris, France", 
-      image: "https://images.unsplash.com/photo-1543158266-0066955977ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
-      type: "attractions",
-      position: { lat: 48.8673, lng: 2.7813 },
-      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI",
-      description: "A magical entertainment resort featuring two theme parks, many hotels, and a shopping, dining and entertainment complex."
-    },
-    { 
-      key: 4, 
-      name: "Taberna Londrina", 
-      location: "London, UK", 
-      image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-      type: "restaurants",
-      position: { lat: 51.5074, lng: -0.1278 },
-      id:"ChIJTR30n_eXIw0RcrUR5K2DPJI",
-      description: "A cozy restaurant in central London offering traditional British cuisine with a modern twist, featuring locally sourced ingredients."
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  // State for saved places
+  const [savedPlaces, setSavedPlaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [photoCache, setPhotoCache] = useState({});
 
+  // Generate placeholder image as a fallback
+  const generatePlaceholderImage = (seed) => {
+    const seedStr = typeof seed === "string" ? seed : "place";
+    const cleanSeed = seedStr.replace(/[^a-zA-Z0-9]/g, "");
+    return `https://picsum.photos/seed/${encodeURIComponent(cleanSeed)}/400/300`;
+  };
+
+  // Get photo URL using the same logic as Trips.jsx
+  const getPhotoUrl = async (photo) => {
+    if (!photo || !photo.name) {
+      console.log("No photo available");
+      return generatePlaceholderImage("place");
+    }
+
+    try {
+      // Check if this photo is already in cache
+      if (photoCache[photo.name]) {
+        return photoCache[photo.name];
+      }
+
+      const response = await axiosPlace.post("/places/photo", {
+        gRPC: photo.name,
+      });
+
+      if (response.status === 429) {
+        return getPhotoUrl(photo); // Retry if rate limited
+      }
+
+      const photoUrl = response.data?.uri;
+      
+      // Add to cache
+      setPhotoCache(prev => ({
+        ...prev,
+        [photo.name]: photoUrl
+      }));
+
+      return photoUrl;
+    } catch (error) {
+      console.error("Error fetching photo:", error);
+      return generatePlaceholderImage("place");
+    }
+  };
+
+  // Fetch saved places from the API
+  const fetchSavedPlaces = async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await axiosUser.get('/places/user/');
+      const formattedPlaces = [];
+      if (response.data) {
+        for (const place of response.data) {
+          try {
+            const placeDetails = await axiosPlace.get(`/places/${place.place_id}`);
+            const placeData = placeDetails.data;
+            
+            const locationStr = typeof placeData.address === 'string' 
+              ? placeData.address 
+              : (placeData.formatted_address || 'No address available');
+              
+            // Get the photo URL
+            let photoUrl = generatePlaceholderImage(placeData.name);
+            if (placeData.photos && placeData.photos.length > 0) {
+              photoUrl = await getPhotoUrl(placeData.photos[0]);
+            }
+            
+            formattedPlaces.push({
+              ...placeData,
+              key: place.id || place.place_id || Math.random().toString(),
+              id: place.place_id,
+              location: locationStr,
+              position: { 
+                lat: placeData.location?.latitude || 0, 
+                lng: placeData.location?.longitude || 0 
+              },
+              image: photoUrl
+            });
+          } catch (error) {
+            console.error(`Error fetching details for place ${place.place_id}:`, error);
+          }
+        }
+        setSavedPlaces(formattedPlaces);
+      } else {
+        setSavedPlaces([]);
+      }
+    } catch (error) {
+      console.error("Error fetching saved places:", error);
+      setSavedPlaces([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   // If userTag is provided but doesn't match LoggedUser, fetch that user's info
   useEffect(() => {
     const fetchUserByTag = async () => {
@@ -103,15 +160,46 @@ function Saved() {
     }
   }, [userTag, LoggedUser, isUserLoading, navigate]);
   
-  const handleToggleSave = (placeId) => {
-    if (!isViewingOwnSaved) return;
-    
-    if (selectedPlace && selectedPlace.id === placeId) {
-      setSidebarOpen(false);
-      setSelectedPlace(null);
+  // Fetch saved places when authenticated or viewing user changes
+  useEffect(() => {
+    if (isAuthenticated && !isUserLoading) {
+      fetchSavedPlaces();
     }
-
-    setSavedPlaces(prev => prev.filter(place => place.id !== placeId));
+  }, [isAuthenticated, isUserLoading]);
+  
+  const handleToggleSave = async (placeId) => {
+    if (!isViewingOwnSaved || !isAuthenticated) return;
+    
+    try {
+      // Check if the place is already saved
+      const isSaved = savedPlaces.some(place => place.id === placeId);
+      
+      if (isSaved) {
+        // Remove from favorites
+        await axiosUser.delete('/places/user/favorite', { 
+          data: { place_id: placeId } 
+        });
+        
+        // Update local state
+        setSavedPlaces(prev => prev.filter(place => place.id !== placeId));
+        
+        // Close sidebar if the removed place was selected
+        if (selectedPlace && selectedPlace.id === placeId) {
+          setSidebarOpen(false);
+          setSelectedPlace(null);
+        }
+      } else {
+        // Add to favorites
+        await axiosUser.post('/places/user/favorite', { 
+          place_id: placeId 
+        });
+        
+        // Refresh the saved places list
+        fetchSavedPlaces();
+      }
+    } catch (error) {
+      console.error("Error toggling saved place:", error);
+    }
   };
   
   // Handle clicking on a saved place card
@@ -132,8 +220,8 @@ function Saved() {
   
   const filteredPlaces = savedPlaces.filter(place => {
     const matchesSearch = 
-      place.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      place.location.toLowerCase().includes(searchTerm.toLowerCase());
+      (place.name && place.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (place.location && typeof place.location === 'string' && place.location.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesTab = activeTab === "all" || place.type === activeTab;
     
@@ -142,8 +230,8 @@ function Saved() {
   
   const getMarkers = () => {
     return filteredPlaces.map(place => ({
-      position: place.position,
-      title: place.name
+      position: place.position || { lat: 0, lng: 0 },
+      title: place.name || 'Unknown Place'
     }));
   };
 
@@ -203,10 +291,10 @@ function Saved() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                   {filteredPlaces.map((place) => (
                     <TripCard
-                      key={place.key}
+                      key={place.key || place.id || Math.random().toString()}
                       image={place.image}
-                      name={place.name}
-                      location={place.location}
+                      name={place.name || "Unnamed Place"}
+                      location={typeof place.location === 'string' ? place.location : "No address available"}
                       isSavedPlace={true}
                       isSaved={true}
                       onToggleSave={() => handleToggleSave(place.id)}

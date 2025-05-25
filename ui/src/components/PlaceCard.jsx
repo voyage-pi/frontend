@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
+import { useAuth } from "../context/AuthContext";
 
 const PlaceCard = ({
   id,
@@ -13,8 +14,19 @@ const PlaceCard = ({
   onDelete,
   road = false,
   refreshing = false,
-  onClick
+  onClick,
+  participants
+  
 }) => {
+  const { LoggedUser } = useAuth();
+  
+  // Check if user is a participant (remove console logs)
+  const isParticipant =
+    (!LoggedUser && (!participants || participants.length === 0)) || // Allow editing for guest-created trips only when not logged in
+    (LoggedUser &&
+      participants &&
+      participants.some((p) => p.user_id === LoggedUser.id)); // Or if logged in user is a participant
+  
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
 
@@ -39,7 +51,7 @@ const PlaceCard = ({
         image.includes("maps.googleapis.com") ||
         image.includes("streetviewpixels"))
     ) {
-      console.log("Detected Google Maps URL, using fallback immediately");
+      // Using fallback for Google Maps URLs
       setImgError(true);
     }
   }, [image]);
@@ -109,38 +121,40 @@ const PlaceCard = ({
             )}
           </div>
         </motion.div>
-        <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
-          {!road && (
+        {isParticipant && (
+          <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
+            {!road && (
+              <motion.div
+                className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
+                onClick={(e) => {
+                  !refreshing && onRefresh(id);
+                  e.stopPropagation();
+                }}
+                animate={refreshing ? { rotate: 360 } : {}}
+                transition={
+                  refreshing
+                    ? { duration: 1, repeat: Infinity, ease: "linear" }
+                    : {}
+                }
+                whileHover={!refreshing ? { scale: 1.1 } : {}}
+                whileTap={!refreshing ? { scale: 0.9 } : {}}
+              >
+                <TfiReload className="text-primary text-lg" />
+              </motion.div>
+            )}
             <motion.div
               className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
               onClick={(e) => {
+                onDelete && onDelete(id);
                 e.stopPropagation();
-                onRefresh(id);
               }}
-              animate={refreshing ? { rotate: 360 } : {}}
-              transition={
-                refreshing
-                  ? { duration: 1, repeat: Infinity, ease: "linear" }
-                  : {}
-              }
-              whileHover={!refreshing ? { scale: 1.1 } : {}}
-              whileTap={!refreshing ? { scale: 0.9 } : {}}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <TfiReload className="text-primary text-lg" />
+              <HiOutlineTrash className="text-primary text-xl" />
             </motion.div>
-          )}
-          <motion.div
-            className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete && onDelete(id);
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <HiOutlineTrash className="text-primary text-xl" />
-          </motion.div>
-        </div>
+          </div>
+        )}
       </div>
       {transport && transport.type && transport.duration ? (
         <p className="text-xs text-gray-400">
