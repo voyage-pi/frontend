@@ -4,6 +4,7 @@ import { FaSistrix } from "react-icons/fa6";
 import { axiosPlace } from "../../../utils/axiosInstance";
 import LoadingAnimation from "../../LoadingAnimation";
 import { motion } from "motion/react";
+import { AnimatePresence } from "framer-motion";
 
 const MustVisitPlacesContent = () => {
   const [suggestionlist, setSuggestionList] = useState([]);
@@ -12,6 +13,7 @@ const MustVisitPlacesContent = () => {
   const [suggestionHovered, setSuggestionHovered] = useState(-1);
   const [mustVisitPlaces, setMustVisitPlaces] = useState([]);
   // Cache for photo URLs
+  const [placesLoading, setPlacesLoading] = useState(false);
   const [photoCache, setPhotoCache] = useState({});
   const timeoutRef = useRef(null);
 
@@ -46,18 +48,23 @@ const MustVisitPlacesContent = () => {
       const id = response.data.place_id;
       const place_response = await axiosPlace.get("/places/" + id);
       const current_place = place_response.data;
-      const promise = getPhotoUrl(current_place).then((imageURL) => {
-        const newPlace = {
-          place: current_place,
-          image: imageURL,
-        };
-        setMustVisitPlaces((prev) => [...prev, newPlace]);
-      });
+
+      const imageURL = await getPhotoUrl(current_place);
+
+      const newPlace = {
+        place: current_place,
+        image: imageURL,
+      };
+
+      setMustVisitPlaces((prev) => [...prev, newPlace]);
+      console.log("Place added:", mustVisitPlaces);
+
       setCurrentText("");
       setSuggestionList([]);
-      await Promise(promise);
     } catch (error) {
       console.error("Add place error:", error);
+    } finally {
+      setPlacesLoading(false);
     }
   };
 
@@ -154,6 +161,7 @@ const MustVisitPlacesContent = () => {
       );
     } else if (key === "Enter") {
       if (suggestionHovered >= 0 && suggestionHovered < suggestionlist.length) {
+        setPlacesLoading(true);
         addPlace(suggestionlist[suggestionHovered].text);
       }
     }
@@ -223,36 +231,57 @@ const MustVisitPlacesContent = () => {
         {/* Right Side - Must Visit Places Box */}
         <div className="flex-1">
           <div className=" h-84 w-full overflow-y-auto">
-            {mustVisitPlaces.length === 0 ? (
-              <div className="flex items-center justify-center h-full w-full">
-                <div className="text-center text-gray-500">
-                  No must-visit places added yet.
-                </div>
-              </div>
-            ) : (
-              <div className={`grid grid-cols-2 gap-2 overflow-y-auto w-full `}>
-                {mustVisitPlaces.map((place, index) => (
-                  <motion.div
-                    key={index}
-                    animate={{
-                      opacity:1
-                    }}
-                    className="h-[150px] w-full rounded-2xl relative  overflow-hidden "
-                  >
-                    <img className="w-full brightness-50" src={place.image} alt="image" />
-                    <div className="absolute top-[50%] translate-x-[-50%] left-[50%] text-white text-center translate-y-[-50%] w-full text-2xl">
-                      {place.place?.name}
-                    </div>
-                    <button
-                      onClick={() => removePlace(place)}
-                      className="absolute top-0 right-0  bg-white p-2 cursor-pointer  rounded-full shadow-md hover:bg-red-100 transition-colors"
+            <div className={`grid grid-cols-2 gap-2 overflow-y-auto w-full `}>
+              <AnimatePresence mode="wait">
+                {mustVisitPlaces.length !== 0 &&
+                  mustVisitPlaces.map((place, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{
+                        opacity: 0,
+                        translateY: 20,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        translateY: 0,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        translateY: -20,
+                      }}
+                      className="h-[150px] w-full rounded-2xl relative  overflow-hidden "
                     >
-                      <FaTrash className="text-red-500" />
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-            )}
+                      {place.image ? (
+                        <img
+                          className="w-full brightness-30"
+                          src={place.image}
+                          alt="image"
+                        />
+                      ) : (
+                        <div className="absolute top-0 left-0 w-full h-full bg-secondary"></div>
+                      )}
+                      <div className="absolute top-[50%] translate-x-[-50%] left-[50%] text-white text-center translate-y-[-50%] w-full text-2xl">
+                        {place.place?.name}
+                      </div>
+                      <button
+                        onClick={() => removePlace(place)}
+                        className="absolute top-0 right-0  bg-white p-2 cursor-pointer  rounded-full shadow-md hover:bg-red-100 transition-colors"
+                      >
+                        <FaTrash className="text-red-500" />
+                      </button>
+                    </motion.div>
+                  ))}
+                {mustVisitPlaces.length === 0 ? (
+                  <div className="flex items-center justify-center h-full w-full">
+                    <div className="text-center text-gray-500">
+                      No must-visit places added yet.
+                    </div>
+                  </div>
+                ) : (
+                  placesLoading && <div className="skeleton h-32 w-full"></div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
