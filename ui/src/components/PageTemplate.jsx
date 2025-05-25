@@ -45,7 +45,7 @@ function PageTemplate({ children, headerIcon, headerTitle, headerContent }) {
         <div className="h-full flex flex-col">
           {/* Page Header */}
           {(headerIcon || headerTitle || headerContent) && (
-            <header className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+            <header className="bg-white pt-7 px-6 flex items-center justify-between sticky top-0 z-10">
               <div className="flex items-center">
                 {headerIcon && <div className="mr-3">{headerIcon}</div>}
                 {headerTitle && (

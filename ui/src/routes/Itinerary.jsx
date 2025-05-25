@@ -5,6 +5,7 @@ import PageTemplate from "../components/PageTemplate";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { motion, AnimatePresence } from "framer-motion";
 import Map from "../components/Map";
+import PlaceDetailSidebar from "../components/PlaceDetailSidebar";
 import { axiosRecommendation } from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import PreferencesSidebar from "../components/PreferencesSidebar";
@@ -109,6 +110,10 @@ function Itinerary() {
     };
     fetchParticipants();
   }, [tripId]);
+
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [isPlaceSidebarOpen, setIsPlaceSidebarOpen] = useState(false);
+  const [savingPlace, setSavingPlace] = useState(false);
 
   useEffect(() => {
     if (!loading && itinerary && itinerary.days && itinerary.days.length > 0) {
@@ -287,6 +292,121 @@ function Itinerary() {
     };
   }, [exportDropdownOpen]);
 
+  const handlePlaceClick = async (place) => {
+    try {
+      // Fetch place details from backend
+      const response = await axiosPlace.get(`/places/${place.id}`);
+      const placeDetails = response.data;
+      
+      let isSaved = false;
+      
+      // Check if this place is saved by the user
+      if (isAuthenticated && placeDetails.place_id) {
+        try {
+          const savedResponse = await axiosUser.get('/places/user/favorite/check', { 
+            params: { place_id: placeDetails.place_id } 
+          });
+          isSaved = savedResponse.data?.is_saved || false;
+        } catch (error) {
+          console.error("Error checking if place is saved:", error);
+        }
+      }
+      
+      // Format the place data for the sidebar
+      const formattedPlaceData = {
+        id: placeDetails.place_id,
+        name: placeDetails.name,
+        description: placeDetails.description,
+        address: placeDetails.address,
+        phone: placeDetails.phone_number,
+        rating: placeDetails.rating,
+        location: place.location,
+        photos: placeDetails.photos,
+        latitude: placeDetails.location?.latitude,
+        longitude: placeDetails.location?.longitude,
+        openHours: placeDetails.opening_hours?.periods || [],
+        reviews: placeDetails.reviews || [],
+        isSaved: isSaved
+      };
+      
+      setSelectedPlace(formattedPlaceData);
+      setIsPlaceSidebarOpen(true);
+    } catch (error) {
+      console.error("Error fetching place details:", error);
+      
+      // For fallback, also try to check if this place is saved
+      let isSaved = false;
+      if (isAuthenticated && place.id) {
+        try {
+          const savedResponse = await axiosUser.get('/places/user/favorite/check', { 
+            params: { place_id: place.id } 
+          });
+          isSaved = savedResponse.data?.is_saved || false;
+        } catch (err) {
+          console.error("Error checking if place is saved:", err);
+        }
+      }
+      
+      // Fallback to basic data if fetch fails
+      setSelectedPlace({
+        id: place.id,
+        name: place.place,
+        location: place.location,
+        image: place.image,
+        isSaved: isSaved
+      });
+      setIsPlaceSidebarOpen(true);
+    }
+  };
+
+  const handleToggleSave = async (placeId) => {
+    if (!isAuthenticated) {
+      showNotification("error", "You need to be logged in to save places");
+      return;
+    }
+
+    if (!placeId) {
+      console.error("No place ID provided");
+      return;
+    }
+
+    setSavingPlace(true);
+    
+    try {
+      // Get current saved status from the selected place
+      const isSaved = selectedPlace?.isSaved || false;
+      
+      if (isSaved) {
+        // Remove from favorites
+        await axiosUser.delete('/places/user/favorite', { 
+          data: { place_id: placeId } 
+        });
+        
+        showNotification("success", "Place removed from saved places");
+      } else {
+        // Add to favorites
+        await axiosUser.post('/places/user/favorite', { 
+          place_id: placeId 
+        });
+        
+        showNotification("success", "Place added to saved places");
+      }
+      
+      // Update the selected place's saved status
+      if (selectedPlace && selectedPlace.id === placeId) {
+        setSelectedPlace(prev => ({
+          ...prev,
+          isSaved: !isSaved
+        }));
+      }
+    } catch (error) {
+      console.error("Error toggling place save:", error);
+      showNotification("error", "Failed to update saved places");
+    } finally {
+      setSavingPlace(false);
+    }
+  };
+
   return (
     <PageTemplate>
       <PreferencesSidebar
@@ -295,6 +415,7 @@ function Itinerary() {
         tripId={tripId}
         onPreferencesUpdated={handlePreferencesUpdated}
       />
+
 
       <div
         ref={pageRef}
@@ -435,15 +556,25 @@ function Itinerary() {
                   tripType={tripType}
                   stops={stops}
                   participants={tripData.participants}
+                  onPlaceClick={handlePlaceClick}
                 />
               </div>
             </div>
           </div>
           {/* Right Side */}
-          <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg max-h-full">
-            <Map
-              polylines={tripType !== "road" ? routes[selectedDay] : routes}
-              markers={tripType !== "road" ? markers[selectedDay] : markers}
+          <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg max-h-full relative">
+            {!isPlaceSidebarOpen && (
+              <Map
+                polylines={tripType !== "road" ? routes[selectedDay] : routes}
+                markers={tripType !== "road" ? markers[selectedDay] : markers}
+              />
+            )}
+            <PlaceDetailSidebar
+              place={selectedPlace}
+              isOpen={isPlaceSidebarOpen}
+              onClose={() => setIsPlaceSidebarOpen(false)}
+              onToggleSave={handleToggleSave}
+              savingState={savingPlace}
             />
           </div>
         </div>

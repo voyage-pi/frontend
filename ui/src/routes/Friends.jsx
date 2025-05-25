@@ -441,16 +441,15 @@ function Friends() {
             </div>
 
             <div className="flex-1 p-4 overflow-auto">
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
-                  <SearchBar 
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    onCreateNew={isViewingOwnFriends ? handleCreateNew : null}
-                    createButtonText="Add Friend"
-                    placeholder="Search for friends"
-                  />
-                </div>
+              <div className="mb-6 w-full">
+                <SearchBar 
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  onCreateNew={isViewingOwnFriends ? handleCreateNew : null}
+                  createButtonText="Add Friend"
+                  placeholder="Search for friends"
+                  className="w-full"
+                />
               </div>
 
               {filterOpen && (
