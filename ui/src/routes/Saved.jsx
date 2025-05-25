@@ -66,6 +66,7 @@ function Saved() {
       }
 
       const photoUrl = response.data?.uri;
+
       
       // Add to cache
       setPhotoCache(prev => ({
@@ -229,9 +230,11 @@ function Saved() {
   });
   
   const getMarkers = () => {
+    console.log("fileted places",filteredPlaces)
     return filteredPlaces.map(place => ({
       position: place.position || { lat: 0, lng: 0 },
-      title: place.name || 'Unknown Place'
+      title: place.name || 'Unknown Place',
+      image: place.image || generatePlaceholderImage(place.name)
     }));
   };
 
@@ -288,7 +291,7 @@ function Saved() {
                     `${viewingUser?.name || 'This user'} doesn't have any saved places to show.`}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="flex flex-wrap gap-x-8 gap-y-4 pb-8 overflow-visible justify-center items-center">
                   {filteredPlaces.map((place) => (
                     <TripCard
                       key={place.key || place.id || Math.random().toString()}
