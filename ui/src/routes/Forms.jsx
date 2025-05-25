@@ -9,6 +9,7 @@ import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
+import TripCreationWebSocket from "../utils/websocketClient";
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -26,6 +27,11 @@ function Forms() {
   const [isGroup, setIsGroup] = useState(false);
   const [addedUsers, setAddedUsers] = useState([]);
 
+  const [showProgress, setShowProgress] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [progressMessage, setProgressMessage] = useState("");
+  const [wsClient, setWsClient] = useState(null);
+
   const getQuestions = async () => {
     const response = await axiosUser.get("/questions/");
     return response.data;
@@ -42,12 +48,11 @@ function Forms() {
       localStorage.removeItem("currentStep");
       localStorage.removeItem("subQuestionIndex");
       localStorage.removeItem("step6SubStep");
-
       try {
-          const qs = await getQuestions();
-          setTotalSubQuestions(qs.length);
-          const QA = qs.map((q) => ({ ...q, answers: null }));
-          setAnswers(QA);
+        const qs = await getQuestions();
+        setTotalSubQuestions(qs.length);
+        const QA = qs.map((q) => ({ ...q, answers: null }));
+        setAnswers(QA);
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }
@@ -65,7 +70,14 @@ function Forms() {
       localStorage.setItem("answers", JSON.stringify(answers));
       localStorage.setItem("isGroup", isGroup);
     }
-  }, [currentStep, subQuestionIndex, step6SubStep, answers, isGroup, isInitialized]);
+  }, [
+    currentStep,
+    subQuestionIndex,
+    step6SubStep,
+    answers,
+    isGroup,
+    isInitialized,
+  ]);
 
   // Calculate progress percentage for progress bar
 
@@ -174,25 +186,18 @@ function Forms() {
       JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
     const keywords = JSON.parse(localStorage.getItem("Keywords")) || [];
 
-    setIsNavigating(true);
-
-    // Formatação da data para ISO string
     const storedStartDate = localStorage.getItem("Start Date");
     const startDate = storedStartDate ? new Date(storedStartDate) : new Date();
     const formattedDate = startDate.toISOString();
 
-    // Make sure duration is at least 1 day
     const duration = Math.max(
       1,
       parseInt(localStorage.getItem("Duration")) || 1
     );
 
-    console.log("User Ratings:", userRatings);
-
     const tripType = localStorage.getItem("Trip Type");
     let obj = {};
 
-    //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
       obj.radius = localStorage.getItem("radius");
       obj.center = {
@@ -214,22 +219,18 @@ function Forms() {
       obj.type = "road";
     }
 
-    // Format must-visit places for API (List[PlaceInfo])
     const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => obj.place);
-    // Parse location for country and city
     const location = localStorage.getItem("Location") || "";
     let locationParts;
     let country;
     let city;
 
     if (localStorage.getItem("Trip Type") === "road") {
-      // For road trips, use the destination text
       const destinationText = localStorage.getItem("currentTextDes") || "";
       locationParts = destinationText.split(",").map((part) => part.trim());
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     } else {
-      // For place and zone trips, use the original location parsing
       locationParts = location.split(",").map((part) => part.trim());
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
@@ -249,97 +250,118 @@ function Forms() {
       questions: {
         user123: userRatings.map((answer, index) => ({
           question_id: index,
-          value: parseInt(answer) || 0, // Garantindo que o valor seja número
+          value: parseInt(answer) || 0,
           type: "scale",
         })),
       },
       is_group: isGroup,
     };
 
-    console.log("isGroup state before sending:", isGroup);
-    console.log("Form data before sending:", formData);
-
-    console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
+    console.log("Creating trip via WebSocket:", formData);
 
     try {
-      const response = await axiosInstance.post("/trips", formData);
-      console.log("Response:", response.data);
+      setShowProgress(true);
+      setProgressPercent(0);
+      setProgressMessage("Connecting to trip creation service...");
 
-      // Ensure we have the complete response data with the correct structure
-      if (
-        response.data &&
-        response.data.response &&
-        response.data.response.itinerary
-      ) {
-        //setItinerary(response.data);
-        const tripId = response.data.response.tripId;
-        navigate(`/itinerary/${tripId}`, {
-          state: {
-            itineraryData: response.data,
-            userRatings: userRatings,
-          },
-        });
+      const client = new TripCreationWebSocket();
+      setWsClient(client);
 
-        // Instead of clearing all localStorage, just remove specific keys
-        // but keep userRatings for the preference sidebar
-        const keysToRemove = [
-          "currentStep",
-          "subQuestionIndex",
-          "step6SubStep",
-          "answers",
-          "Start Date",
-          "Trip Type",
-          "radius",
-          "Latitude",
-          "Longitude",
-          "Location",
-          "Budget",
-          "Duration",
-          "userRatings",
-          "MustVisitPlaces",
-          "Keywords",
-          "currentTextDes",
-          "currentTextOrigin",
-          "origin",
-          "destination",
-          "route",
-          "isGroup"
-        ];
+      client.setEventHandlers({
+        onConnection: (message, progress) => {
+          setProgressMessage(message);
+          setProgressPercent(progress);
+        },
+        onProgress: (message, progress, tripId) => {
+          setProgressMessage(message);
+          setProgressPercent(progress);
+        },
+        onSuccess: async (message, responseData, tripId) => {
+          console.log("Trip created successfully with ID:", tripId);
+          setProgressMessage("Trip created successfully!");
+          setProgressPercent(100);
 
-        keysToRemove.forEach((key) => localStorage.removeItem(key));
+          setTimeout(async () => {
+            setShowProgress(false);
 
-        answers.forEach((answer) => {
-          answer.answer = null;
-        });
-        setAnswers([...answers]);
-        setCurrentStep(1);
-        setSubQuestionIndex(0);
-        setStep6SubStep(0);
-        setIsGroup(false);
+            navigate(`/itinerary/${tripId}`, {
+              state: {
+                itineraryData: { response: responseData },
+                userRatings: userRatings,
+              },
+            });
 
-        // After trip creation, send invitations to all addedUsers
-        for (const user of addedUsers) {
-          try {
-            await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
-          } catch (e) {
-            console.error(`Failed to invite user ${user.id}:`, e);
-          }
-        }
-      } else {
-        console.error("Invalid response structure:", response.data);
-        setIsNavigating(false);
-      }
+            const keysToRemove = [
+              "currentStep",
+              "subQuestionIndex",
+              "step6SubStep",
+              "answers",
+              "Start Date",
+              "Trip Type",
+              "radius",
+              "Latitude",
+              "Longitude",
+              "Location",
+              "Budget",
+              "Duration",
+              "userRatings",
+              "MustVisitPlaces",
+              "Keywords",
+              "currentTextDes",
+              "currentTextOrigin",
+              "origin",
+              "destination",
+              "route",
+              "isGroup",
+            ];
+
+            keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+            answers.forEach((answer) => {
+              answer.answer = null;
+            });
+            setAnswers([...answers]);
+            setCurrentStep(1);
+            setSubQuestionIndex(0);
+            setStep6SubStep(0);
+            setIsGroup(false);
+
+            for (const user of addedUsers) {
+              try {
+                await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
+              } catch (e) {
+                console.error(`Failed to invite user ${user.id}:`, e);
+              }
+            }
+          }, 1500);
+        },
+        onError: (message, progress) => {
+          console.error("WebSocket error:", message);
+          setProgressMessage(`Error: ${message}`);
+          setTimeout(() => {
+            setShowProgress(false);
+            setIsNavigating(false);
+          }, 3000);
+        },
+      });
+
+      await client.connect();
+      client.sendTripData(formData);
     } catch (error) {
-      if (error.response?.data) {
-        console.error("Validation errors:", error.response.data);
-      }
-      console.error("Error submitting form:", error);
+      console.error("Error creating trip via WebSocket:", error);
+      setShowProgress(false);
       setIsNavigating(false);
     }
   };
 
-  if (!isInitialized || isNavigating) {
-    return <LoadingItinerary />;
+  if (!isInitialized || isNavigating || showProgress) {
+    return (
+      <LoadingItinerary
+        message={progressMessage}
+        progress={progressPercent}
+        showProgress={showProgress}
+      />
+    );
   }
 
   return (
