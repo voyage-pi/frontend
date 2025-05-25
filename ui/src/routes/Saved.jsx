@@ -305,7 +305,7 @@ function Saved() {
                     `${viewingUser?.name || 'This user'} doesn't have any saved places to show.`}
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-x-8 gap-y-4 pb-8 overflow-visible justify-center items-center">
+                <div className="flex flex-wrap gap-x-8 gap-y-4 pb-8 overflow-visible justify-start items-center">
                   {filteredPlaces.map((place) => (
                     <TripCard
                       key={place.key || place.id || Math.random().toString()}
