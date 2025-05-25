@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 
 const PlaceCard = ({
   id,
+  displayOrder,
   place,
   time,
   transport,
@@ -67,8 +68,21 @@ const PlaceCard = ({
       className="flex flex-col"
     >
       <div className="flex flex-row items-center">
+        {displayOrder && (
+          <div className="flex items-center justify-center mr-6">
+            <motion.span
+              className="text-sm font-bold text-black"
+              whileHover={{ scale: 1.1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              {displayOrder}
+            </motion.span>
+          </div>
+        )}
         <motion.div
-          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full"
+          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full relative"
           animate={refreshing ? { opacity: 0.7 } : { opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
