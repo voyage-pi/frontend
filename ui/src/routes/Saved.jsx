@@ -257,8 +257,8 @@ function Saved() {
     <PageTemplate>
       <div className="flex flex-col overflow-hidden">
         <div className="flex">
-          <div className="w-4/7">
-            <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-10 mt-[0.6rem] pb-9">
+          <div className="w-4/7 relative z-20">
+            <div className="bg-white py-4 px-6 flex items-center justify-between sticky top-0 z-20 mt-[0.6rem] pb-9">
               <div className="flex items-center">
                 <FaHeart className="text-primary text-xl mr-3" />
                 <h1 className="text-2xl font-bold">
@@ -268,11 +268,12 @@ function Saved() {
                 </h1>
               </div>
             </div>
-            <div className="ml-4">
+            <div className="ml-4 relative z-20">
               <TabBar
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 tabs={tabs}
+                className="z-20"
               />
             </div>
             <div className="px-6 pt-4 overflow-y-auto">
@@ -324,11 +325,12 @@ function Saved() {
             </div>
           </div>
           
-          <div className="w-3/7 h-screen relative">
+          <div className="w-3/7 h-screen relative z-10">
             {/* Map component - hide when sidebar is open */}
             {!sidebarOpen && (
               <Map
                 markers={getMarkers()}
+                className="z-10"
               />
             )}
             
@@ -338,6 +340,7 @@ function Saved() {
               isOpen={sidebarOpen}
               onClose={handleCloseSidebar}
               onToggleSave={handleToggleSave}
+              className="z-10"
             />
           </div>
         </div>

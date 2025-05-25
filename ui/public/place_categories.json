@@ -42,26 +42,6 @@
         "laundry",
         "spa"
     ],
-    "Transports": [
-        "bus_station",
-        "train_station",
-        "subway_station",
-        "light_rail_station",
-        "transit_station",
-        "taxi_stand",
-        "airport",
-        "gas_station",
-        "parking",
-        "rv_park"
-    ],
-    "Food": [
-        "restaurant",
-        "cafe",
-        "bar",
-        "night_club",
-        "meal_delivery",
-        "meal_takeaway"
-    ],
     "Institutions": [
         "city_hall",
         "courthouse",
