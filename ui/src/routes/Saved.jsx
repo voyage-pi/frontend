@@ -40,6 +40,18 @@ function Saved() {
   const [loading, setLoading] = useState(true);
   const [photoCache, setPhotoCache] = useState({});
 
+  // Feedback notification state
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+
+  // Function to show notification
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
+  };
+
   // Generate placeholder image as a fallback
   const generatePlaceholderImage = (seed) => {
     const seedStr = typeof seed === "string" ? seed : "place";
@@ -179,19 +191,23 @@ function Saved() {
       const isSaved = savedPlaces.some(place => place.id === placeId);
       
       if (isSaved) {
-        // Remove from favorites
+        // Find place name before removing
+        const placeToRemove = savedPlaces.find(place => place.id === placeId);
+        const placeName = placeToRemove?.name || 'Place';
+        
         await axiosUser.delete('/places/user/favorite', { 
           data: { place_id: placeId } 
         });
         
-        // Update local state
         setSavedPlaces(prev => prev.filter(place => place.id !== placeId));
         
-        // Close sidebar if the removed place was selected
         if (selectedPlace && selectedPlace.id === placeId) {
           setSidebarOpen(false);
           setSelectedPlace(null);
         }
+        
+        // Show feedback notification
+        showNotification(`${placeName} removed from favorites`, 'success');
       } else {
         // Add to favorites
         await axiosUser.post('/places/user/favorite', { 
@@ -200,9 +216,13 @@ function Saved() {
         
         // Refresh the saved places list
         fetchSavedPlaces();
+        
+        // Show feedback notification
+        showNotification('Place added to favorites', 'success');
       }
     } catch (error) {
       console.error("Error toggling saved place:", error);
+      showNotification('Failed to update favorites', 'error');
     }
   };
   
@@ -255,6 +275,14 @@ function Saved() {
   
   return (
     <PageTemplate>
+      {/* Notification Toast */}
+      {notification.show && (
+        <div className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-md shadow-md transition-opacity duration-300
+          ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+          {notification.message}
+        </div>
+      )}
+
       <div className="flex flex-col overflow-hidden">
         <div className="flex">
           <div className="w-4/7 relative z-20">
