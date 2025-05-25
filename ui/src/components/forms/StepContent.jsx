@@ -33,6 +33,7 @@ const StepContent = ({
     case 5:
       return (
         <Step5Content
+          setCurrentStep={setCurrentStep}
           subQuestionIndex={subQuestionIndex}
           totalSubQuestions={totalSubQuestions}
           answers={answers}

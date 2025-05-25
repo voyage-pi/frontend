@@ -9,6 +9,7 @@ import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
+import { useAuth } from "../context/AuthContext";
 import TripCreationWebSocket from "../utils/websocketClient";
 
 function Forms() {
@@ -20,6 +21,7 @@ function Forms() {
   const [step6SubStep, setStep6SubStep] = useState(0);
   const [totalSubQuestions, setTotalSubQuestions] = useState(0);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [isNavigating, setIsNavigating] = useState(false);
   const [isStep5Valid, setIsStep5Valid] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -51,7 +53,7 @@ function Forms() {
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-        const QA = qs.map((q) => ({ ...q, answers: null }));
+        const QA = qs.map((q) => ({ ...q}));
         setAnswers(QA);
       } catch (error) {
         console.error("Failed to fetch questions:", error);
@@ -235,6 +237,7 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
+    console.log("answers:", answers);
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
@@ -247,8 +250,8 @@ function Forms() {
       data_type: obj,
       must_visit_places: formattedMustVisitPlaces,
       keywords: keywords,
-      questions: {
-        user123: userRatings.map((answer, index) => ({
+      preferences: {
+        "questions": userRatings.map((answer, index) => ({
           question_id: index,
           value: parseInt(answer) || 0,
           type: "scale",
@@ -256,7 +259,11 @@ function Forms() {
       },
       is_group: isGroup,
     };
-
+    // If the user is authenticated, include preferences name in the formData
+    if (isAuthenticated) {
+      formData.preferences["preferencesName"] =
+        localStorage.getItem("preferencesName");
+    }
     console.log("Creating trip via WebSocket:", formData);
 
     try {
