@@ -9,6 +9,7 @@ import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import TripCard from "../components/TripCard";
 import PlaceDetailSidebar from "../components/PlaceDetailSidebar";
+import placeCategories from '../../public/place_categories.json';
 
 function Saved() {
   const { userTag } = useParams(); // Get userTag from URL params
@@ -19,11 +20,13 @@ function Saved() {
   const [viewingUser, setViewingUser] = useState(null);
   const isViewingOwnSaved = !userTag || (LoggedUser && userTag === LoggedUser.tag);
   
+  // Create tabs from place_categories.json
   const tabs = [
     { value: "all", label: "All places" },
-    { value: "attractions", label: "Attractions" },
-    { value: "locations", label: "Locations" },
-    { value: "restaurants", label: "Restaurants" },
+    ...Object.keys(placeCategories).map(category => ({
+      value: category.toLowerCase(),
+      label: category
+    }))
   ];
 
   const [activeTab, setActiveTab] = useState("all");
@@ -224,7 +227,17 @@ function Saved() {
       (place.name && place.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (place.location && typeof place.location === 'string' && place.location.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesTab = activeTab === "all" || place.type === activeTab;
+    if (activeTab === "all") {
+      return matchesSearch;
+    }
+
+    // Check if place types match the selected category
+    const selectedCategory = activeTab.charAt(0).toUpperCase() + activeTab.slice(1); // Capitalize first letter
+    const categoryTypes = placeCategories[selectedCategory] || [];
+    
+    const matchesTab = place.types && place.types.some(type => 
+      categoryTypes.includes(type.toLowerCase())
+    );
     
     return matchesSearch && matchesTab;
   });

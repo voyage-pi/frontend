@@ -126,17 +126,31 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
     }
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return hours.map(period => {
-      const openDay = days[period.open.day];
+    
+    // Group periods by day
+    const dayGroups = {};
+    
+    hours.forEach(period => {
+      const dayIndex = period.open.day;
+      const dayName = days[dayIndex];
+      
+      if (!dayGroups[dayName]) {
+        dayGroups[dayName] = [];
+      }
+      
       const openTime = `${period.open.hour.toString().padStart(2, '0')}:${period.open.minute.toString().padStart(2, '0')}`;
       const closeTime = period.close ? 
         `${period.close.hour.toString().padStart(2, '0')}:${period.close.minute.toString().padStart(2, '0')}` : 
         'Closed';
-      return {
-        day: openDay,
-        hours: `${openTime} - ${closeTime}`
-      };
+        
+      dayGroups[dayName].push(`${openTime} - ${closeTime}`);
     });
+    
+    // Convert grouped periods into final format
+    return Object.entries(dayGroups).map(([day, timeRanges]) => ({
+      day,
+      hours: timeRanges.join(', ')
+    }));
   };
 
   return (
@@ -246,8 +260,14 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
                   <div className="space-y-2">
                     {formatHours(place.openHours).map((item, index) => (
                       <div key={index} className="flex justify-between">
-                        <span className="font-medium">{item.day}</span>
-                        <span className="text-gray-600">{item.hours}</span>
+                        {item.day === "Information not available" ? (
+                          <span className="font-medium">Information not available</span>  
+                        ) : (
+                          <>
+                            <span className="font-medium">{item.day}</span>
+                            <span className="text-gray-600">{item.hours}</span>
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
