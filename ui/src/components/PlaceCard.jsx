@@ -14,17 +14,18 @@ const PlaceCard = ({
   onDelete,
   road = false,
   refreshing = false,
-  participants,
+  onClick,
+  participants
 }) => {
   const { LoggedUser } = useAuth();
-  console.log("PlaceCard - LoggedUser:", LoggedUser);
-  console.log("PlaceCard - Participants:", participants);
+  
+  // Check if user is a participant
   const isParticipant =
-    (!LoggedUser && (!participants || participants.length === 0)) || // Allow editing for guest-created trips only when not logged in
+    (!LoggedUser && (!participants || participants.length === 0)) ||
     (LoggedUser &&
       participants &&
-      participants.some((p) => p.user_id === LoggedUser.id)); // Or if logged in user is a participant
-  console.log("PlaceCard - isParticipant:", isParticipant);
+      participants.some((p) => p.user_id === LoggedUser.id));
+  
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
 
@@ -49,7 +50,7 @@ const PlaceCard = ({
         image.includes("maps.googleapis.com") ||
         image.includes("streetviewpixels"))
     ) {
-      console.log("Detected Google Maps URL, using fallback immediately");
+      // Using fallback for Google Maps URLs
       setImgError(true);
     }
   }, [image]);
@@ -68,7 +69,8 @@ const PlaceCard = ({
     >
       <div className="flex flex-row items-center">
         <motion.div
-          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full"
+          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-pointer bg-white shadow-md w-full hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+          onClick={onClick}
           animate={refreshing ? { opacity: 0.7 } : { opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
@@ -122,8 +124,11 @@ const PlaceCard = ({
           <div className="flex flex-col items-center justify-between pl-3 mr-7 gap-y-2 -mt-3">
             {!road && (
               <motion.div
-                className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
-                onClick={() => !refreshing && onRefresh(id)}
+                className="btn btn-sm btn-white rounded-full btn-circle shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200"
+                onClick={(e) => {
+                  !refreshing && onRefresh(id);
+                  e.stopPropagation();
+                }}
                 animate={refreshing ? { rotate: 360 } : {}}
                 transition={
                   refreshing
@@ -137,8 +142,11 @@ const PlaceCard = ({
               </motion.div>
             )}
             <motion.div
-              className="btn btn-sm btn-white rounded-full btn-circle shadow-sm"
-              onClick={() => onDelete && onDelete(id)}
+              className="btn btn-sm btn-white rounded-full btn-circle shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200"
+              onClick={(e) => {
+                onDelete && onDelete(id);
+                e.stopPropagation();
+              }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >

@@ -13,6 +13,7 @@ function ActivityList({
   onDeleteActivity,
   tripType,
   stops,
+  onPlaceClick,
   participants,
 }) {
   // State to track image loading for activities
@@ -106,6 +107,7 @@ function ActivityList({
               onRefresh={() => onRefreshActivity(stop.id)}
               onDelete={() => onDeleteActivity(stop.id)}
               road={true}
+              onClick={() => onPlaceClick(stop.place)}
               participants={participants}
             />
           ))}
@@ -142,6 +144,7 @@ function ActivityList({
             onRefresh={() => onRefreshActivity(activity.id)}
             onDelete={() => onDeleteActivity(activity.id)}
             refreshing={refreshingActivity === activity.id}
+            onClick={() => onPlaceClick(activity.place)}
             participants={participants}
           />
         ))}

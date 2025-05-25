@@ -495,7 +495,7 @@ function Trips() {
                   <p className="text-gray-500">No trips found.</p>
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-x-8 gap-y-4 pb-8 overflow-visible justify-center items-center">
+                <div className="flex flex-wrap gap-x-8 gap-y-4 pb-8 overflow-visible justify-start items-center">
                   {filteredTrips.map((trip) => (
                     <TripCard
                       key={trip.id}
