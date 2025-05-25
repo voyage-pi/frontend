@@ -23,6 +23,7 @@ function SearchBar({
         />
       </div>
 
+      {!hideButton && (
       <button
         className="btn btn-primary normal-case rounded-full flex items-center gap-2 px-6"
         onClick={onCreateNew}
@@ -32,6 +33,7 @@ function SearchBar({
         </div>
         <span className="text-primary-content text-lg align-middle font-bold ml-2">{createButtonText}</span>
       </button>
+      )}
     </div>
   );
 }
