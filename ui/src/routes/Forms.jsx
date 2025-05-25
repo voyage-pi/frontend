@@ -10,6 +10,7 @@ import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
 import Notification from "../components/Notification";
 import { useAuth } from "../context/AuthContext";
+import TripCreationWebSocket from "../utils/websocketClient";
 
 function Forms() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -28,6 +29,11 @@ function Forms() {
   const [isGroup, setIsGroup] = useState(false);
   const [addedUsers, setAddedUsers] = useState([]);
 
+  const [showProgress, setShowProgress] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [progressMessage, setProgressMessage] = useState("");
+  const [wsClient, setWsClient] = useState(null);
+
   const getQuestions = async () => {
     const response = await axiosUser.get("/questions/");
     return response.data;
@@ -35,23 +41,15 @@ function Forms() {
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const initialize = async () => {
-      const savedStep = parseInt(localStorage.getItem("currentStep")) || 1;
-      const savedSubQuestionIndex =
-        parseInt(localStorage.getItem("subQuestionIndex")) || 0;
-      const savedStep6SubStep =
-        parseInt(localStorage.getItem("step6SubStep")) || 0;
-
-      if (savedStep) {
-        setCurrentStep(savedStep);
-      }
-
-      if (savedSubQuestionIndex && savedSubQuestionIndex >= 0) {
-        setSubQuestionIndex(savedSubQuestionIndex);
-      }
-
-      if (savedStep6SubStep !== undefined) {
-        setStep6SubStep(savedStep6SubStep);
-      }
+      // Always start at step 1 and clear any saved step data
+      setCurrentStep(1);
+      setSubQuestionIndex(0);
+      setStep6SubStep(0);
+      
+      // Clear saved step data from localStorage
+      localStorage.removeItem("currentStep");
+      localStorage.removeItem("subQuestionIndex");
+      localStorage.removeItem("step6SubStep");
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
@@ -190,25 +188,18 @@ function Forms() {
       JSON.parse(localStorage.getItem("MustVisitPlaces")) || [];
     const keywords = JSON.parse(localStorage.getItem("Keywords")) || [];
 
-    setIsNavigating(true);
-
-    // Formatação da data para ISO string
     const storedStartDate = localStorage.getItem("Start Date");
     const startDate = storedStartDate ? new Date(storedStartDate) : new Date();
     const formattedDate = startDate.toISOString();
 
-    // Make sure duration is at least 1 day
     const duration = Math.max(
       1,
       parseInt(localStorage.getItem("Duration")) || 1
     );
 
-    console.log("User Ratings:", userRatings);
-
     const tripType = localStorage.getItem("Trip Type");
     let obj = {};
 
-    //add an object related to the trip type an append it to the sending data for the backend attributes
     if (tripType === "zone") {
       obj.radius = localStorage.getItem("radius");
       obj.center = {
@@ -230,22 +221,18 @@ function Forms() {
       obj.type = "road";
     }
 
-    // Format must-visit places for API (List[PlaceInfo])
     const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => obj.place);
-    // Parse location for country and city
     const location = localStorage.getItem("Location") || "";
     let locationParts;
     let country;
     let city;
 
     if (localStorage.getItem("Trip Type") === "road") {
-      // For road trips, use the destination text
       const destinationText = localStorage.getItem("currentTextDes") || "";
       locationParts = destinationText.split(",").map((part) => part.trim());
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     } else {
-      // For place and zone trips, use the original location parsing
       locationParts = location.split(",").map((part) => part.trim());
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
@@ -266,99 +253,118 @@ function Forms() {
       preferences: {
         "questions": userRatings.map((answer, index) => ({
           question_id: index,
-          value: parseInt(answer) || 0, // Garantindo que o valor seja número
+          value: parseInt(answer) || 0,
           type: "scale",
         })),
       },
       is_group: isGroup,
     };
-    // if it is authenticated add the preferencesName to the forms to create preferences profile
-    if (isAuthenticated) {
-      formData.preferences["preferencesName"] =
-        localStorage.getItem("preferencesName");
-    }
 
-    console.log("Sending data:", JSON.stringify(formData, null, 2)); // Para debug detalhado
+    console.log("Creating trip via WebSocket:", formData);
 
     try {
-      const response = await axiosInstance.post("/trips", formData);
+      setShowProgress(true);
+      setProgressPercent(0);
+      setProgressMessage("Connecting to trip creation service...");
 
-      // Ensure we have the complete response data with the correct structure
-      if (
-        response.data &&
-        response.data.response &&
-        response.data.response.itinerary
-      ) {
+      const client = new TripCreationWebSocket();
+      setWsClient(client);
 
-        const tripId = response.data.response.tripId;
-        navigate(`/itinerary/${tripId}`, {
-          state: {
-            itineraryData: response.data,
-            preferences_id: response.data.response.preferences_id,
-          },
-        });
+      client.setEventHandlers({
+        onConnection: (message, progress) => {
+          setProgressMessage(message);
+          setProgressPercent(progress);
+        },
+        onProgress: (message, progress, tripId) => {
+          setProgressMessage(message);
+          setProgressPercent(progress);
+        },
+        onSuccess: async (message, responseData, tripId) => {
+          console.log("Trip created successfully with ID:", tripId);
+          setProgressMessage("Trip created successfully!");
+          setProgressPercent(100);
 
-        // Instead of clearing all localStorage, just remove specific keys
-        // but keep userRatings for the preference sidebar
-        const keysToRemove = [
-          "currentStep",
-          "subQuestionIndex",
-          "step6SubStep",
-          "answers",
-          "Start Date",
-          "Trip Type",
-          "radius",
-          "Latitude",
-          "Longitude",
-          "Location",
-          "Budget",
-          "Duration",
-          "userRatings",
-          "MustVisitPlaces",
-          "Keywords",
-          "currentTextDes",
-          "currentTextOrigin",
-          "origin",
-          "destination",
-          "route",
-          "preferencesName",
-          "isGroup",
-        ];
+          setTimeout(async () => {
+            setShowProgress(false);
 
-        keysToRemove.forEach((key) => localStorage.removeItem(key));
+            navigate(`/itinerary/${tripId}`, {
+              state: {
+                itineraryData: { response: responseData },
+                userRatings: userRatings,
+              },
+            });
 
-        answers.forEach((answer) => {
-          answer.answer = null;
-        });
-        setAnswers([...answers]);
-        setCurrentStep(1);
-        setSubQuestionIndex(0);
-        setStep6SubStep(0);
-        setIsGroup(false);
+            const keysToRemove = [
+              "currentStep",
+              "subQuestionIndex",
+              "step6SubStep",
+              "answers",
+              "Start Date",
+              "Trip Type",
+              "radius",
+              "Latitude",
+              "Longitude",
+              "Location",
+              "Budget",
+              "Duration",
+              "userRatings",
+              "MustVisitPlaces",
+              "Keywords",
+              "currentTextDes",
+              "currentTextOrigin",
+              "origin",
+              "destination",
+              "route",
+              "isGroup",
+            ];
 
-        // After trip creation, send invitations to all addedUsers
-        for (const user of addedUsers) {
-          try {
-            await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
-          } catch (e) {
-            console.error(`Failed to invite user ${user.id}:`, e);
-          }
-        }
-      } else {
-        console.error("Invalid response structure:", response.data);
-        setIsNavigating(false);
-      }
+            keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+            answers.forEach((answer) => {
+              answer.answer = null;
+            });
+            setAnswers([...answers]);
+            setCurrentStep(1);
+            setSubQuestionIndex(0);
+            setStep6SubStep(0);
+            setIsGroup(false);
+
+            for (const user of addedUsers) {
+              try {
+                await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
+              } catch (e) {
+                console.error(`Failed to invite user ${user.id}:`, e);
+              }
+            }
+          }, 1500);
+        },
+        onError: (message, progress) => {
+          console.error("WebSocket error:", message);
+          setProgressMessage(`Error: ${message}`);
+          setTimeout(() => {
+            setShowProgress(false);
+            setIsNavigating(false);
+          }, 3000);
+        },
+      });
+
+      await client.connect();
+      client.sendTripData(formData);
     } catch (error) {
-      if (error.response?.data) {
-        console.error("Validation errors:", error.response.data);
-      }
-      console.error("Error submitting form:", error);
+      console.error("Error creating trip via WebSocket:", error);
+      setShowProgress(false);
       setIsNavigating(false);
     }
   };
 
-  if (!isInitialized || isNavigating) {
-    return <LoadingItinerary />;
+  if (!isInitialized || isNavigating || showProgress) {
+    return (
+      <LoadingItinerary
+        message={progressMessage}
+        progress={progressPercent}
+        showProgress={showProgress}
+      />
+    );
   }
 
   return (

@@ -7,8 +7,26 @@ export const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true // Enable sending cookies
+  withCredentials: true, // Enable sending cookies
 });
+
+// Add request interceptor to include auth token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("voyage_at="))
+      ?.split("=")[1];
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export const axiosPlace = axios.create({
   baseURL: "/api/v1/place-wrapper", // Updated to use the nginx proxy path
@@ -16,8 +34,26 @@ export const axiosPlace = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true
+  withCredentials: true,
 });
+
+// Add request interceptor to include auth token
+axiosPlace.interceptors.request.use(
+  (config) => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("voyage_at="))
+      ?.split("=")[1];
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export const axiosMaps = axios.create({
   baseURL: "/api/v1/maps-wrapper/", // Updated to use the nginx proxy path
@@ -33,8 +69,26 @@ export const axiosUser = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true
+  withCredentials: true,
 });
+
+// Add request interceptor to include auth token
+axiosUser.interceptors.request.use(
+  (config) => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("voyage_at="))
+      ?.split("=")[1];
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export const axiosRecommendation = axios.create({
   baseURL: "/api/v1/recommendations",
@@ -42,5 +96,23 @@ export const axiosRecommendation = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true
+  withCredentials: true,
 });
+
+// Add request interceptor to include auth token
+axiosRecommendation.interceptors.request.use(
+  (config) => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("voyage_at="))
+      ?.split("=")[1];
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);

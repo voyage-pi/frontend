@@ -13,6 +13,7 @@ function ActivityList({
   onDeleteActivity,
   tripType,
   stops,
+  participants,
 }) {
   // State to track image loading for activities
   const [activityImages, setActivityImages] = useState({});
@@ -105,6 +106,7 @@ function ActivityList({
               onRefresh={() => onRefreshActivity(stop.id)}
               onDelete={() => onDeleteActivity(stop.id)}
               road={true}
+              participants={participants}
             />
           ))}
         </div>
@@ -140,6 +142,7 @@ function ActivityList({
             onRefresh={() => onRefreshActivity(activity.id)}
             onDelete={() => onDeleteActivity(activity.id)}
             refreshing={refreshingActivity === activity.id}
+            participants={participants}
           />
         ))}
       </div>

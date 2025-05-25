@@ -4,6 +4,7 @@ import { axiosUser } from "../utils/axiosInstance";
 
 const FriendCard = ({ friend, onClick, selected }) => {
   const [stats, setStats] = useState(null);
+  const [lastTrip, setLastTrip] = useState(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -15,6 +16,24 @@ const FriendCard = ({ friend, onClick, selected }) => {
       }
     };
     fetchStats();
+  }, [friend]);
+
+  useEffect(() => {
+    const fetchLastTrip = async () => {
+      if (!friend) return;
+      try {
+        const res = await axiosUser.get(`/trip-info/last-shared-trip/${friend.friend_id || friend.id}`);
+        const tripDetails = res.data?.data?.data;
+        if (tripDetails && tripDetails.name) {
+          setLastTrip(tripDetails);
+        } else {
+          setLastTrip(null);
+        }
+      } catch (e) {
+        setLastTrip(null);
+      }
+    };
+    fetchLastTrip();
   }, [friend]);
 
   return (
@@ -61,17 +80,23 @@ const FriendCard = ({ friend, onClick, selected }) => {
             </div>
           </div>
           
-          {friend.lastTrip ? (
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <p className="text-xs text-gray-500">Last trip together:</p>
-              <p className="text-sm font-medium">{friend.lastTrip}</p>
-            </div>
-          ) : (
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <p className="text-xs text-gray-500">Last trip together:</p>
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-500">Last trip together:</p>
+            {lastTrip ? (
+              <div>
+                <p className="text-sm font-medium">
+                  {`${lastTrip.name}`} <span className="text-xs text-gray-400">({lastTrip.start_date && lastTrip.end_date
+                    ? `${new Date(lastTrip.start_date).toLocaleDateString()} - ${new Date(lastTrip.end_date).toLocaleDateString()}`
+                    : lastTrip.start_date
+                      ? new Date(lastTrip.start_date).toLocaleDateString()
+                      : null
+                  })</span>
+                </p>
+              </div>
+            ) : (
               <p className="text-sm text-gray-400 italic">You still don't have trips together</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
