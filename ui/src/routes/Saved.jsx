@@ -207,6 +207,7 @@ function Saved() {
         }
         
         // Show feedback notification
+        
         showNotification(`${placeName} removed from favorites`, 'success');
       } else {
         // Add to favorites

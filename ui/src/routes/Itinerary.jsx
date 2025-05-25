@@ -513,7 +513,7 @@ function Itinerary() {
 
         <div className="flex flex-col md:flex-row h-min-screen p-10 -mt-10">
           {/* Left Side */}
-          <div className="w-full md:w-1/2 pr-4 overflow-hidden  ">
+          <div className="w-full md:w-1/2 pr-4 overflow-hidden relative z-30">
             <ItineraryHeader
               title={title}
               totalDays={totalDays}
@@ -530,6 +530,7 @@ function Itinerary() {
               setExportDropdownOpen={setExportDropdownOpen}
               generateGoogleMapsUrl={generateGoogleMapsUrl}
               participants={tripData.participants}
+              className="z-30"
             />
 
             <div className="h-[40rem] pr-2">
@@ -562,11 +563,12 @@ function Itinerary() {
             </div>
           </div>
           {/* Right Side */}
-          <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg max-h-full relative">
+          <div className="w-full md:w-1/2 bg-blue-100 flex items-center justify-center overflow-hidden text-gray-500 rounded-lg max-h-full relative z-20">
             {!isPlaceSidebarOpen && (
               <Map
                 polylines={tripType !== "road" ? routes[selectedDay] : routes}
                 markers={tripType !== "road" ? markers[selectedDay] : markers}
+                className="z-20"
               />
             )}
             <PlaceDetailSidebar
