@@ -41,7 +41,14 @@ const FriendsInvite = ({ onNext, onBack, addedUsers, setAddedUsers }) => {
           }
         });
         const friendsList = (await Promise.all(friendsPromises)).filter(Boolean);
-        setFriends(friendsList);
+        
+        // Check if any friends should be pre-selected based on addedUsers
+        const updatedFriendsList = friendsList.map(friend => ({
+          ...friend,
+          selected: addedUsers.some(user => user.id === friend.id)
+        }));
+        
+        setFriends(updatedFriendsList);
       } catch (err) {
         setError('Failed to load friends.');
       } finally {
@@ -49,7 +56,7 @@ const FriendsInvite = ({ onNext, onBack, addedUsers, setAddedUsers }) => {
       }
     };
     fetchFriends();
-  }, []);
+  }, [addedUsers]);
 
   // Handle toggling friend selection
   const handleFriendToggle = (id) => {

@@ -25,7 +25,28 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUse
         setIsGroup(false);
       }
     } else {
-      setShowLeaveButton(true);
+      // Check if there are pre-added users from localStorage
+      const savedAddedUsers = localStorage.getItem("addedUsers");
+      if (savedAddedUsers) {
+        try {
+          const parsedUsers = JSON.parse(savedAddedUsers);
+          if (parsedUsers.length > 0) {
+            // Auto-select group trip and show friends invite
+            setSelectedCard('group');
+            localStorage.setItem("Trip Dimension", 'group');
+            setShowFriendsInvite(true);
+            setShowLeaveButton(false);
+            setIsGroup(true);
+          } else {
+            setShowLeaveButton(true);
+          }
+        } catch (error) {
+          console.error("Error parsing saved addedUsers:", error);
+          setShowLeaveButton(true);
+        }
+      } else {
+        setShowLeaveButton(true);
+      }
     }
   }, [setShowLeaveButton, setIsGroup]);
 

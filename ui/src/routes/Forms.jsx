@@ -54,6 +54,23 @@ function Forms() {
       // Load saved answers if available
       const savedAnswers = localStorage.getItem("answers");
       
+      
+      // Load addedUsers from localStorage if they exist
+      const savedAddedUsers = localStorage.getItem("addedUsers");
+      if (savedAddedUsers) {
+        try {
+          const parsedUsers = JSON.parse(savedAddedUsers);
+          setAddedUsers(parsedUsers);
+          // If there are added users, set isGroup to true
+          if (parsedUsers.length > 0) {
+            setIsGroup(true);
+          }
+        } catch (error) {
+          console.error("Error parsing saved addedUsers:", error);
+          setAddedUsers([]);
+        }
+      }
+      
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
@@ -80,6 +97,7 @@ function Forms() {
       localStorage.setItem("step6SubStep", step6SubStep);
       localStorage.setItem("answers", JSON.stringify(answers));
       localStorage.setItem("isGroup", isGroup);
+      localStorage.setItem("addedUsers", JSON.stringify(addedUsers));
     }
   }, [
     currentStep,
@@ -87,6 +105,7 @@ function Forms() {
     step6SubStep,
     answers,
     isGroup,
+    addedUsers,
     isInitialized,
   ]);
 
@@ -329,6 +348,7 @@ function Forms() {
               "destination",
               "route",
               "isGroup",
+              "addedUsers",
             ];
 
             keysToRemove.forEach((key) => localStorage.removeItem(key));
@@ -341,6 +361,7 @@ function Forms() {
             setSubQuestionIndex(0);
             setStep6SubStep(0);
             setIsGroup(false);
+            setAddedUsers([]);
 
             for (const user of addedUsers) {
               try {
