@@ -67,9 +67,9 @@ function ItineraryHeader({
             <FaRegFloppyDisk className="text-primary text-xl" />
           </div>
         )}
-        <div className="relative" ref={exportDropdownRef}>
+        <div className="relative z-[100]" ref={exportDropdownRef}>
           <button
-            className="btn btn-md btn-white rounded-full btn-circle shadow-sm flex items-center justify-center"
+            className="btn btn-md btn-white rounded-full btn-circle shadow-sm flex items-center justify-center relative z-[100]"
             onClick={() =>
               tripType === "road"
                 ? onOpenInGoogleMaps()
@@ -81,7 +81,7 @@ function ItineraryHeader({
             <FaMapLocationDot className="text-primary text-xl" />
           </button>
           {exportDropdownOpen && (
-            <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-50">
+            <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-[100]">
               {tripType !== "road" &&
               itinerary.days &&
               itinerary.days.length > 0 ? (
