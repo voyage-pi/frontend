@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceCard from "./PlaceCard";
+import "../styles/scrollbar.css";
 
 function ActivityList({
   days,
@@ -18,6 +19,9 @@ function ActivityList({
 }) {
   // State to track image loading for activities
   const [activityImages, setActivityImages] = useState({});
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+  const scrollContainerRef = useRef(null);
 
   // Effect to load images for current day's activities
   useEffect(() => {
@@ -79,6 +83,33 @@ function ActivityList({
     getPhotoUrl,
   ]);
 
+  const checkScrollability = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    setCanScrollUp(scrollTop > 5);
+    setCanScrollDown(scrollTop < scrollHeight - clientHeight - 5);
+  };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => checkScrollability();
+
+    checkScrollability();
+    container.addEventListener("scroll", handleScroll);
+
+    const resizeObserver = new ResizeObserver(checkScrollability);
+    resizeObserver.observe(container);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, [days, selectedDay, stops, tripType]);
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4 animate-pulse">
@@ -90,30 +121,42 @@ function ActivityList({
   }
 
   const scrollContainerClasses =
-    "relative flex flex-col gap-4 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-100";
+    "flex flex-col gap-4 overflow-y-auto custom-scrollbar";
 
   if (tripType === "road") {
     return (
-      <div className={scrollContainerClasses}>
-        <div className="pb-12">
-          {(stops || []).map((stop, index) => (
-            <PlaceCard
-              key={`${stop.id || index}-${index}`}
-              id={stop.id || index}
-              place={stop.place?.name || "Unknown Place"}
-              time={null}
-              transport={null}
-              image={activityImages[stop.id] || stop.image || ""}
-              onRefresh={() => onRefreshActivity(stop.id)}
-              onDelete={() => onDeleteActivity(stop.id)}
-              road={true}
-              onClick={() => onPlaceClick(stop.place)}
-              participants={participants}
-            />
-          ))}
+      <div
+        className={`relative h-full scroll-container ${
+          canScrollUp ? "has-scroll-up" : ""
+        } ${canScrollDown ? "has-scroll-down" : ""}`}
+      >
+        <div
+          ref={scrollContainerRef}
+          className={`${scrollContainerClasses} h-full`}
+        >
+          <div className="pb-12 pt-2">
+            {(stops || []).map((stop, index) => (
+              <PlaceCard
+                key={`${stop.id || index}-${index}`}
+                id={stop.id || index}
+                displayOrder={index + 1}
+                place={stop.place?.name || "Unknown Place"}
+                time={null}
+                transport={null}
+                image={activityImages[stop.id] || stop.image || ""}
+                onRefresh={() => onRefreshActivity(stop.id)}
+                onDelete={() => onDeleteActivity(stop.id)}
+                onClick={() => onPlaceClick(stop.place)}
+                road={true}
+                participants={participants}
+              />
+            ))}
+          </div>
         </div>
-        {/* Fade-out effect at the bottom */}
-        <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+
+        {canScrollDown && (
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white via-white/70 to-transparent pointer-events-none z-10" />
+        )}
       </div>
     );
   }
@@ -129,28 +172,40 @@ function ActivityList({
   ].sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 
   return (
-    <div className={scrollContainerClasses}>
-      <div className="pb-12">
-        {allActivities.map((activity, index) => (
-          <PlaceCard
-            key={`${activity.id}-${index}`}
-            id={activity.id}
-            place={activity.place?.name || "Unknown Place"}
-            time={`${formatTime(activity.start_time)} - ${formatTime(
-              activity.end_time
-            )}`}
-            transport={activity.transport || {}}
-            image={activityImages[activity.id] || ""}
-            onRefresh={() => onRefreshActivity(activity.id)}
-            onDelete={() => onDeleteActivity(activity.id)}
-            refreshing={refreshingActivity === activity.id}
-            onClick={() => onPlaceClick(activity.place)}
-            participants={participants}
-          />
-        ))}
+    <div
+      className={`relative h-full scroll-container ${
+        canScrollUp ? "has-scroll-up" : ""
+      } ${canScrollDown ? "has-scroll-down" : ""}`}
+    >
+      <div
+        ref={scrollContainerRef}
+        className={`${scrollContainerClasses} h-full`}
+      >
+        <div className="pb-12 pt-2">
+          {allActivities.map((activity, index) => (
+            <PlaceCard
+              key={`${activity.id}-${index}`}
+              id={activity.id}
+              displayOrder={index + 1}
+              place={activity.place?.name || "Unknown Place"}
+              time={`${formatTime(activity.start_time)} - ${formatTime(
+                activity.end_time
+              )}`}
+              transport={activity.transport || {}}
+              image={activityImages[activity.id] || ""}
+              onRefresh={() => onRefreshActivity(activity.id)}
+              onDelete={() => onDeleteActivity(activity.id)}
+              refreshing={refreshingActivity === activity.id}
+              onClick={() => onPlaceClick(activity.place)}
+              participants={participants}
+            />
+          ))}
+        </div>
       </div>
-      {/* Fade-out effect at the bottom */}
-      <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+
+      {canScrollDown && (
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white via-white/70 to-transparent pointer-events-none z-10" />
+      )}
     </div>
   );
 }
