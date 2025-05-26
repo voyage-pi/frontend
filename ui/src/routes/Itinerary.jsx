@@ -38,7 +38,7 @@ function Itinerary() {
     itinerary,
     title,
     totalDays,
-    budget,
+    price_range,
     locationName,
     calendar,
     days,
@@ -49,7 +49,6 @@ function Itinerary() {
     stops,
     distancePill,
   } = tripData;
-
   // State for UI elements
   const [selectedDay, setSelectedDay] = useState(0);
   // State to track which days are open
@@ -399,6 +398,7 @@ function Itinerary() {
               totalPeople={totalPeople}
               locationName={locationName}
               distancePill={distancePill}
+              priceRange={price_range}
               tripType={tripType}
               onSaveTrip={handleSaveTrip}
               onOpenInGoogleMaps={handleOpenInGoogleMaps}
