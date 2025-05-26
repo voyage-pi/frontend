@@ -205,8 +205,6 @@ export const AuthProvider = ({ children }) => {
                 setUser(null)
                 setIsAuthenticated(false)
                 setIsUserLoading(false)
-                // if you want to redirect to login page when not authenticated
-                //navigate('/login')
             }
         }
         checkAuth()
