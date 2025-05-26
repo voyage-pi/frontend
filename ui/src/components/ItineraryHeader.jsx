@@ -121,7 +121,7 @@ function ItineraryHeader({
               </div>
             </div>
           )}
-          {tripType !== "road" && (
+          {tripType !== "road" && (~~priceRange?.start_price!==0 && ~~priceRange?.end_price!==0) && (
             <div className="rounded-full w-fit border-1 m-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <TbCoinEuro PclassName="text-primary ml-1" />
