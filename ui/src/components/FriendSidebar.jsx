@@ -352,7 +352,11 @@ const FriendSidebar = ({
           ) : tripCards.length > 0 ? (
             <div className="flex flex-col gap-2">
               {tripCards.map(trip => (
-                <SidebarTripListItem key={trip.id} {...trip} />
+                <SidebarTripListItem 
+                  key={trip.id} 
+                  {...trip} 
+                  onClick={(tripId) => navigate(`/itinerary/${tripId}`)}
+                />
               ))}
             </div>
           ) : (
@@ -367,7 +371,11 @@ const FriendSidebar = ({
           ) : sharedTripCards.length > 0 ? (
             <div className="flex flex-col gap-2">
               {sharedTripCards.map(trip => (
-                <SidebarTripListItem key={trip.id} {...trip} />
+                <SidebarTripListItem 
+                  key={trip.id} 
+                  {...trip} 
+                  onClick={(tripId) => navigate(`/itinerary/${tripId}`)}
+                />
               ))}
             </div>
           ) : (
@@ -378,6 +386,19 @@ const FriendSidebar = ({
                 <button
                   className="btn btn-primary border-none rounded-full mt-10 w-auto px-6 flex items-center gap-3 h-10 shadow-sm transition-all duration-400 ease-in-out"
                   onClick={() => {
+                    // Pre-add the friend to localStorage for the forms page
+                    const friendToAdd = {
+                      id: selectedFriend.id || selectedFriend.friend_id,
+                      name: selectedFriend.name,
+                      tag: selectedFriend.username || selectedFriend.tag,
+                      image: selectedFriend.avatar_url || selectedFriend.image || '/default-avatar.png'
+                    };
+                    
+                    // Save the friend to localStorage so they're pre-added in forms
+                    localStorage.setItem("addedUsers", JSON.stringify([friendToAdd]));
+                    localStorage.setItem("isGroup", "true");
+                    localStorage.setItem("Trip Dimension", "group");
+                    
                     setNotification({
                       message: `Starting a new trip with ${selectedFriend.name}!`,
                       type: "success"

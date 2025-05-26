@@ -9,10 +9,13 @@ import Notification from "../Notification";
 const Step4Content = () => {
   const today = new Date();
   const tomorrow_tomorrow = new Date(today);
-  tomorrow_tomorrow.setDate(tomorrow_tomorrow.getDate() + 2);
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(tomorrow_tomorrow);
-  const [budget, setBudget] = useState(332);
+  tomorrow_tomorrow.setDate(tomorrow_tomorrow.getDate() + 1);
+  
+  // Initialize with null to prevent default values from overriding localStorage
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [budget, setBudget] = useState(null);
+  
   const [dateError, setDateError] = useState(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [calendarPosition, setCalendarPosition] = useState(0);
@@ -27,38 +30,135 @@ const Step4Content = () => {
     const savedEnd = localStorage.getItem("End Date");
     const savedBudget = localStorage.getItem("Budget");
 
-    if (savedStart && savedEnd) {
-      setStartDate(new Date(savedStart));
-      setEndDate(new Date(savedEnd));
+    console.log("Loading from localStorage:", { savedStart, savedEnd, savedBudget });
+
+    let parsedStartDate = null;
+    let parsedEndDate = null;
+    let parsedBudget = 332; // Default budget value
+
+    if (savedStart) {
+      try {
+        // Parse date from YYYY-MM-DD format
+        const parts = savedStart.split('-');
+        if (parts.length === 3) {
+          const year = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1; // JS months are 0-indexed
+          const day = parseInt(parts[2], 10);
+          
+          const parsedDate = new Date(year, month, day);
+          console.log("Parsed start date:", parsedDate);
+          
+          if (!isNaN(parsedDate.getTime())) {
+            parsedStartDate = parsedDate;
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing start date from localStorage:", error);
+      }
     }
-    if (savedBudget) setBudget(parseInt(savedBudget, 10));
-  }, []);
+    
+    if (savedEnd) {
+      try {
+        // Parse date from YYYY-MM-DD format
+        const parts = savedEnd.split('-');
+        if (parts.length === 3) {
+          const year = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1; // JS months are 0-indexed
+          const day = parseInt(parts[2], 10);
+          
+          const parsedDate = new Date(year, month, day);
+          console.log("Parsed end date:", parsedDate);
+          
+          if (!isNaN(parsedDate.getTime())) {
+            parsedEndDate = parsedDate;
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing end date from localStorage:", error);
+      }
+    }
+
+    // Set dates: use localStorage values if available, otherwise use defaults
+    setStartDate(parsedStartDate || today);
+    setEndDate(parsedEndDate || tomorrow_tomorrow);
+    
+    if (savedBudget) {
+      try {
+        const budgetValue = parseInt(savedBudget, 10);
+        if (!isNaN(budgetValue)) {
+          parsedBudget = budgetValue;
+        }
+      } catch (error) {
+        console.error("Error parsing budget from localStorage:", error);
+      }
+    }
+    
+    // Set budget: use localStorage value if available, otherwise use default
+    setBudget(parsedBudget);
+  }, []); // Empty dependency array to run only once on mount
 
   useEffect(() => {
     // Only save dates to localStorage if they're not null
     if (startDate) {
-      localStorage.setItem(
-        "Start Date",
-        startDate instanceof Date
-          ? startDate.toISOString().split("T")[0]
-          : startDate
-      );
+      try {
+        if (startDate instanceof Date && !isNaN(startDate.getTime())) {
+          // Format date as YYYY-MM-DD with current year
+          const year = new Date().getFullYear();
+          const month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+          const day = startDate.getDate().toString().padStart(2, '0');
+          
+          const dateString = `${year}-${month}-${day}`;
+          console.log("Saving start date:", dateString);
+          
+          localStorage.setItem("Start Date", dateString);
+        }
+      } catch (error) {
+        console.error("Error saving start date to localStorage:", error);
+      }
     }
+    
     if (endDate) {
-      localStorage.setItem(
-        "End Date",
-        endDate instanceof Date ? endDate.toISOString().split("T")[0] : endDate
-      );
+      try {
+        if (endDate instanceof Date && !isNaN(endDate.getTime())) {
+          // Format date as YYYY-MM-DD with current year
+          const year = new Date().getFullYear();
+          const month = (endDate.getMonth() + 1).toString().padStart(2, '0');
+          const day = endDate.getDate().toString().padStart(2, '0');
+          
+          const dateString = `${year}-${month}-${day}`;
+          console.log("Saving end date:", dateString);
+          
+          localStorage.setItem("End Date", dateString);
+        }
+      } catch (error) {
+        console.error("Error saving end date to localStorage:", error);
+      }
     }
   }, [startDate, endDate]);
 
   useEffect(() => {
-    localStorage.setItem("Budget", budget);
+    // Only save budget to localStorage if it's not null
+    if (budget !== null) {
+      localStorage.setItem("Budget", budget);
+    }
   }, [budget]);
 
   const handleDateChange = useCallback(
     (start, end) => {
-      // If both dates are present and invalid, block update
+      console.log("Calendar selected dates:", { start, end });
+      
+      if (start) {
+        // Ensure we preserve the date exactly as selected
+        setStartDate(start);
+      } else {
+        setStartDate(today);
+      }
+      
+      if (end) {
+        // Ensure we preserve the date exactly as selected
+        setEndDate(end);
+      }
+
       if (start && end && start > end) {
         setDateError("End date cannot be earlier than start date");
         setShowDateErrorNotification(true);
@@ -70,19 +170,35 @@ const Step4Content = () => {
       if (end) setEndDate(end);
       setDateError(null);
     },
-    []
+    [today]
   );
 
   const calculateDays = (start, end) => {
     if (!start || !end) return 0;
-    const startObj = new Date(start);
-    const endObj = new Date(end);
-    if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) return 0;
-
-    return Math.max(
-      1,
-      Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1
-    );
+    
+    try {
+      // Create new Date objects to avoid reference issues
+      const startObj = start instanceof Date ? new Date(start) : new Date(start);
+      const endObj = end instanceof Date ? new Date(end) : new Date(end);
+      
+      // Validate both dates are valid
+      if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) {
+        console.error("Invalid date in calculateDays");
+        return 0;
+      }
+      
+      // Reset hours to compare dates only
+      startObj.setHours(0, 0, 0, 0);
+      endObj.setHours(0, 0, 0, 0);
+      
+      return Math.max(
+        1,
+        Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1
+      );
+    } catch (error) {
+      console.error("Error calculating days:", error);
+      return 0;
+    }
   };
   const days = calculateDays(startDate, endDate);
 
@@ -129,10 +245,21 @@ const Step4Content = () => {
   // Format date for display
   const formatDate = (date) => {
     if (!date) return "Select a date";
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    
+    try {
+      // Check if date is a valid Date object
+      if (!(date instanceof Date) || isNaN(date.getTime())) {
+        return "Invalid date";
+      }
+      
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Invalid date";
+    }
   };
 
   const CalendarIcon = () => (

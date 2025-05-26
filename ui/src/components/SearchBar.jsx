@@ -5,11 +5,12 @@ function SearchBar({
   setSearchTerm,
   onCreateNew,
   createButtonText,
-  placeholder
+  placeholder,
+  hideButton = false
 }) {
   return (
     <div className="flex justify-between items-center mb-6">
-      <div className="relative w-full max-w-full mr-2">
+      <div className={`relative ${hideButton ? 'w-full' : 'w-full max-w-full mr-2'}`}>
         <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
           <FaSistrix className="z-50 opacity-50 text-2xl" />
         </div>
@@ -22,6 +23,7 @@ function SearchBar({
         />
       </div>
 
+      {!hideButton && (
       <button
         className="btn btn-primary normal-case rounded-full flex items-center gap-2 px-6"
         onClick={onCreateNew}
@@ -31,6 +33,7 @@ function SearchBar({
         </div>
         <span className="text-primary-content text-lg align-middle font-bold ml-2">{createButtonText}</span>
       </button>
+      )}
     </div>
   );
 }

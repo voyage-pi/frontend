@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { FaUserGroup, FaUser } from "react-icons/fa6";
 import FormCard from './FormCard';
 import FriendsInviteComponent from './FriendsInvite';
+import { useAuth } from '../../context/AuthContext';
+import Notification from '../Notification';
 
 const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUsers, setAddedUsers }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
   const [showFriendsInvite, setShowFriendsInvite] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const savedSelection = localStorage.getItem("Trip Dimension");
@@ -21,12 +25,38 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUse
         setIsGroup(false);
       }
     } else {
-      setShowLeaveButton(true);
+      // Check if there are pre-added users from localStorage
+      const savedAddedUsers = localStorage.getItem("addedUsers");
+      if (savedAddedUsers) {
+        try {
+          const parsedUsers = JSON.parse(savedAddedUsers);
+          if (parsedUsers.length > 0) {
+            // Auto-select group trip and show friends invite
+            setSelectedCard('group');
+            localStorage.setItem("Trip Dimension", 'group');
+            setShowFriendsInvite(true);
+            setShowLeaveButton(false);
+            setIsGroup(true);
+          } else {
+            setShowLeaveButton(true);
+          }
+        } catch (error) {
+          console.error("Error parsing saved addedUsers:", error);
+          setShowLeaveButton(true);
+        }
+      } else {
+        setShowLeaveButton(true);
+      }
     }
   }, [setShowLeaveButton, setIsGroup]);
 
   const handleCardClick = (card) => {
     if (lastNotificationId === card.id) {
+      return;
+    }
+
+    if (card.id === 'group' && !isAuthenticated) {
+      setShowNotification(true);
       return;
     }
 
@@ -84,6 +114,13 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUse
 
   return (
     <div className="text-center p-6 -mb-10">
+      {showNotification && (
+        <Notification
+          type="error"
+          text="You need to be logged in to create a group trip"
+          onClose={() => setShowNotification(false)}
+        />
+      )}
       <div className="flex justify-center space-x-40 pt-9">
         {cardData.map((card) => (
           <FormCard

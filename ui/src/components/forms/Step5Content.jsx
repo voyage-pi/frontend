@@ -3,11 +3,24 @@ import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6";
 import { FaUser, FaUserGroup } from "react-icons/fa6";
 import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
+import { useAuth } from "../../context/AuthContext";
+import NewPreferences from "./step4/NewPreferences";
+import OldPreferences from "./step4/OldPreferences";
 
-function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSelect, setCurrentStep, onValidationChange, handleNext}) {
-  const [showNewPreferences, setShowNewPreferences] = useState(false);
+function Step5Content({
+  subQuestionIndex,
+  totalSubQuestions,
+  answers,
+  onRatingSelect,
+  setCurrentStep,
+  onValidationChange,
+  handleNext,
+}) {
+  const [showNewPreferences, setShowNewPreferences] = useState(null);
   const [isValid, setIsValid] = useState(false);
-  const [tripDimension, setTripDimension] = useState('individual');
+  const [tripDimension, setTripDimension] = useState("individual");
+  const [choosen, setChoosen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Check if trip dimension is saved in localStorage
@@ -15,32 +28,19 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
     if (savedTripDimension) {
       setTripDimension(savedTripDimension);
     }
-    
     // Check if preferences profile already exists
     const preferencesProfile = localStorage.getItem("Preferences Profile");
-    
+
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-    
+
     // If a profile already exists as "New" or if there are ratings for the current question
     if (preferencesProfile === "New" || savedRatings[subQuestionIndex]) {
-      setShowNewPreferences(true);
+      // verify if the user is logged in otherwise just continue, for preferences saving
+      if (!isAuthenticated) {
+        setShowNewPreferences(true);
+      }
     }
   }, [subQuestionIndex]);
-
-  const handleNewPreferencesClick = () => {
-    setShowNewPreferences(true);
-    localStorage.setItem("Preferences Profile", "New");
-  };
-
-  const handleSingularTasteClick = () => {
-    setShowNewPreferences(true);
-    localStorage.setItem("Preferences Profile", "Singular");
-  };
-
-  const handleCombinedGroupClick = () => {
-    setShowNewPreferences(true);
-    localStorage.setItem("Preferences Profile", "Combined");
-  };
 
   const handleRatingSelect = (rating) => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
@@ -48,7 +48,7 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
     localStorage.setItem("userRatings", JSON.stringify(savedRatings)); // Save the updated array
 
     if (onRatingSelect) {
-      onRatingSelect(rating); 
+      onRatingSelect(rating);
     }
   };
 
@@ -58,42 +58,68 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
       onValidationChange(isValid);
     }
   };
-
-  if (showNewPreferences) {
-    const currentQuestion = answers[subQuestionIndex];
-    return (
-      <div className="p-6">
-        <Step5ContentPP
-          currentQuestion={currentQuestion}
-          subQuestionIndex={subQuestionIndex}
-          totalSubQuestions={totalSubQuestions}
-          onRatingSelect={handleRatingSelect}
-          onValidationChange={handleValidationChange}
-          handleNext={handleNext}
-        />
-      </div>
-    );
-  }
-
-  // Different options based on trip dimension
-  if (tripDimension === 'group') {
-    const groupCardData = [
+  if (
+    showNewPreferences == null &&
+    ((choosen && tripDimension === "group") || tripDimension == "individual")
+  ) {
+    const individualCardData = [
       {
-        id: 'singular',
-        icon: FaUser,
-        title: 'Singular Taste Profile',
-        onClick: handleSingularTasteClick,
-        text: 'Create a single preference profile for the entire group based on one person\'s choices. This is useful when one person is making decisions for the group or when the group has similar preferences.'
+        id: "reuse",
+        icon: FaRecycle,
+        title: "Reuse Preferences Profile",
+        onClick: () => setShowNewPreferences(false),
       },
       {
-        id: 'combined',
-        icon: FaUserGroup,
-        title: 'Combined Group Preferences',
-        onClick: handleCombinedGroupClick,
-        text: 'Create a combined profile that takes into account preferences from all group members. This option is ideal for groups with diverse tastes, ensuring that recommendations satisfy the majority of the group.'
+        id: "new",
+        icon: FaFileCirclePlus,
+        title: "New Preferences Profile",
+        onClick: () => {
+          setShowNewPreferences(true);
+        },
       },
     ];
 
+    return (
+      <div className="text-center p-6 -mb-10">
+        <div className="flex justify-center space-x-40 pt-9">
+          {individualCardData.map((card) => (
+            <FormCard
+              key={card.id}
+              icon={card.icon}
+              title={card.title}
+              selected={false}
+              onClick={card.onClick || (() => {})}
+              iconSize={100}
+              infoSize={25}
+              text={card.text}
+              id={card.id}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  } else if (!choosen && tripDimension === "group") {
+    // Different options based on trip dimension
+    const groupCardData = [
+      {
+        id: "singular",
+        icon: FaUser,
+        title: "Singular Taste Profile",
+        onClick: () => {
+          setChoosen(true);
+        },
+        text: "Create a single preference profile for the entire group based on one person's choices. This is useful when one person is making decisions for the group or when the group has similar preferences.",
+      },
+      {
+        id: "combined",
+        icon: FaUserGroup,
+        title: "Combined Group Preferences",
+        onClick: () => {
+          setChoosen(true);
+        },
+        text: "Create a combined profile that takes into account preferences from all group members. This option is ideal for groups with diverse tastes, ensuring that recommendations satisfy the majority of the group.",
+      },
+    ];
     return (
       <div className="text-center p-6 -mb-10">
         <div className="flex justify-center space-x-40 pt-9">
@@ -113,42 +139,26 @@ function Step5Content({subQuestionIndex, totalSubQuestions, answers, onRatingSel
         </div>
       </div>
     );
+  } else {
+    if (showNewPreferences) {
+      const currentQuestion = answers[subQuestionIndex];
+      return (
+        <NewPreferences
+          questionsStep5={{
+            currentQuestion,
+            subQuestionIndex,
+            totalSubQuestions,
+            handleRatingSelect,
+            handleValidationChange,
+            handleNext,
+          }}
+        />
+      );
+    } else if (!showNewPreferences) {
+      return <OldPreferences setCurrentStep={setCurrentStep} />;
+    }
   }
-
   // Default options for individual trips
-  const individualCardData = [
-    {
-      id: 'reuse',
-      icon: FaRecycle,
-      title: 'Reuse Preferences Profile',
-    },
-    {
-      id: 'new',
-      icon: FaFileCirclePlus,
-      title: 'New Preferences Profile',
-      onClick: handleNewPreferencesClick,
-    },
-  ];
-
-  return (
-    <div className="text-center p-6 -mb-10">
-      <div className="flex justify-center space-x-40 pt-9">
-        {individualCardData.map((card) => (
-          <FormCard
-            key={card.id}
-            icon={card.icon}
-            title={card.title}
-            selected={false} 
-            onClick={card.onClick || (() => { })} 
-            iconSize={100}
-            infoSize={25}
-            text={card.text}
-            id={card.id}
-          />
-        ))}
-      </div>
-    </div>
-  );
 }
 
 export default Step5Content;

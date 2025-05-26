@@ -7,7 +7,7 @@ const initialState = {
   title: "",
   totalDays: 0,
   totalPeople: 0,
-  budget: 0,
+  price_range: {"start_price":0.0,"end_price":0.0,"currency":"EUR"},
   locationName: "",
   calendar: [],
   days: {},
@@ -17,6 +17,7 @@ const initialState = {
   tripType: undefined,
   stops: [],
   distancePill: [],
+  participants: [],
 };
 
 // Action types
@@ -38,8 +39,14 @@ function tripReducer(state, action) {
       return { ...state, tripType: action.payload };
 
     case ACTION_TYPES.PROCESS_ROAD_DATA:
-      const { itinerary, title, routes, markers, distancePill } =
-        action.payload;
+      { const {
+        itinerary,
+        title,
+        routes,
+        markers,
+        distancePill,
+        participants: roadParticipants,
+      } = action.payload;
 
       return {
         ...state,
@@ -48,8 +55,9 @@ function tripReducer(state, action) {
         routes,
         markers,
         distancePill,
+        participants: roadParticipants,
         loading: false,
-      };
+      }; }
 
     case ACTION_TYPES.UPDATE_STOPS:
       return {
@@ -58,17 +66,18 @@ function tripReducer(state, action) {
       };
 
     case ACTION_TYPES.PROCESS_ITINERARY_DATA:
-      const {
+      { const {
         itinerary: itineraryData,
         title: titleData,
         totalDays,
         totalPeople,
-        budget,
+        price_range,
         locationName,
         calendar,
         days,
         routes: routesData,
         markers: markersData,
+        participants: itineraryParticipants,
       } = action.payload;
 
       return {
@@ -77,14 +86,15 @@ function tripReducer(state, action) {
         title: titleData,
         totalDays,
         totalPeople,
-        budget,
+        price_range,
         locationName,
         calendar,
         days,
         routes: routesData,
         markers: markersData,
+        participants: itineraryParticipants,
         loading: false,
-      };
+      }; }
 
     default:
       return state;
@@ -161,6 +171,7 @@ export function useTripData(tripId, getPhotoUrl) {
 
   const processRoadData = async (data) => {
     const responseItinerary = data.itinerary;
+    const tripParticipants = data.participants || [];
     let all_stops = [];
     let routesRoad = [];
     let markersRoad = [];
@@ -222,19 +233,22 @@ export function useTripData(tripId, getPhotoUrl) {
           routes: routesRoad,
           markers: markersRoad,
           distancePill: totalDistance,
+          participants: tripParticipants,
         },
       });
     }
   };
 
   const processItineraryData = async (data) => {
-    console.log("data", data);
     if (data) {
       let responseItinerary = null;
+      let tripParticipants = [];
       if (data.response?.itinerary) {
         responseItinerary = data.response.itinerary;
+        tripParticipants = data.response.participants || [];
       } else {
         responseItinerary = data.itinerary;
+        tripParticipants = data.participants || [];
       }
       console.log("Processing itinerary data:", responseItinerary);
 
@@ -358,12 +372,13 @@ export function useTripData(tripId, getPhotoUrl) {
             title: responseItinerary.name,
             totalDays,
             totalPeople: responseItinerary.total_people || 1,
-            budget: responseItinerary.budget || 0,
+            price_range: responseItinerary.price_range,
             locationName: locationTrip,
             calendar,
             days,
             routes: AllroutesData,
             markers: AllmarkersData,
+            participants: tripParticipants,
           },
         });
       }
@@ -436,7 +451,7 @@ export function useTripData(tripId, getPhotoUrl) {
       title: state.title,
       totalDays: state.totalDays,
       totalPeople: state.totalPeople,
-      budget: state.budget,
+      price_range: state.price_range,
       locationName: state.locationName,
       calendar: state.calendar,
       days: state.days,
@@ -446,6 +461,7 @@ export function useTripData(tripId, getPhotoUrl) {
       tripType: state.tripType,
       stops: state.stops,
       distancePill: state.distancePill,
+      participants: state.participants,
     },
     actions: {
       processRoadData,

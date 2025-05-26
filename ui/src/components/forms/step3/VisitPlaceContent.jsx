@@ -54,6 +54,24 @@ const VisitPlaceContent = () => {
     const savedLocation = localStorage.getItem("Location");
     if (savedLocation) {
       setSelectedLocation(savedLocation);
+      setCurrentText(savedLocation);
+      
+      // Restore marker data if available
+      const lat = localStorage.getItem("Latitude");
+      const lng = localStorage.getItem("Longitude");
+      
+      if (lat && lng) {
+        const m = {
+          position: {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng),
+          },
+          title: savedLocation,
+          address: "",
+          image: "",
+        };
+        setMarkers([m]);
+      }
     }
     //clean up timeout when the component unmounts
     if (timeoutRef.current) {

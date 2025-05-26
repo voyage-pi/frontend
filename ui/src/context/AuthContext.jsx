@@ -71,11 +71,20 @@ export const AuthProvider = ({ children }) => {
                 countries: stats.countries_visited || 0,
                 cities: stats.cities_visited || 0,
                 days: stats.total_days || 0,
-                friends: friendCount
+                friends: friendCount,
+                saved: stats.saved || 0
             };
         } catch (error) {
             console.error("Error fetching user stats:", error);
-            return null;
+            // Return default stats object instead of null to prevent further errors
+            return {
+                trips: 0,
+                countries: 0,
+                cities: 0,
+                days: 0,
+                friends: 0,
+                saved: 0
+            };
         }
     };
 
@@ -92,18 +101,32 @@ export const AuthProvider = ({ children }) => {
             if (userData && userData.id) {
                 console.log('User data loaded successfully with ID:', userData.id);
                 
-                // Try to load user statistics
-                const stats = await loadUserStats(userData.id);
-                if (stats) {
-                    // Make sure stats object exists
-                    if (!userData.stats) userData.stats = {};
-                    
-                    // Update stats with data from the API
-                    userData.stats.trips = stats.trips;
-                    userData.stats.countries = stats.countries;
-                    userData.stats.cities = stats.cities;
-                    userData.stats.days = stats.days;
-                    userData.stats.friends = stats.friends;
+                try {
+                    // Try to load user statistics but don't let it block authentication
+                    const stats = await loadUserStats(userData.id);
+                    if (stats) {
+                        // Make sure stats object exists
+                        if (!userData.stats) userData.stats = {};
+                        
+                        // Update stats with data from the API
+                        userData.stats.trips = stats.trips;
+                        userData.stats.countries = stats.countries;
+                        userData.stats.cities = stats.cities;
+                        userData.stats.days = stats.days;
+                        userData.stats.friends = stats.friends;
+                        userData.stats.saved = stats.saved;
+                    }
+                } catch (statsError) {
+                    console.error("Failed to load user stats, continuing with default values:", statsError);
+                    // Ensure stats object exists with default values
+                    userData.stats = {
+                        trips: 0,
+                        countries: 0,
+                        cities: 0,
+                        days: 0,
+                        friends: 0,
+                        saved: 0
+                    };
                 }
                 
                 // Process user data to ensure all fields are present
@@ -137,18 +160,32 @@ export const AuthProvider = ({ children }) => {
                 if (userData && userData.id) {
                     console.log('User data loaded successfully with ID:', userData.id);
                     
-                    // Try to load user statistics
-                    const stats = await loadUserStats(userData.id);
-                    if (stats) {
-                        // Make sure stats object exists
-                        if (!userData.stats) userData.stats = {};
-                        
-                        // Update stats with data from the API
-                        userData.stats.trips = stats.trips;
-                        userData.stats.countries = stats.countries;
-                        userData.stats.cities = stats.cities;
-                        userData.stats.days = stats.days;
-                        userData.stats.friends = stats.friends;
+                    try {
+                        // Try to load user statistics but don't let it block authentication
+                        const stats = await loadUserStats(userData.id);
+                        if (stats) {
+                            // Make sure stats object exists
+                            if (!userData.stats) userData.stats = {};
+                            
+                            // Update stats with data from the API
+                            userData.stats.trips = stats.trips;
+                            userData.stats.countries = stats.countries;
+                            userData.stats.cities = stats.cities;
+                            userData.stats.days = stats.days;
+                            userData.stats.friends = stats.friends;
+                            userData.stats.saved = stats.saved;
+                        }
+                    } catch (statsError) {
+                        console.error("Failed to load user stats, continuing with default values:", statsError);
+                        // Ensure stats object exists with default values
+                        userData.stats = {
+                            trips: 0,
+                            countries: 0,
+                            cities: 0,
+                            days: 0,
+                            friends: 0,
+                            saved: 0
+                        };
                     }
                     
                     // Process user data to ensure all fields are present
@@ -168,8 +205,6 @@ export const AuthProvider = ({ children }) => {
                 setUser(null)
                 setIsAuthenticated(false)
                 setIsUserLoading(false)
-                // if you want to redirect to login page when not authenticated
-                //navigate('/login')
             }
         }
         checkAuth()
