@@ -291,7 +291,7 @@ function Itinerary() {
     };
   }, [exportDropdownOpen]);
 
-  const handlePlaceClick = async (place) => {
+  const handlePlaceClick = async (place, displayOrder = 1) => {
     try {
       // Fetch place details from backend
       const response = await axiosPlace.get(`/places/${place.id}`);
@@ -325,7 +325,8 @@ function Itinerary() {
         longitude: placeDetails.location?.longitude,
         openHours: placeDetails.opening_hours?.periods || [],
         reviews: placeDetails.reviews || [],
-        isSaved: isSaved
+        isSaved: isSaved,
+        displayOrder: displayOrder
       };
       
       setSelectedPlace(formattedPlaceData);
@@ -352,7 +353,8 @@ function Itinerary() {
         name: place.place,
         location: place.location,
         image: place.image,
-        isSaved: isSaved
+        isSaved: isSaved,
+        displayOrder: displayOrder
       });
       setIsPlaceSidebarOpen(true);
     }

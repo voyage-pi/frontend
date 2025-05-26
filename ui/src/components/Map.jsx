@@ -37,7 +37,8 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   });
 
   useEffect(() => {
-    setHasElements(markers.length > 0 || polylines.length > 0);
+    const validMarkersCount = markers.filter(marker => marker !== null).length;
+    setHasElements(validMarkersCount > 0 || polylines.length > 0);
   }, [markers, polylines]);
 
   // Clear all polylines
@@ -95,7 +96,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
     if (markers.length > 0 && markers != previousMarkers) {
       setPreviousMarkers(markers);
       markers.forEach((marker) => {
-        if (marker.position && marker.position.lat && marker.position.lng) {
+        if (marker && marker.position && marker.position.lat && marker.position.lng) {
           bounds.extend(
             new window.google.maps.LatLng(
               marker.position.lat,
@@ -129,7 +130,8 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
 
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
-      if (markers.length === 1) {
+      const validMarkersCount = markers.filter(marker => marker !== null).length;
+      if (validMarkersCount === 1) {
         mapInstance.setZoom(9);
       }
     } else if (markers.length == 0 && polylines == 0 && circles.length === 0) {
@@ -216,19 +218,21 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
     >
       {/* Render only markers using React components */}
       {markers.length !== 0 &&
-        markers.map((marker, index) => (
-          <Marker
-            key={`marker-${index}`}
-            position={marker.position}
-            title={marker.title}
-            icon={{
-              url: createNumberedMarkerIcon(index + 1),
-              scaledSize: new window.google.maps.Size(50, 62),
-              anchor: new window.google.maps.Point(25, 60),
-            }}
-            onClick={() => handleMarkerClick(marker)}
-          />
-        ))}
+        markers.map((marker, index) => 
+          marker ? (
+            <Marker
+              key={`marker-${index}`}
+              position={marker.position}
+              title={marker.title}
+              icon={{
+                url: createNumberedMarkerIcon(index + 1),
+                scaledSize: new window.google.maps.Size(50, 62),
+                anchor: new window.google.maps.Point(25, 60),
+              }}
+              onClick={() => handleMarkerClick(marker)}
+            />
+          ) : null
+        )}
       {renderCircles()}
 
       {selectedMarker && (

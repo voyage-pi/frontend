@@ -19,14 +19,14 @@ const PlaceCard = ({
   participants
 }) => {
   const { LoggedUser } = useAuth();
-  
+
   // Check if user is a participant
   const isParticipant =
     (!LoggedUser && (!participants || participants.length === 0)) ||
     (LoggedUser &&
       participants &&
       participants.some((p) => p.user_id === LoggedUser.id));
-  
+
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
 
@@ -83,7 +83,7 @@ const PlaceCard = ({
           </div>
         )}
         <motion.div
-          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-grab bg-white shadow-md w-full relative"
+          className="shadow-primary/20 rounded-lg p-3 pl-3 mb-4 cursor-pointer bg-white shadow-md w-full hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
           onClick={onClick}
           animate={refreshing ? { opacity: 0.7 } : { opacity: 1 }}
           transition={{ duration: 0.3 }}

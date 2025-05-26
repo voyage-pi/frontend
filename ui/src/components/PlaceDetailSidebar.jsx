@@ -110,7 +110,29 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
     }
   };
 
-  const marker = place ? {
+  // Create markers array with the place at the correct position for proper numbering
+  const markers = place && place.displayOrder ? (() => {
+    const markersArray = [];
+    const targetIndex = place.displayOrder - 1; // Convert to 0-based index
+    
+    // Fill array with empty slots up to the target index
+    for (let i = 0; i < targetIndex; i++) {
+      markersArray.push(null);
+    }
+    
+    // Add the actual marker at the correct position
+    markersArray.push({
+      position: {
+        lat: place.latitude || 48.8566,
+        lng: place.longitude || 9.3517
+      },
+      title: place.name,
+      address: place.address,
+      image: currentImage
+    });
+    
+    return markersArray;
+  })() : place ? [{
     position: {
       lat: place.latitude || 48.8566,
       lng: place.longitude || 9.3517
@@ -118,7 +140,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
     title: place.name,
     address: place.address,
     image: currentImage
-  } : null;
+  }] : [];
 
   const formatHours = (hours) => {
     if (!hours || !Array.isArray(hours) || hours.length === 0) {
@@ -246,7 +268,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
               <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
                 <h3 className="font-semibold text-lg mb-3">Location</h3>
                 <div className="h-52 rounded-lg overflow-hidden">
-                  {marker && <Map markers={[marker]} />}
+                  <Map markers={markers} />
                 </div>
               </div>
 

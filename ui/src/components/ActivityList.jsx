@@ -146,7 +146,7 @@ function ActivityList({
                 image={activityImages[stop.id] || stop.image || ""}
                 onRefresh={() => onRefreshActivity(stop.id)}
                 onDelete={() => onDeleteActivity(stop.id)}
-                onClick={() => onPlaceClick(stop.place)}
+                onClick={() => onPlaceClick(stop.place, index + 1)}
                 road={true}
                 participants={participants}
               />
@@ -196,7 +196,7 @@ function ActivityList({
               onRefresh={() => onRefreshActivity(activity.id)}
               onDelete={() => onDeleteActivity(activity.id)}
               refreshing={refreshingActivity === activity.id}
-              onClick={() => onPlaceClick(activity.place)}
+              onClick={() => onPlaceClick(activity.place, index + 1)}
               participants={participants}
             />
           ))}
