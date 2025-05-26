@@ -433,6 +433,7 @@ function Itinerary() {
         onClose={() => setIsPreferencesSidebarOpen(false)}
         tripId={tripId}
         onPreferencesUpdated={handlePreferencesUpdated}
+        participants={tripData.participants}
       />
 
 

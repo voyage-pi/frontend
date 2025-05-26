@@ -3,32 +3,71 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import { axiosUser } from "../utils/axiosInstance";
 
-const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated }) => {
+const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, participants }) => {
   const [userPreferences, setUserPreferences] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [currentPreferenceId, setCurrentPreferenceId] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
-      loadQuestions();
+      loadCurrentTripPreferences();
     }
-  }, [isOpen]);
+  }, [isOpen, tripId, participants]);
 
-  const loadQuestions = async () => {
+  const loadCurrentTripPreferences = async () => {
     setQuestionsLoading(true);
     try {
-      // Fetch questions from the API
-      const response = await axiosUser.get("/questions/");
-      const questions = response.data;
+      // First, fetch all questions from the API
+      const questionsResponse = await axiosUser.get("/questions/");
+      const questions = questionsResponse.data;
       
-      // Get saved ratings from localStorage
-      const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+      // Find the preference_id from the current trip's participants
+      let preferenceId = null;
+      if (participants && participants.length > 0) {
+        const participantWithPreferences = participants.find(p => p.preference_id);
+        if (participantWithPreferences) {
+          preferenceId = participantWithPreferences.preference_id;
+          setCurrentPreferenceId(preferenceId);
+        }
+      }
       
-      // Map questions with saved ratings or default to 0
-      const preferences = questions.map((q, index) => ({
-        ...q,
-        answer: Number(savedRatings[index] || 0)
-      }));
+      let preferences = [];
+      
+      if (preferenceId) {
+        try {
+          // Fetch the specific preference profile for this trip
+          const preferenceResponse = await axiosUser.get(`/preferences/${preferenceId}`);
+          const preferenceData = preferenceResponse.data.response.Preferences;
+          
+          // Map questions with the preference answers
+          preferences = questions.map((q, index) => {
+            // Find the answer for this question from the preference data
+            const savedAnswer = preferenceData.answers.find(a => a.question_id === index);
+            return {
+              ...q,
+              answer: savedAnswer ? Number(savedAnswer.value) : 0
+            };
+          });
+          
+          console.log("Loaded trip preference profile:", preferenceData.name);
+        } catch (error) {
+          console.error("Error fetching trip preference profile:", error);
+          // Fallback to localStorage if preference fetch fails
+          const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+          preferences = questions.map((q, index) => ({
+            ...q,
+            answer: Number(savedRatings[index] || 0)
+          }));
+        }
+      } else {
+        // No preference_id found, fallback to localStorage
+        const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+        preferences = questions.map((q, index) => ({
+          ...q,
+          answer: Number(savedRatings[index] || 0)
+        }));
+      }
       
       setUserPreferences(preferences);
     } catch (error) {
@@ -94,7 +133,14 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated }) =
         >
           <div className="p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-secondary">Preferences Profile</h2>
+              <h2 className="text-xl font-bold text-secondary">
+                Preferences Profile
+                {currentPreferenceId && (
+                  <span className="text-sm font-normal text-gray-500 block">
+                    Current Trip Profile
+                  </span>
+                )}
+              </h2>
               <button
                 onClick={onClose}
                 className="text-gray-500 hover:text-primary transition-colors"
