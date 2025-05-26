@@ -28,19 +28,17 @@ function Step5Content({
     if (savedTripDimension) {
       setTripDimension(savedTripDimension);
     }
-    // Check if preferences profile already exists
+    
+    // Check if preferences profile choice already exists
     const preferencesProfile = localStorage.getItem("Preferences Profile");
-
-    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
-
-    // If a profile already exists as "New" or if there are ratings for the current question
-    if (preferencesProfile === "New" || savedRatings[subQuestionIndex]) {
-      // verify if the user is logged in otherwise just continue, for preferences saving
-      if (!isAuthenticated) {
-        setShowNewPreferences(true);
-      }
+    
+    // If user has already made a choice, set the state accordingly
+    if (preferencesProfile === "New") {
+      setShowNewPreferences(true);
+    } else if (preferencesProfile === "Reuse") {
+      setShowNewPreferences(false);
     }
-  }, [subQuestionIndex]);
+  }, []);
 
   const handleRatingSelect = (rating) => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
@@ -58,6 +56,17 @@ function Step5Content({
       onValidationChange(isValid);
     }
   };
+
+  const handleNewPreferencesClick = () => {
+    localStorage.setItem("Preferences Profile", "New");
+    setShowNewPreferences(true);
+  };
+
+  const handleReusePreferencesClick = () => {
+    localStorage.setItem("Preferences Profile", "Reuse");
+    setShowNewPreferences(false);
+  };
+
   if (
     showNewPreferences == null &&
     ((choosen && tripDimension === "group") || tripDimension == "individual")
@@ -67,15 +76,13 @@ function Step5Content({
         id: "reuse",
         icon: FaRecycle,
         title: "Reuse Preferences Profile",
-        onClick: () => setShowNewPreferences(false),
+        onClick: handleReusePreferencesClick,
       },
       {
         id: "new",
         icon: FaFileCirclePlus,
         title: "New Preferences Profile",
-        onClick: () => {
-          setShowNewPreferences(true);
-        },
+        onClick: handleNewPreferencesClick,
       },
     ];
 
@@ -154,7 +161,7 @@ function Step5Content({
           }}
         />
       );
-    } else if (!showNewPreferences) {
+    } else if (showNewPreferences === false) {
       return <OldPreferences setCurrentStep={setCurrentStep} />;
     }
   }

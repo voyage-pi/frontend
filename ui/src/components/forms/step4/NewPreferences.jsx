@@ -8,7 +8,8 @@ const NewPreferences = ({ questionsStep5 }) => {
   const [name, setName] = useState(null);
   const [forward, setForward] = useState(false);
   const [notification, setNotification] = useState(null);
-  const {isAuthenticated} = useAuth()
+  const { isAuthenticated } = useAuth();
+  
   const newPrefName = () => {
     if (name == null || name.length <= 3) {
       setNotification(
@@ -23,10 +24,15 @@ const NewPreferences = ({ questionsStep5 }) => {
     localStorage.setItem("preferencesName", name);
     setForward(true);
   };
+
+  // For unauthenticated users, show questions directly
+  // For authenticated users, show name input first, then questions after name is entered
+  const shouldShowQuestions = !isAuthenticated || forward;
+
   return (
     <>
       {notification}
-      {!forward && isAuthenticated ? (
+      {!shouldShowQuestions ? (
         <div className="text-center p-6 -mb-10">
           <h2 className="text-3xl mb-10">
             Set a name for your preferences profile!
@@ -36,7 +42,10 @@ const NewPreferences = ({ questionsStep5 }) => {
               className="input bg-white w-4/5 pr-4 rounded-full text-lg shadow-sm focus:border-transparent"
               placeholder="Barcelona, adventurous"
               type="text"
-              onChange={(e) => (setName(e.target.value), localStorage.setItem("preferencesName", e.target.value))}
+              onChange={(e) => {
+                setName(e.target.value);
+                localStorage.setItem("preferencesName", e.target.value);
+              }}
             />
             <button
               onClick={newPrefName}

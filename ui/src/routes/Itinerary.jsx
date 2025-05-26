@@ -157,7 +157,18 @@ function Itinerary() {
       } else {
         isGroup = localStorage.getItem("isGroup") === "true";
       }
-      const trip_management_response = await axiosInstance.post("/save", {
+
+      // Get preferences_id from trip participants (if available)
+      let preferencesId = null;
+      if (tripData.participants && tripData.participants.length > 0) {
+        // Look for the preferences_id from any participant (usually the creator)
+        const participantWithPreferences = tripData.participants.find(p => p.preference_id);
+        if (participantWithPreferences) {
+          preferencesId = participantWithPreferences.preference_id;
+        }
+      }
+
+      const saveData = {
         id: tripId,
         itinerary: {
           ...itinerary,
@@ -167,7 +178,14 @@ function Itinerary() {
         },
         trip_type: tripType,
         is_group: isGroup, // <-- ensure is_group is present at the root
-      });
+      };
+
+      // Add preferences_id if available
+      if (preferencesId) {
+        saveData.preference_id = preferencesId;
+      }
+
+      const trip_management_response = await axiosInstance.post("/save", saveData);
 
       if (trip_management_response.status === 200) {
         console.log("Trip saved successfully in trip-management");

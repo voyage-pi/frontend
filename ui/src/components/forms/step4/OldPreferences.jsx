@@ -44,6 +44,8 @@ const OldPreferences = ({ setCurrentStep }) => {
         console.log("Selected profile ratings:", ratings);
         localStorage.setItem("userRatings", JSON.stringify(ratings));
         localStorage.setItem("preferencesName", pref.name);
+        localStorage.setItem("selectedPreferenceId", selectedProfile.toString());
+        console.log("Stored preference ID:", selectedProfile);
       }
     });
     setCurrentStep((prev) => prev + 1);
