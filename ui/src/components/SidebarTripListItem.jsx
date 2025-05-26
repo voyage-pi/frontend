@@ -1,8 +1,11 @@
 import React from "react";
 
-const SidebarTripListItem = ({ image, name, date, days, people, destinations }) => {
+const SidebarTripListItem = ({ id, image, name, date, days, people, destinations, onClick }) => {
   return (
-    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer w-full min-w-0">
+    <div 
+      className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer w-full min-w-0"
+      onClick={() => onClick && onClick(id)}
+    >
       <img
         src={image}
         alt={name}
