@@ -7,6 +7,8 @@ import { GiPathDistance } from "react-icons/gi";
 import { FaRegFloppyDisk, FaMapLocationDot } from "react-icons/fa6";
 import PreferencesButton from "./PreferencesButton";
 import { useAuth } from "../context/AuthContext";
+import { TbCoinEuro } from "react-icons/tb";
+
 
 function ItineraryHeader({
   title,
@@ -14,6 +16,7 @@ function ItineraryHeader({
   totalPeople,
   locationName,
   distancePill,
+  priceRange,
   tripType,
   onSaveTrip,
   onOpenInGoogleMaps,
@@ -105,10 +108,10 @@ function ItineraryHeader({
         </div>
       </div>
 
-      <div className="flex flex-row items-center justify-between pb-5">
-        <div className="flex flex-row gap-x-5">
+      <div className="flex flex-wrap items-center justify-between pb-5">
+        <div className="flex flex-wrap gap-x-5">
           {tripType !== "road" && (
-            <div className="rounded-full border-1 border-secondary/10">
+            <div className="rounded-full w-fit border-1 m-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <GoClock className="text-primary ml-1" />
                 <div className="mr-2">
@@ -119,7 +122,17 @@ function ItineraryHeader({
             </div>
           )}
           {tripType !== "road" && (
-            <div className="rounded-full border-1 border-secondary/10">
+            <div className="rounded-full w-fit border-1 m-1 border-secondary/10">
+              <div className="flex flex-row items-center gap-x-3 m-1">
+                <TbCoinEuro PclassName="text-primary ml-1" />
+                <div className="mr-2">
+                   {~~priceRange?.start_price}-{~~priceRange?.end_price}
+                </div>
+              </div>
+            </div>
+          )}
+          {tripType !== "road" && (
+            <div className="rounded-full w-fit border-1 m-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <GoPeople className="text-primary ml-1" />
                 <div className="mr-2">
@@ -130,7 +143,7 @@ function ItineraryHeader({
             </div>
           )}
           {tripType !== "road" && (
-            <div className="rounded-full border-1 border-secondary/10">
+            <div className="rounded-full w-fit border-1 m-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <IoLocationOutline className="text-primary ml-1" />
                 <div className="mr-2">
@@ -140,7 +153,7 @@ function ItineraryHeader({
             </div>
           )}
           {tripType === "road" && (
-            <div className="rounded-full border-1 border-secondary/10">
+            <div className="rounded-full w-fit border-1 m-1 border-secondary/10">
               <div className="flex flex-row items-center gap-x-3 m-1">
                 <GiPathDistance className="text-primary ml-1" />
                 <div className="mr-2">
@@ -153,7 +166,7 @@ function ItineraryHeader({
 
         {/* Preferences Button - only show for participants */}
         {isParticipant && (
-          <div className="pr-2">
+          <div className="m-1" >
             <PreferencesButton onClick={onPreferencesClick} />
           </div>
         )}
