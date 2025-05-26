@@ -513,7 +513,7 @@ function Itinerary() {
 
         <div className="flex flex-col md:flex-row h-min-screen p-10 -mt-10">
           {/* Left Side */}
-          <div className="w-full md:w-1/2 pr-4 overflow-hidden relative z-30">
+          <div className="w-full md:w-1/2 pr-4 overflow-visible relative z-40">
             <ItineraryHeader
               title={title}
               totalDays={totalDays}
@@ -530,7 +530,7 @@ function Itinerary() {
               setExportDropdownOpen={setExportDropdownOpen}
               generateGoogleMapsUrl={generateGoogleMapsUrl}
               participants={tripData.participants}
-              className="z-30"
+              className="z-40"
             />
 
             <div className="h-[40rem] pr-2">
