@@ -28,37 +28,68 @@ const RoadTripContent = () => {
   const [showOrigin, setShowOrigin] = useState(true);
   const [showDes, setShowDes] = useState(true);
   const [route, setRoute] = useState([]);
+
   useEffect(() => {
-    const routing = async () => {
-      if (markersOrigin.length > 0 && markersDes.length > 0) {
-        console.log("Both markers are set");
-        let originR = {
-          latitude: markersOrigin[0].position.lat,
-          longitude: markersOrigin[0].position.lng,
+    const savedOrigin = localStorage.getItem("origin");
+    const savedDestination = localStorage.getItem("destination");
+    const savedRoutePolyline = localStorage.getItem("route");
+    const savedOriginText = localStorage.getItem("currentTextOrigin");
+    const savedDestinationText = localStorage.getItem("currentTextDes");
+    
+    // Load origin data
+    if (savedOrigin && savedOriginText) {
+      const originData = JSON.parse(savedOrigin);
+      setCurrentTextOrigin(savedOriginText);
+      setSelectedLocationOrigin({ text: savedOriginText });
+      setShowOrigin(false);
+      
+      if (originData.location) {
+        const m = {
+          position: {
+            lat: originData.location.latitude,
+            lng: originData.location.longitude,
+          },
+          title: originData.name,
+          address: "",
+          image: "",
         };
-        let destinationR = {
-          latitude: markersDes[0].position.lat,
-          longitude: markersDes[0].position.lng,
+        setMarkersOrigin([m]);
+      }
+    }
+    
+    // Load destination data
+    if (savedDestination && savedDestinationText) {
+      const destinationData = JSON.parse(savedDestination);
+      setCurrentTextDes(savedDestinationText);
+      setSelectedLocationDes({ text: savedDestinationText });
+      setShowDes(false);
+      
+      if (destinationData.location) {
+        const m = {
+          position: {
+            lat: destinationData.location.latitude,
+            lng: destinationData.location.longitude,
+          },
+          title: destinationData.name,
+          address: "",
+          image: "",
         };
-        const response = await axiosMaps.post("/maps/", {
-          origin: originR,
-          destination: destinationR,
-          travelingMode: "DRIVE",
-        });
-        console.log(response.data.routes);
-        setRoute(response.data.routes);
-        //store the origin and destination in local storage such has the route
-        localStorage.setItem(
-          "Location",
-          "Driving from " + currentTextOrigin + " to " + currentTextDes
-        );
-        localStorage.setItem("route", response.data.routes[0].polylineEncoded);
-        localStorage.setItem("currentTextOrigin", currentTextOrigin);
-        localStorage.setItem("currentTextDes", currentTextDes);
+        setMarkersDes([m]);
+      }
+    }
+    
+    // Load route data if available
+    if (savedRoutePolyline && savedOrigin && savedDestination) {
+      setRoute([{ polylineEncoded: savedRoutePolyline }]);
+    }
+    
+    // Clean up timeout when component unmounts
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-    routing();
-  }, [markersDes, markersOrigin]);
+  }, []);
 
   const handleSelectLocation = async (location, origin) => {
     if (origin) {
@@ -199,6 +230,40 @@ const RoadTripContent = () => {
   const MouseHover = (idx, origin) => {
     origin ? setSuggestionHoveredOrigin(idx) : setSuggestionHoveredDes(idx);
   };
+
+  // Add routing effect to generate route when markers change
+  useEffect(() => {
+    const routing = async () => {
+      if (markersOrigin.length > 0 && markersDes.length > 0) {
+        console.log("Both markers are set");
+        let originR = {
+          latitude: markersOrigin[0].position.lat,
+          longitude: markersOrigin[0].position.lng,
+        };
+        let destinationR = {
+          latitude: markersDes[0].position.lat,
+          longitude: markersDes[0].position.lng,
+        };
+        const response = await axiosMaps.post("/maps/", {
+          origin: originR,
+          destination: destinationR,
+          travelingMode: "DRIVE",
+        });
+        console.log(response.data.routes);
+        setRoute(response.data.routes);
+        //store the origin and destination in local storage such has the route
+        localStorage.setItem(
+          "Location",
+          "Driving from " + currentTextOrigin + " to " + currentTextDes
+        );
+        localStorage.setItem("route", response.data.routes[0].polylineEncoded);
+        localStorage.setItem("currentTextOrigin", currentTextOrigin);
+        localStorage.setItem("currentTextDes", currentTextDes);
+      }
+    };
+    routing();
+  }, [markersDes, markersOrigin, currentTextOrigin, currentTextDes]);
+
   return (
     <>
       <ToastContainer />
