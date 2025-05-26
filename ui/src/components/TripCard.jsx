@@ -8,6 +8,7 @@ function TripCard({
   image,
   name, 
   date, 
+  type,
   days, 
   people, 
   destinations, 
@@ -147,7 +148,7 @@ function TripCard({
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold mb-1">{name}</h2>
-                {!isSavedPlace && date && <p className="text-secondary/70">{date}</p>}
+                {!isSavedPlace && date && type!=="road" && <p className="text-secondary/70">{date}</p>}
                 {isSavedPlace && location && <p className="text-secondary/70">{location}</p>}
               </div>
             </div>
