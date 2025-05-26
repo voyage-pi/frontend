@@ -13,12 +13,21 @@ import { useAuth } from "../context/AuthContext";
 import TripCreationWebSocket from "../utils/websocketClient";
 
 function Forms() {
-  const [currentStep, setCurrentStep] = useState(1);
   const [isInitialized, setIsInitialized] = useState(false);
+  // Get saved values from localStorage for initial state
+  const savedStep = localStorage.getItem("currentStep");
+  const savedSubQuestionIndex = localStorage.getItem("subQuestionIndex");
+  const savedStep6SubStep = localStorage.getItem("step6SubStep");
+  const savedIsGroup = localStorage.getItem("isGroup");
+  
+  // Initialize state with localStorage values if available
+  const [currentStep, setCurrentStep] = useState(savedStep ? Number(savedStep) : 1);
+  const [subQuestionIndex, setSubQuestionIndex] = useState(savedSubQuestionIndex ? Number(savedSubQuestionIndex) : 0);
+  const [step6SubStep, setStep6SubStep] = useState(savedStep6SubStep ? Number(savedStep6SubStep) : 0);
+  const [isGroup, setIsGroup] = useState(savedIsGroup === "true");
+  
   const totalSteps = 6;
   const [answers, setAnswers] = useState([]);
-  const [subQuestionIndex, setSubQuestionIndex] = useState(0);
-  const [step6SubStep, setStep6SubStep] = useState(0);
   const [totalSubQuestions, setTotalSubQuestions] = useState(0);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -26,7 +35,6 @@ function Forms() {
   const [isStep5Valid, setIsStep5Valid] = useState(false);
   const [showError, setShowError] = useState(false);
   const [showLeaveButton, setShowLeaveButton] = useState(true);
-  const [isGroup, setIsGroup] = useState(false);
   const [addedUsers, setAddedUsers] = useState([]);
 
   const [showProgress, setShowProgress] = useState(false);
@@ -41,20 +49,21 @@ function Forms() {
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const initialize = async () => {
-      // Always start at step 1 and clear any saved step data
-      setCurrentStep(1);
-      setSubQuestionIndex(0);
-      setStep6SubStep(0);
+      console.log("Initializing - Current step is:", currentStep);
       
-      // Clear saved step data from localStorage
-      localStorage.removeItem("currentStep");
-      localStorage.removeItem("subQuestionIndex");
-      localStorage.removeItem("step6SubStep");
+      // Load saved answers if available
+      const savedAnswers = localStorage.getItem("answers");
+      
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-        const QA = qs.map((q) => ({ ...q}));
-        setAnswers(QA);
+        
+        if (savedAnswers) {
+          setAnswers(JSON.parse(savedAnswers));
+        } else {
+          const QA = qs.map((q) => ({ ...q}));
+          setAnswers(QA);
+        }
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }

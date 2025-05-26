@@ -36,7 +36,7 @@ const NewPreferences = ({ questionsStep5 }) => {
               className="input bg-white w-4/5 pr-4 rounded-full text-lg shadow-sm focus:border-transparent"
               placeholder="Barcelona, adventurous"
               type="text"
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => (setName(e.target.value), localStorage.setItem("preferencesName", e.target.value))}
             />
             <button
               onClick={newPrefName}

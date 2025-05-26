@@ -73,8 +73,47 @@ const ZoneTripContent = () => {
 
   useEffect(() => {
     const savedLocation = localStorage.getItem("Location");
+    const savedRadius = localStorage.getItem("radius");
+    const savedLat = localStorage.getItem("Latitude");
+    const savedLng = localStorage.getItem("Longitude");
+    
     if (savedLocation) {
       setSelectedLocation(savedLocation);
+      setCurrentText(savedLocation);
+    }
+    
+    if (savedRadius) {
+      const radiusValue = parseInt(savedRadius, 10);
+      setRadius(radiusValue);
+    }
+    
+    // If we have location and radius, restore the circle and marker
+    if (savedLat && savedLng) {
+      const lat = parseFloat(savedLat);
+      const lng = parseFloat(savedLng);
+      
+      // Create marker
+      const m = {
+        position: {
+          lat: lat,
+          lng: lng,
+        },
+        title: savedLocation || "Selected Location",
+        address: "",
+        image: "",
+      };
+      setMarkers([m]);
+      
+      // Create circle with the saved radius
+      setCircle([
+        {
+          radius: radius,
+          center: {
+            lat: lat,
+            lng: lng,
+          },
+        },
+      ]);
     }
   }, []);
 
