@@ -35,7 +35,6 @@ const RoadTripContent = ({ setDisableButton }) => {
     const savedRoutePolyline = localStorage.getItem("route");
     const savedOriginText = localStorage.getItem("currentTextOrigin");
     const savedDestinationText = localStorage.getItem("currentTextDes");
-
     // Load origin data
     if (savedOrigin && savedOriginText) {
       const originData = JSON.parse(savedOrigin);
@@ -75,6 +74,27 @@ const RoadTripContent = ({ setDisableButton }) => {
           image: "",
         };
         setMarkersDes([m]);
+      }
+    }
+    if (savedOrigin && savedDestination) {
+      const distance = getDistanceFromLatLonInKm(
+        JSON.parse(savedOrigin).location.latitude,
+        JSON.parse(savedOrigin).location.longitude,
+        JSON.parse(savedDestination).location.latitude,
+        JSON.parse(savedDestination).location.longitude
+      );
+      if (distance > 500) {
+        setDisableButton(true);
+        setNotify({
+          type: "error",
+          text: "Origin and destination must be at least 500 km apart.",
+          key: Date.now(),
+        });
+        return () => {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+        };
       }
     }
 
@@ -151,6 +171,7 @@ const RoadTripContent = ({ setDisableButton }) => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
+      setDisableButton(true);
       console.error("Search error:", error);
     }
   };
@@ -232,11 +253,23 @@ const RoadTripContent = ({ setDisableButton }) => {
     origin ? setSuggestionHoveredOrigin(idx) : setSuggestionHoveredDes(idx);
   };
 
+  function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  }
   // Add routing effect to generate route when markers change
   useEffect(() => {
     const routing = async () => {
       if (markersOrigin.length > 0 && markersDes.length > 0) {
-        console.log("Both markers are set");
         let originR = {
           latitude: markersOrigin[0].position.lat,
           longitude: markersOrigin[0].position.lng,
@@ -245,6 +278,21 @@ const RoadTripContent = ({ setDisableButton }) => {
           latitude: markersDes[0].position.lat,
           longitude: markersDes[0].position.lng,
         };
+        const distance = getDistanceFromLatLonInKm(
+          originR.latitude,
+          originR.longitude,
+          destinationR.latitude,
+          destinationR.longitude
+        );
+        if (distance > 500) {
+          setDisableButton(true);
+          setNotify({
+            type: "error",
+            text: "Origin and destination must be at least 500 km apart.",
+            key: Date.now(),
+          });
+          return;
+        }
         try {
           const response = await axiosMaps.post("/maps/", {
             origin: originR,
@@ -270,12 +318,13 @@ const RoadTripContent = ({ setDisableButton }) => {
             text: `A road trip from ${currentTextOrigin} to ${currentTextDes} is not possible`,
             key: Date.now(),
           });
+          setDisableButton(true);
           console.error("Routing error:", error);
         }
       }
     };
     routing();
-  }, [markersDes, markersOrigin, currentTextOrigin, currentTextDes]);
+  }, [markersDes, markersOrigin]);
 
   return (
     <>

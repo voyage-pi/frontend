@@ -5,16 +5,16 @@ import RangeSlider from "../RangeSlider";
 import RangeDatePicker from "../RangeDatePicker";
 import "../../styles/RangeDatePicker.css";
 
-const Step4Content = () => {
+const Step4Content = ({ setDisableButton }) => {
   const today = new Date();
   const tomorrow_tomorrow = new Date(today);
   tomorrow_tomorrow.setDate(tomorrow_tomorrow.getDate() + 1);
-  
+
   // Initialize with null to prevent default values from overriding localStorage
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(null);
-  
+
   const [dateError, setDateError] = useState(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [calendarPosition, setCalendarPosition] = useState(0);
@@ -28,24 +28,21 @@ const Step4Content = () => {
     const savedEnd = localStorage.getItem("End Date");
     const savedBudget = localStorage.getItem("Budget");
 
-    console.log("Loading from localStorage:", { savedStart, savedEnd, savedBudget });
-
     let parsedStartDate = null;
     let parsedEndDate = null;
-    let parsedBudget = 332; // Default budget value
-
+    let parsedBudget = 500; // Default budget value
     if (savedStart) {
       try {
         // Parse date from YYYY-MM-DD format
-        const parts = savedStart.split('-');
+        const parts = savedStart.split("-");
         if (parts.length === 3) {
           const year = parseInt(parts[0], 10);
           const month = parseInt(parts[1], 10) - 1; // JS months are 0-indexed
           const day = parseInt(parts[2], 10);
-          
+
           const parsedDate = new Date(year, month, day);
           console.log("Parsed start date:", parsedDate);
-          
+
           if (!isNaN(parsedDate.getTime())) {
             parsedStartDate = parsedDate;
           }
@@ -54,19 +51,19 @@ const Step4Content = () => {
         console.error("Error parsing start date from localStorage:", error);
       }
     }
-    
+
     if (savedEnd) {
       try {
         // Parse date from YYYY-MM-DD format
-        const parts = savedEnd.split('-');
+        const parts = savedEnd.split("-");
         if (parts.length === 3) {
           const year = parseInt(parts[0], 10);
           const month = parseInt(parts[1], 10) - 1; // JS months are 0-indexed
           const day = parseInt(parts[2], 10);
-          
+
           const parsedDate = new Date(year, month, day);
           console.log("Parsed end date:", parsedDate);
-          
+
           if (!isNaN(parsedDate.getTime())) {
             parsedEndDate = parsedDate;
           }
@@ -79,7 +76,7 @@ const Step4Content = () => {
     // Set dates: use localStorage values if available, otherwise use defaults
     setStartDate(parsedStartDate || today);
     setEndDate(parsedEndDate || tomorrow_tomorrow);
-    
+
     if (savedBudget) {
       try {
         const budgetValue = parseInt(savedBudget, 10);
@@ -90,7 +87,7 @@ const Step4Content = () => {
         console.error("Error parsing budget from localStorage:", error);
       }
     }
-    
+
     // Set budget: use localStorage value if available, otherwise use default
     setBudget(parsedBudget);
   }, []); // Empty dependency array to run only once on mount
@@ -102,30 +99,28 @@ const Step4Content = () => {
         if (startDate instanceof Date && !isNaN(startDate.getTime())) {
           // Format date as YYYY-MM-DD with current year
           const year = new Date().getFullYear();
-          const month = (startDate.getMonth() + 1).toString().padStart(2, '0');
-          const day = startDate.getDate().toString().padStart(2, '0');
-          
+          const month = (startDate.getMonth() + 1).toString().padStart(2, "0");
+          const day = startDate.getDate().toString().padStart(2, "0");
+
           const dateString = `${year}-${month}-${day}`;
-          console.log("Saving start date:", dateString);
-          
           localStorage.setItem("Start Date", dateString);
         }
       } catch (error) {
         console.error("Error saving start date to localStorage:", error);
       }
     }
-    
+
     if (endDate) {
       try {
         if (endDate instanceof Date && !isNaN(endDate.getTime())) {
           // Format date as YYYY-MM-DD with current year
           const year = new Date().getFullYear();
-          const month = (endDate.getMonth() + 1).toString().padStart(2, '0');
-          const day = endDate.getDate().toString().padStart(2, '0');
-          
+          const month = (endDate.getMonth() + 1).toString().padStart(2, "0");
+          const day = endDate.getDate().toString().padStart(2, "0");
+
           const dateString = `${year}-${month}-${day}`;
           console.log("Saving end date:", dateString);
-          
+
           localStorage.setItem("End Date", dateString);
         }
       } catch (error) {
@@ -143,15 +138,14 @@ const Step4Content = () => {
 
   const handleDateChange = useCallback(
     (start, end) => {
-      console.log("Calendar selected dates:", { start, end });
-      
+
       if (start) {
         // Ensure we preserve the date exactly as selected
         setStartDate(start);
       } else {
         setStartDate(today);
       }
-      
+
       if (end) {
         // Ensure we preserve the date exactly as selected
         setEndDate(end);
@@ -168,22 +162,23 @@ const Step4Content = () => {
 
   const calculateDays = (start, end) => {
     if (!start || !end) return 0;
-    
+
     try {
       // Create new Date objects to avoid reference issues
-      const startObj = start instanceof Date ? new Date(start) : new Date(start);
+      const startObj =
+        start instanceof Date ? new Date(start) : new Date(start);
       const endObj = end instanceof Date ? new Date(end) : new Date(end);
-      
+
       // Validate both dates are valid
       if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) {
         console.error("Invalid date in calculateDays");
         return 0;
       }
-      
+
       // Reset hours to compare dates only
       startObj.setHours(0, 0, 0, 0);
       endObj.setHours(0, 0, 0, 0);
-      
+
       return Math.max(
         1,
         Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1
@@ -231,13 +226,13 @@ const Step4Content = () => {
   // Format date for display
   const formatDate = (date) => {
     if (!date) return "Select a date";
-    
+
     try {
       // Check if date is a valid Date object
       if (!(date instanceof Date) || isNaN(date.getTime())) {
         return "Invalid date";
       }
-      
+
       const day = date.getDate().toString().padStart(2, "0");
       const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const year = date.getFullYear();
@@ -267,6 +262,21 @@ const Step4Content = () => {
       <line x1="3" y1="10" x2="21" y2="10"></line>
     </svg>
   );
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      if (calculateDays(startDate, endDate) > 7) {
+        setDateError("The maximum duration is 7 days");
+        setDisableButton(true);
+      } else if (startDate > endDate) {
+        setDateError("End date cannot be earlier than start date");
+        setDisableButton(true);
+      } else {
+        setDateError(null);
+        setDisableButton(false);
+      }
+    }
+  }, [startDate, endDate]);
 
   return (
     <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto p-15 pb-12">

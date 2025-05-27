@@ -59,6 +59,7 @@ const ZoneTripContent = ({setDisableButton}) => {
       console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
+    setDisableButton(false);
   };
 
   const handleRadiusChange = (radius) => {

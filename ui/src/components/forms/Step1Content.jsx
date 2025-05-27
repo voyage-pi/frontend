@@ -5,7 +5,7 @@ import FriendsInviteComponent from './FriendsInvite';
 import { useAuth } from '../../context/AuthContext';
 import Notification from '../Notification';
 
-const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUsers, setAddedUsers }) => {
+const Step1Content = ({ setDisableButton,setCurrentStep, setShowLeaveButton, setIsGroup, addedUsers, setAddedUsers }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [lastNotificationId, setLastNotificationId] = useState(null);
   const [showFriendsInvite, setShowFriendsInvite] = useState(false);
@@ -109,7 +109,7 @@ const Step1Content = ({ setCurrentStep, setShowLeaveButton, setIsGroup, addedUse
   ];
 
   if (showFriendsInvite) {
-    return <FriendsInviteComponent onNext={handleFriendsInviteNext} onBack={handleFriendsInviteBack} addedUsers={addedUsers} setAddedUsers={setAddedUsers} />;
+    return <FriendsInviteComponent setDisableButton={setDisableButton} onNext={handleFriendsInviteNext} onBack={handleFriendsInviteBack} addedUsers={addedUsers} setAddedUsers={setAddedUsers} />;
   }
 
   return (

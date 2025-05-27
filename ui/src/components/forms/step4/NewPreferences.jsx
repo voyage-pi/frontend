@@ -31,6 +31,7 @@ const NewPreferences = ({ questionsStep5, setDisableButton ,setForward,forward})
         setDisableButton(false);
       } else {
         setDisableButton(true);
+
       }
     }
   }, [forward, questionsStep5.currentQuestion, questionsStep5.subQuestionIndex, setDisableButton]);

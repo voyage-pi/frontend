@@ -77,12 +77,8 @@ function Forms() {
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-            if (savedAnswers) {
-          setAnswers(JSON.parse(savedAnswers));
-        } else {
           const QA = qs.map((q) => ({ ...q}));
           setAnswers(QA);
-        }
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }
@@ -119,7 +115,7 @@ function Forms() {
       : 0;
 
   const handleNext = () => {
-    setDisableButton(() => true);
+    setDisableButton(true);
     const profile = localStorage.getItem("Preferences Profile");
     if (profile === "Old" && currentStep === 5) {
       console.log("Old profile detected, skipping step 5");
@@ -421,7 +417,7 @@ function Forms() {
     );
   }
   const renderNextOrFinishButton = () => {
-    const isDisabled = disableButton && (currentStep==5 || currentStep == 3);
+    const isDisabled = disableButton 
 
     const baseNextButton = (
       <button
@@ -435,8 +431,8 @@ function Forms() {
       </button>
     );
 
-    if (
-      (currentStep >= 3 && currentStep < 5) ||
+      if (
+      (currentStep >= 1 && currentStep < 5) ||
       (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1)
     ) {
       return baseNextButton;
@@ -515,7 +511,7 @@ function Forms() {
               )}
 
               {/* Back Button */}
-              {currentStep > 1 && (
+              {currentStep>1 && (
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"

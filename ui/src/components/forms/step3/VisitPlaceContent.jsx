@@ -73,6 +73,7 @@ const VisitPlaceContent = ({setDisableButton}) => {
         };
         setMarkers([m]);
       }
+    setDisableButton(false)
     }
     //clean up timeout when the component unmounts
     if (timeoutRef.current) {
