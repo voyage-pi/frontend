@@ -235,36 +235,130 @@ function Forms() {
     );
 
     const tripType = localStorage.getItem("Trip Type");
+    const location = localStorage.getItem("Location");
+    const budget = localStorage.getItem("Budget");
+
+    // Validate required form data
+    if (!tripType) {
+      setShowError(true);
+      setProgressMessage("Please complete the trip type selection first.");
+      setTimeout(() => {
+        setShowError(false);
+        setCurrentStep(2); // Go back to step 2 where trip type is selected
+      }, 3000);
+      return;
+    }
+
+    if (!location) {
+      setShowError(true);
+      setProgressMessage("Please complete the location selection first.");
+      setTimeout(() => {
+        setShowError(false);
+        setCurrentStep(3); // Go back to step 3 where location is selected
+      }, 3000);
+      return;
+    }
+
+    if (!budget) {
+      setShowError(true);
+      setProgressMessage("Please complete the budget and duration selection first.");
+      setTimeout(() => {
+        setShowError(false);
+        setCurrentStep(4); // Go back to step 4 where budget is selected
+      }, 3000);
+      return;
+    }
+
     let obj = {};
 
     if (tripType === "zone") {
-      obj.radius = localStorage.getItem("radius");
+      const radius = localStorage.getItem("radius");
+      const latitude = localStorage.getItem("Latitude");
+      const longitude = localStorage.getItem("Longitude");
+      
+      if (!radius || !latitude || !longitude) {
+        setShowError(true);
+        setProgressMessage("Missing zone trip data. Please complete the location selection.");
+        setTimeout(() => {
+          setShowError(false);
+          setCurrentStep(3);
+        }, 3000);
+        return;
+      }
+      
+      obj.radius = parseInt(radius);
       obj.center = {
-        latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-        longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
       };
       obj.type = "zone";
-    } else if (tripType == "place") {
+    } else if (tripType === "place") {
+      const latitude = localStorage.getItem("Latitude");
+      const longitude = localStorage.getItem("Longitude");
+      
+      if (!latitude || !longitude) {
+        setShowError(true);
+        setProgressMessage("Missing place trip data. Please complete the location selection.");
+        setTimeout(() => {
+          setShowError(false);
+          setCurrentStep(3);
+        }, 3000);
+        return;
+      }
+      
       obj.coordinates = {
-        latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-        longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
       };
-      obj.place_name = localStorage.getItem("Location");
+      obj.place_name = location;
       obj.type = "place";
-    } else if (tripType == "road") {
-      obj.origin = JSON.parse(localStorage.getItem("origin"));
-      obj.destination = JSON.parse(localStorage.getItem("destination"));
-      obj.polylines = localStorage.getItem("route");
+    } else if (tripType === "road") {
+      const origin = localStorage.getItem("origin");
+      const destination = localStorage.getItem("destination");
+      const route = localStorage.getItem("route");
+      
+      if (!origin || !destination || !route) {
+        setShowError(true);
+        setProgressMessage("Missing road trip data. Please complete the route selection.");
+        setTimeout(() => {
+          setShowError(false);
+          setCurrentStep(3);
+        }, 3000);
+        return;
+      }
+      
+      const originData = JSON.parse(origin);
+      const destinationData = JSON.parse(destination);
+      
+      // Transform the data structure to match backend expectations
+      obj.origin = {
+        id: originData.id,
+        name: originData.name,
+        types: originData.types,
+        location: {
+          latitude: originData.location.latitude,
+          longitude: originData.location.longitude,
+        },
+      };
+      obj.destination = {
+        id: destinationData.id,
+        name: destinationData.name,
+        types: destinationData.types,
+        location: {
+          latitude: destinationData.location.latitude,
+          longitude: destinationData.location.longitude,
+        },
+      };
+      obj.polylines = route;
       obj.type = "road";
     }
 
     const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => obj.place);
-    const location = localStorage.getItem("Location") || "";
     let locationParts;
     let country;
     let city;
 
-    if (localStorage.getItem("Trip Type") === "road") {
+    if (tripType === "road") {
       const destinationText = localStorage.getItem("currentTextDes") || "";
       locationParts = destinationText.split(",").map((part) => part.trim());
       country = locationParts[locationParts.length - 1] || null;
@@ -276,11 +370,11 @@ function Forms() {
     }
 
     const formData = {
-      budget: parseFloat(localStorage.getItem("Budget")) || 0,
+      budget: parseFloat(budget),
       startDate: formattedDate,
       duration: duration,
       tripType: tripType,
-      display_name: localStorage.getItem("Location"),
+      display_name: location,
       country: country,
       city: city,
       data_type: obj,
@@ -295,12 +389,20 @@ function Forms() {
       },
       is_group: isGroup,
     };
+    
     // If the user is authenticated, include preferences name in the formData
-
     if (isAuthenticated) {
       formData.preferences["preferencesName"] =
         localStorage.getItem("preferencesName");
-    } else {
+      
+      // Include selectedPreferenceId if it exists (for reused preferences)
+      const selectedPreferenceId = localStorage.getItem("selectedPreferenceId");
+      if (selectedPreferenceId) {
+        formData.preference_id = parseInt(selectedPreferenceId);
+        console.log("Including existing preference ID:", selectedPreferenceId);
+      }
+    }
+    else{
       // for trip-management to make the distinction between guest and authenticated users for preferences and trip saving
       formData["guest"] = true;
     }
@@ -358,6 +460,10 @@ function Forms() {
               "route",
               "isGroup",
               "addedUsers",
+              "selectedPreferenceId",
+              "preferencesName",
+              "Preferences Profile",
+              "Trip Dimension",
             ];
 
             keysToRemove.forEach((key) => localStorage.removeItem(key));
@@ -490,7 +596,7 @@ function Forms() {
             {showError && (
               <Notification
                 type="error"
-                text="You must select an answer before proceeding"
+                text={progressMessage || "You must select an answer before proceeding"}
                 onClose={() => setShowError(false)}
               />
             )}

@@ -65,7 +65,7 @@ export const axiosMaps = axios.create({
 
 export const axiosUser = axios.create({
   baseURL: "/api/v1/user-management",
-  timeout: 10000,
+  timeout: 120000, // Increased timeout for trip regeneration
   headers: {
     "Content-Type": "application/json",
   },

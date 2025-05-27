@@ -62,8 +62,8 @@ const RangeSlider = ({
 
       {showLabels && (
         <div className="flex justify-between px-2 mt-1">
-          <span className={labelClassName}>{min}€</span>
-          <span className={labelClassName}>{max}€ +</span>
+          <span className={labelClassName}>{min}</span>
+          <span className={labelClassName}>{max} +</span>
         </div>
       )}
     </div>

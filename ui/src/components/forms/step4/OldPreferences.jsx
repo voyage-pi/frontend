@@ -43,8 +43,16 @@ const OldPreferences = ({setDisableButton, setCurrentStep }) => {
       return;
     }
     const ratings = selectedProfile.answers.map((q) => q.value);
+    
+    // Save the selected preference ID and ratings to localStorage
+    localStorage.setItem("selectedPreferenceId", selectedProfileId);
     localStorage.setItem("userRatings", JSON.stringify(ratings));
     localStorage.setItem("preferencesName", selectedProfile.name);
+    
+    console.log("Selected preference ID:", selectedProfileId);
+    console.log("Selected preference name:", selectedProfile.name);
+    console.log("Selected ratings:", ratings);
+    
     setDisableButton(false);
   };
   return (

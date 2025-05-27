@@ -28,7 +28,8 @@ function Step5Content({
     if (savedTripDimension) {
       setTripDimension(savedTripDimension);
     }
-    // Check if preferences profile already exists
+    
+    // Check if preferences profile choice already exists
     const preferencesProfile = localStorage.getItem("Preferences Profile");
 
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
