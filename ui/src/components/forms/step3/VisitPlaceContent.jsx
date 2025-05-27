@@ -7,7 +7,7 @@ import LoadingAnimation from "../../LoadingAnimation";
 import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 
-const VisitPlaceContent = () => {
+const VisitPlaceContent = ({setDisableButton}) => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [suggestionlist, setSuggestionList] = useState([]);
   const [currentText, setCurrentText] = useState("");
@@ -48,6 +48,7 @@ const VisitPlaceContent = () => {
       console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
+    setDisableButton(false)
   };
 
   useEffect(() => {

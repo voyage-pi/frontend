@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 import LoadingAnimation from "../../LoadingAnimation";
 
-const ZoneTripContent = () => {
+const ZoneTripContent = ({setDisableButton}) => {
   const [circle, setCircle] = useState([]);
   const [radius, setRadius] = useState(100);
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -114,6 +114,7 @@ const ZoneTripContent = () => {
           },
         },
       ]);
+      setDisableButton(false)
     }
   }, []);
 

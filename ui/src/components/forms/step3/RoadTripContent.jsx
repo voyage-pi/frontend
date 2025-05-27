@@ -10,7 +10,7 @@ import Notification from "../../Notification";
 import { motion } from "motion/react";
 import { AnimatePresence } from "framer-motion";
 
-const RoadTripContent = () => {
+const RoadTripContent = ({ setDisableButton }) => {
   const [selectedLocationOrigin, setSelectedLocationOrigin] = useState("");
   const [selectedLocationDes, setSelectedLocationDes] = useState("");
   const [suggestionlistOrigin, setSuggestionListOrigin] = useState([]);
@@ -35,14 +35,14 @@ const RoadTripContent = () => {
     const savedRoutePolyline = localStorage.getItem("route");
     const savedOriginText = localStorage.getItem("currentTextOrigin");
     const savedDestinationText = localStorage.getItem("currentTextDes");
-    
+
     // Load origin data
     if (savedOrigin && savedOriginText) {
       const originData = JSON.parse(savedOrigin);
       setCurrentTextOrigin(savedOriginText);
       setSelectedLocationOrigin({ text: savedOriginText });
       setShowOrigin(false);
-      
+
       if (originData.location) {
         const m = {
           position: {
@@ -56,14 +56,14 @@ const RoadTripContent = () => {
         setMarkersOrigin([m]);
       }
     }
-    
+
     // Load destination data
     if (savedDestination && savedDestinationText) {
       const destinationData = JSON.parse(savedDestination);
       setCurrentTextDes(savedDestinationText);
       setSelectedLocationDes({ text: savedDestinationText });
       setShowDes(false);
-      
+
       if (destinationData.location) {
         const m = {
           position: {
@@ -77,12 +77,13 @@ const RoadTripContent = () => {
         setMarkersDes([m]);
       }
     }
-    
+
     // Load route data if available
     if (savedRoutePolyline && savedOrigin && savedDestination) {
       setRoute([{ polylineEncoded: savedRoutePolyline }]);
+      setDisableButton(false);
     }
-    
+
     // Clean up timeout when component unmounts
     return () => {
       if (timeoutRef.current) {
@@ -244,21 +245,33 @@ const RoadTripContent = () => {
           latitude: markersDes[0].position.lat,
           longitude: markersDes[0].position.lng,
         };
-        const response = await axiosMaps.post("/maps/", {
-          origin: originR,
-          destination: destinationR,
-          travelingMode: "DRIVE",
-        });
-        console.log(response.data.routes);
-        setRoute(response.data.routes);
-        //store the origin and destination in local storage such has the route
-        localStorage.setItem(
-          "Location",
-          "Driving from " + currentTextOrigin + " to " + currentTextDes
-        );
-        localStorage.setItem("route", response.data.routes[0].polylineEncoded);
-        localStorage.setItem("currentTextOrigin", currentTextOrigin);
-        localStorage.setItem("currentTextDes", currentTextDes);
+        try {
+          const response = await axiosMaps.post("/maps/", {
+            origin: originR,
+            destination: destinationR,
+            travelingMode: "DRIVE",
+          });
+          setRoute(response.data.routes);
+          //store the origin and destination in local storage such has the route
+          localStorage.setItem(
+            "Location",
+            "Driving from " + currentTextOrigin + " to " + currentTextDes
+          );
+          localStorage.setItem(
+            "route",
+            response.data.routes[0].polylineEncoded
+          );
+          localStorage.setItem("currentTextOrigin", currentTextOrigin);
+          localStorage.setItem("currentTextDes", currentTextDes);
+          setDisableButton(false);
+        } catch (error) {
+          setNotify({
+            type: "info",
+            text: `A road trip from ${currentTextOrigin} to ${currentTextDes} is not possible`,
+            key: Date.now(),
+          });
+          console.error("Routing error:", error);
+        }
       }
     };
     routing();
