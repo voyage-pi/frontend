@@ -149,6 +149,7 @@ function ActivityList({
                 onClick={() => onPlaceClick(stop.place, index + 1)}
                 road={true}
                 participants={participants}
+                activityTypes={stop.place?.types || []}
               />
             ))}
           </div>
@@ -198,6 +199,7 @@ function ActivityList({
               refreshing={refreshingActivity === activity.id}
               onClick={() => onPlaceClick(activity.place, index + 1)}
               participants={participants}
+              activityTypes={activity.place?.types || []}
             />
           ))}
         </div>
