@@ -225,7 +225,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
               position={marker.position}
               title={marker.title}
               icon={{
-                url: createNumberedMarkerIcon(index + 1),
+                url: createNumberedMarkerIcon(marker.displayNumber || index + 1),
                 scaledSize: new window.google.maps.Size(50, 62),
                 anchor: new window.google.maps.Point(25, 60),
               }}

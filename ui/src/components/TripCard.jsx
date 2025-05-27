@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaClock, FaUsers, FaLocationDot, FaEye, FaHeart } from "react-icons/fa6";
+import { FaClock, FaUsers, FaLocationDot, FaHeart, FaRegHeart } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { axiosPlace } from "../utils/axiosInstance";
 
@@ -8,6 +8,7 @@ function TripCard({
   image,
   name, 
   date, 
+  type,
   days, 
   people, 
   destinations, 
@@ -17,7 +18,8 @@ function TripCard({
   onToggleSave,
   onCardClick,
   id,
-  placeData
+  placeData,
+  markerNumber
 }) {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -123,10 +125,10 @@ function TripCard({
           </div>
 
           <div className="absolute right-2 top-2">
-            {!isSavedPlace && (
-              <button className="btn btn-circle btn-xs bg-gray-700/70 text-white border-none hover:bg-gray-600">
-                <FaEye className="h-3 w-3" />
-              </button>
+            {!isSavedPlace && markerNumber && (
+              <div className="btn btn-circle btn-xs bg-gray-700/70 text-white border-none hover:bg-gray-600 cursor-default">
+                <span className="text-xs font-bold">{markerNumber}</span>
+              </div>
             )}
             
             {isSavedPlace && (
@@ -147,7 +149,7 @@ function TripCard({
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold mb-1">{name}</h2>
-                {!isSavedPlace && date && <p className="text-secondary/70">{date}</p>}
+                {!isSavedPlace && date && type!=="road" && <p className="text-secondary/70">{date}</p>}
                 {isSavedPlace && location && <p className="text-secondary/70">{location}</p>}
               </div>
             </div>

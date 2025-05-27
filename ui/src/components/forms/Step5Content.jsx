@@ -16,10 +16,9 @@ function Step5Content({
   onValidationChange,
   handleNext,
 }) {
-  const [showNewPreferences, setShowNewPreferences] = useState(null);
   const [isValid, setIsValid] = useState(false);
+  const [showNewPreferences, setShowNewPreferences] = useState(null);
   const [tripDimension, setTripDimension] = useState("individual");
-  const [choosen, setChoosen] = useState(false);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -56,97 +55,7 @@ function Step5Content({
       onValidationChange(isValid);
     }
   };
-
-  const handleNewPreferencesClick = () => {
-    localStorage.setItem("Preferences Profile", "New");
-    setShowNewPreferences(true);
-  };
-
-  const handleReusePreferencesClick = () => {
-    localStorage.setItem("Preferences Profile", "Reuse");
-    setShowNewPreferences(false);
-  };
-
-  if (
-    showNewPreferences == null &&
-    ((choosen && tripDimension === "group") || tripDimension == "individual")
-  ) {
-    const individualCardData = [
-      {
-        id: "reuse",
-        icon: FaRecycle,
-        title: "Reuse Preferences Profile",
-        onClick: handleReusePreferencesClick,
-      },
-      {
-        id: "new",
-        icon: FaFileCirclePlus,
-        title: "New Preferences Profile",
-        onClick: handleNewPreferencesClick,
-      },
-    ];
-
-    return (
-      <div className="text-center p-6 -mb-10">
-        <div className="flex justify-center space-x-40 pt-9">
-          {individualCardData.map((card) => (
-            <FormCard
-              key={card.id}
-              icon={card.icon}
-              title={card.title}
-              selected={false}
-              onClick={card.onClick || (() => {})}
-              iconSize={100}
-              infoSize={25}
-              text={card.text}
-              id={card.id}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  } else if (!choosen && tripDimension === "group") {
-    // Different options based on trip dimension
-    const groupCardData = [
-      {
-        id: "singular",
-        icon: FaUser,
-        title: "Singular Taste Profile",
-        onClick: () => {
-          setChoosen(true);
-        },
-        text: "Create a single preference profile for the entire group based on one person's choices. This is useful when one person is making decisions for the group or when the group has similar preferences.",
-      },
-      {
-        id: "combined",
-        icon: FaUserGroup,
-        title: "Combined Group Preferences",
-        onClick: () => {
-          setChoosen(true);
-        },
-        text: "Create a combined profile that takes into account preferences from all group members. This option is ideal for groups with diverse tastes, ensuring that recommendations satisfy the majority of the group.",
-      },
-    ];
-    return (
-      <div className="text-center p-6 -mb-10">
-        <div className="flex justify-center space-x-40 pt-9">
-          {groupCardData.map((card) => (
-            <FormCard
-              key={card.id}
-              icon={card.icon}
-              title={card.title}
-              selected={false}
-              onClick={card.onClick}
-              iconSize={100}
-              infoSize={25}
-              text={card.text}
-              id={card.id}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  } else {
+  if (showNewPreferences !== null) {
     if (showNewPreferences) {
       const currentQuestion = answers[subQuestionIndex];
       return (
@@ -158,14 +67,49 @@ function Step5Content({
             handleRatingSelect,
             handleValidationChange,
             handleNext,
+
           }}
         />
       );
-    } else if (showNewPreferences === false) {
-      return <OldPreferences setCurrentStep={setCurrentStep} />;
+    } else if (!showNewPreferences) {
+      return <OldPreferences  answers={answers} setCurrentStep={setCurrentStep} />;
     }
   }
-  // Default options for individual trips
-}
+  const individualCardData = [
+    {
+      id: "reuse",
+      icon: FaRecycle,
+      title: "Reuse Preferences Profile",
+      onClick: () => setShowNewPreferences(false),
+    },
+    {
+      id: "new",
+      icon: FaFileCirclePlus,
+      title: "New Preferences Profile",
+      onClick: () => {
+        setShowNewPreferences(true);
+      },
+    },
+  ];
 
+  return (
+    <div className="text-center p-6 -mb-10">
+      <div className="flex justify-center space-x-40 pt-9">
+        {individualCardData.map((card) => (
+          <FormCard
+            key={card.id}
+            icon={card.icon}
+            title={card.title}
+            selected={false}
+            onClick={card.onClick || (() => {})}
+            iconSize={100}
+            infoSize={25}
+            text={card.text}
+            id={card.id}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 export default Step5Content;

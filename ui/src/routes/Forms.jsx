@@ -318,8 +318,28 @@ function Forms() {
         return;
       }
       
-      obj.origin = JSON.parse(origin);
-      obj.destination = JSON.parse(destination);
+      const originData = JSON.parse(origin);
+      const destinationData = JSON.parse(destination);
+      
+      // Transform the data structure to match backend expectations
+      obj.origin = {
+        id: originData.id,
+        name: originData.name,
+        types: originData.types,
+        location: {
+          latitude: originData.location.latitude,
+          longitude: originData.location.longitude,
+        },
+      };
+      obj.destination = {
+        id: destinationData.id,
+        name: destinationData.name,
+        types: destinationData.types,
+        location: {
+          latitude: destinationData.location.latitude,
+          longitude: destinationData.location.longitude,
+        },
+      };
       obj.polylines = route;
       obj.type = "road";
     }

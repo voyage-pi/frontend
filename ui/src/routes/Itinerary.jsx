@@ -87,6 +87,7 @@ function Itinerary() {
     tripId,
     actions,
     showNotification,
+    currentParticipants: tripData.participants,
   });
 
   // State for participants count
@@ -314,21 +315,24 @@ function Itinerary() {
       // Fetch place details from backend
       const response = await axiosPlace.get(`/places/${place.id}`);
       const placeDetails = response.data;
-      
+
       let isSaved = false;
-      
+
       // Check if this place is saved by the user
       if (isAuthenticated && placeDetails.place_id) {
         try {
-          const savedResponse = await axiosUser.get('/places/user/favorite/check', { 
-            params: { place_id: placeDetails.place_id } 
-          });
+          const savedResponse = await axiosUser.get(
+            "/places/user/favorite/check",
+            {
+              params: { place_id: placeDetails.place_id },
+            }
+          );
           isSaved = savedResponse.data?.is_saved || false;
         } catch (error) {
           console.error("Error checking if place is saved:", error);
         }
       }
-      
+
       // Format the place data for the sidebar
       const formattedPlaceData = {
         id: placeDetails.place_id,
@@ -344,27 +348,30 @@ function Itinerary() {
         openHours: placeDetails.opening_hours?.periods || [],
         reviews: placeDetails.reviews || [],
         isSaved: isSaved,
-        displayOrder: displayOrder
+        displayOrder: displayOrder,
       };
-      
+
       setSelectedPlace(formattedPlaceData);
       setIsPlaceSidebarOpen(true);
     } catch (error) {
       console.error("Error fetching place details:", error);
-      
+
       // For fallback, also try to check if this place is saved
       let isSaved = false;
       if (isAuthenticated && place.id) {
         try {
-          const savedResponse = await axiosUser.get('/places/user/favorite/check', { 
-            params: { place_id: place.id } 
-          });
+          const savedResponse = await axiosUser.get(
+            "/places/user/favorite/check",
+            {
+              params: { place_id: place.id },
+            }
+          );
           isSaved = savedResponse.data?.is_saved || false;
         } catch (err) {
           console.error("Error checking if place is saved:", err);
         }
       }
-      
+
       // Fallback to basic data if fetch fails
       setSelectedPlace({
         id: place.id,
@@ -372,7 +379,7 @@ function Itinerary() {
         location: place.location,
         image: place.image,
         isSaved: isSaved,
-        displayOrder: displayOrder
+        displayOrder: displayOrder,
       });
       setIsPlaceSidebarOpen(true);
     }
@@ -390,32 +397,32 @@ function Itinerary() {
     }
 
     setSavingPlace(true);
-    
+
     try {
       // Get current saved status from the selected place
       const isSaved = selectedPlace?.isSaved || false;
-      
+
       if (isSaved) {
         // Remove from favorites
-        await axiosUser.delete('/places/user/favorite', { 
-          data: { place_id: placeId } 
+        await axiosUser.delete("/places/user/favorite", {
+          data: { place_id: placeId },
         });
-        
+
         showNotification("success", "Place removed from saved places");
       } else {
         // Add to favorites
-        await axiosUser.post('/places/user/favorite', { 
-          place_id: placeId 
+        await axiosUser.post("/places/user/favorite", {
+          place_id: placeId,
         });
-        
+
         showNotification("success", "Place added to saved places");
       }
-      
+
       // Update the selected place's saved status
       if (selectedPlace && selectedPlace.id === placeId) {
-        setSelectedPlace(prev => ({
+        setSelectedPlace((prev) => ({
           ...prev,
-          isSaved: !isSaved
+          isSaved: !isSaved,
         }));
       }
     } catch (error) {
@@ -436,7 +443,6 @@ function Itinerary() {
         participants={tripData.participants}
         showNotification={showNotification}
       />
-
 
       <div
         ref={pageRef}

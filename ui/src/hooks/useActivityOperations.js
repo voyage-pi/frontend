@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import { axiosInstance } from "../utils/axiosInstance";
 import { supabase } from "../utils/supabaseClient";
 
-export function useActivityOperations({ tripId, actions, showNotification }) {
+export function useActivityOperations({
+  tripId,
+  actions,
+  showNotification,
+  currentParticipants = [],
+}) {
   const [refreshingActivity, setRefreshingActivity] = useState(null);
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(null);
 
@@ -85,6 +90,7 @@ export function useActivityOperations({ tripId, actions, showNotification }) {
         const newItineraryData = {
           response: {
             itinerary: response.data.itinerary,
+            participants: currentParticipants,
           },
         };
         await actions.processItineraryData(newItineraryData);
@@ -144,6 +150,7 @@ export function useActivityOperations({ tripId, actions, showNotification }) {
         const newItineraryData = {
           response: {
             itinerary: itineraryData,
+            participants: currentParticipants,
           },
         };
         await actions.processItineraryData(newItineraryData);

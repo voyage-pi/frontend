@@ -5,7 +5,7 @@ import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
-import Map from "../components/Map";
+import MapComponent from "../components/Map";
 import { FaEarthAmericas, FaEnvelope } from "react-icons/fa6";
 import { axiosInstance, axiosUser, axiosPlace } from "../utils/axiosInstance";
 import { useNotifications } from "../context/NotificationsContext";
@@ -241,29 +241,60 @@ function Trips() {
               // The response structure follows the ResponseBody format with nested itinerary
               if (tripResponse.data && tripResponse.data.response && tripResponse.data.response.itinerary) {
                 const itinerary = tripResponse.data.response.itinerary;
-                
-                // Debug log the itinerary structure
-                console.log('Itinerary structure:', JSON.stringify({
-                  has_days: Boolean(itinerary.days),
-                  days_length: itinerary.days ? itinerary.days.length : 0,
-                  name: itinerary.name,
-                  start_date: itinerary.start_date,
-                  end_date: itinerary.end_date
-                }));
-                
                 // Fetch the photo URL
                 const imageUrl = await getFirstPhotoUrl(itinerary);
+                
+                // Extract location data based on trip type
+                let locationData = {};
+                
+                if (itinerary.trip_type === 'zone' && itinerary.original_place_data?.center) {
+                  // For zone trips, use the center location
+                  locationData = {
+                    location: {
+                      latitude: itinerary.original_place_data.center.latitude,
+                      longitude: itinerary.original_place_data.center.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'place' && itinerary.original_place_data?.coordinates) {
+                  // For place trips, use the coordinates
+                  locationData = {
+                    location: {
+                      latitude: itinerary.original_place_data.coordinates.latitude,
+                      longitude: itinerary.original_place_data.coordinates.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'road' && itinerary.original_place_data?.origin && itinerary.original_place_data?.destination) {
+                  // For road trips, use a consistent structure with a primary location (origin) and additional destination info
+                  locationData = {
+                    location: {
+                      latitude: itinerary.original_place_data.origin.location.latitude,
+                      longitude: itinerary.original_place_data.origin.location.longitude
+                    },
+                    location_origin: {
+                      latitude: itinerary.original_place_data.origin.location.latitude,
+                      longitude: itinerary.original_place_data.origin.location.longitude,
+                      name: itinerary.original_place_data.origin.name
+                    },
+                    location_destination: {
+                      latitude: itinerary.original_place_data.destination.location.latitude,
+                      longitude: itinerary.original_place_data.destination.location.longitude,
+                      name: itinerary.original_place_data.destination.name
+                    }
+                  };
+                }
                 
                 return {
                   id: tripId,
                   name: itinerary.name || 'Unnamed Trip',
+                  type: itinerary.trip_type,
                   date: formatTripDates(itinerary.start_date, itinerary.end_date),
                   days: itinerary.days ? itinerary.days.length : 0,
                   people: peopleCount, // Use fetched people count
                   status: userTrip.status, // This comes directly from user_trips
                   destinations: getDestinationsCount(itinerary),
                   image: imageUrl,
-                  markers: extractMarkers(itinerary)
+                  markers: extractMarkers(itinerary),
+                  ...locationData // Add location data to the trip object
                 };
               } else {
                 console.error('Invalid trip response structure:', tripResponse.data);
@@ -336,26 +367,33 @@ function Trips() {
     }
   };
 
-  // Extract markers for the map
+  // Extract markers for the map (legacy function, kept for compatibility)
   const extractMarkers = (itinerary) => {
     try {
       const markers = [];
 
-      if (itinerary.days) {
-        itinerary.days.forEach(day => {
-          ['morning_activities', 'afternoon_activities', 'evening_activities'].forEach(timeSlot => {
-            if (day[timeSlot]) {
-              day[timeSlot].forEach(activity => {
-                if (activity.place && activity.place.location) {
-                  markers.push({
-                    lat: activity.place.location.latitude,
-                    lng: activity.place.location.longitude,
-                    name: activity.place.name
-                  });
-                }
-              });
-            }
-          });
+      if (itinerary.trip_type === 'zone' && itinerary.original_place_data?.center) {
+        markers.push({
+          lat: itinerary.original_place_data.center.latitude,
+          lng: itinerary.original_place_data.center.longitude,
+          name: itinerary.name
+        });
+      } else if (itinerary.trip_type === 'place' && itinerary.original_place_data?.coordinates) {
+        markers.push({
+          lat: itinerary.original_place_data.coordinates.latitude,
+          lng: itinerary.original_place_data.coordinates.longitude,
+          name: itinerary.name
+        });
+      } else if (itinerary.trip_type === 'road' && itinerary.original_place_data?.origin && itinerary.original_place_data?.destination) {
+        markers.push({
+          lat: itinerary.original_place_data.origin.location.latitude,
+          lng: itinerary.original_place_data.origin.location.longitude,
+          name: itinerary.original_place_data.origin.name
+        });
+        markers.push({
+          lat: itinerary.original_place_data.destination.location.latitude,
+          lng: itinerary.original_place_data.destination.location.longitude,
+          name: itinerary.original_place_data.destination.name
         });
       }
 
@@ -416,12 +454,101 @@ function Trips() {
     return true;
   });
 
-  const allMarkers = [];
-  filteredTrips.forEach(trip => {
-    if (trip.markers && trip.markers.length > 0) {
-      allMarkers.push(...trip.markers);
-    }
-  });
+  // Generate city-based markers from trip locations
+  const getCityMarkers = () => {
+    const uniqueLocations = new Map(); // Use Map to avoid duplicate cities
+    
+    // First, assign each trip a unique number
+    const tripNumbers = new Map();
+    filteredTrips.forEach((trip, index) => {
+      tripNumbers.set(trip.id, index + 1);
+    });
+    
+    console.log('Filtered trips for marker generation:', filteredTrips);
+    
+    filteredTrips.forEach(trip => {
+      const tripNumber = tripNumbers.get(trip.id);
+      console.log(`Processing trip ${trip.id} (${trip.type}):`, trip);
+      
+      // Handle all trip types that have a primary location (zone, place, and now road trips)
+      if (trip.location) {
+        const locationKey = `${trip.location.latitude},${trip.location.longitude}`;
+        if (!uniqueLocations.has(locationKey)) {
+          uniqueLocations.set(locationKey, {
+            position: {
+              lat: trip.location.latitude,
+              lng: trip.location.longitude
+            },
+            title: trip.name,
+            tripCount: 1,
+            tripIds: [trip.id],
+            tripNumbers: [tripNumber],
+            displayNumber: tripNumber, // Use the trip number for display
+            image: trip.image
+          });
+        } else {
+          // If location already exists, increment trip count
+          const existing = uniqueLocations.get(locationKey);
+          existing.tripCount += 1;
+          existing.tripIds.push(trip.id);
+          existing.tripNumbers.push(tripNumber);
+          // For multiple trips at same location, show the first trip's number
+          existing.displayNumber = existing.tripNumbers[0];
+          // Update title to show multiple trips
+          existing.title = `${existing.tripCount} trips in this area`;
+        }
+      } else {
+        console.log(`No primary location found for trip ${trip.id}`);
+      }
+      
+      // For road trips, also add the destination as a separate marker
+      if (trip.type === 'road' && trip.location_destination) {
+        const destKey = `${trip.location_destination.latitude},${trip.location_destination.longitude}`;
+        
+        if (!uniqueLocations.has(destKey)) {
+          uniqueLocations.set(destKey, {
+            position: {
+              lat: trip.location_destination.latitude,
+              lng: trip.location_destination.longitude
+            },
+            title: trip.location_destination.name || `${trip.name} (Destination)`,
+            tripCount: 1,
+            tripIds: [trip.id],
+            tripNumbers: [tripNumber],
+            displayNumber: tripNumber, // Same trip number as origin
+            image: trip.image
+          });
+        } else {
+          const existing = uniqueLocations.get(destKey);
+          existing.tripCount += 1;
+          existing.tripIds.push(trip.id);
+          existing.tripNumbers.push(tripNumber);
+          // For multiple trips at same location, show the first trip's number
+          existing.displayNumber = existing.tripNumbers[0];
+          existing.title = `${existing.tripCount} trips to this area`;
+        }
+      } else if (trip.type === 'road') {
+        console.log(`Road trip ${trip.id} missing location_destination:`, trip);
+      }
+    });
+    
+    const markers = Array.from(uniqueLocations.values());
+    return markers;
+  };
+
+  // Create a mapping from trip ID to trip number
+  const getTripToMarkerMapping = () => {
+    const tripToMarkerMap = new Map();
+    
+    filteredTrips.forEach((trip, index) => {
+      tripToMarkerMap.set(trip.id, index + 1);
+    });
+    
+    return tripToMarkerMap;
+  };
+
+  const allMarkers = getCityMarkers();
+  const tripToMarkerMap = getTripToMarkerMapping();
 
   const myPolylines = [
     {
@@ -504,8 +631,10 @@ function Trips() {
                       days={trip.days}
                       people={trip.people}
                       destinations={trip.destinations}
+                      type={trip.type} 
                       name={trip.name}
                       date={trip.date}
+                      markerNumber={tripToMarkerMap.get(trip.id)}
                     />
                   ))}
                 </div>
@@ -516,7 +645,7 @@ function Trips() {
           <div className="w-3/7 h-screen relative">
             {/* Map component */}
             {!showInbox && (
-              <Map
+              <MapComponent
                 polylines={myPolylines}
                 markers={allMarkers}
               />
