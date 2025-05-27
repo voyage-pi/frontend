@@ -241,7 +241,6 @@ function Trips() {
               // The response structure follows the ResponseBody format with nested itinerary
               if (tripResponse.data && tripResponse.data.response && tripResponse.data.response.itinerary) {
                 const itinerary = tripResponse.data.response.itinerary;
-                
                 // Debug log the itinerary structure
                 console.log('Itinerary structure:', JSON.stringify({
                   has_days: Boolean(itinerary.days),
@@ -257,6 +256,7 @@ function Trips() {
                 return {
                   id: tripId,
                   name: itinerary.name || 'Unnamed Trip',
+                  type: itinerary.trip_type,
                   date: formatTripDates(itinerary.start_date, itinerary.end_date),
                   days: itinerary.days ? itinerary.days.length : 0,
                   people: peopleCount, // Use fetched people count
@@ -504,6 +504,7 @@ function Trips() {
                       days={trip.days}
                       people={trip.people}
                       destinations={trip.destinations}
+                      type={trip.type} 
                       name={trip.name}
                       date={trip.date}
                     />
