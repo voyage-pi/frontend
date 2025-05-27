@@ -407,14 +407,14 @@ const Step4Content = () => {
           <div className="flex justify-center items-baseline mb-2">
             <input
               type="number"
-              value={budget}
+              value={budget || 332}
               onChange={handleBudgetInputChange}
               min="0"
               max="2500"
               className="text-error text-5xl font-bold bg-transparent outline-none focus:outline-none text-right"
               style={{
                 /* auto‐size by character count + 1 for padding */
-                width: `${budget.toString().length + 1}ch`,
+                width: `${(budget || 332).toString().length + 1}ch`,
                 appearance: 'textfield',
               }}
             />
@@ -422,13 +422,13 @@ const Step4Content = () => {
               className="text-error text-5xl font-bold pointer-events-none"
               style={{ lineHeight: 1 }}
             >
-              €{budget >= 2500 ? '+' : ''}
+              €{(budget || 332) >= 2500 ? '+' : ''}
             </span>
           </div>
 
           <div className="w-full flex flex-col items-center gap-2">
             <RangeSlider
-              value={budget}
+              value={budget || 332}
               onChange={handleBudgetChange}
               min={0}
               max={2500}
