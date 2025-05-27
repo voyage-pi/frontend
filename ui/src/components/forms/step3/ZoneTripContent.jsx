@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 import LoadingAnimation from "../../LoadingAnimation";
 
-const ZoneTripContent = () => {
+const ZoneTripContent = ({setDisableButton}) => {
   const [circle, setCircle] = useState([]);
   const [radius, setRadius] = useState(100);
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -56,9 +56,9 @@ const ZoneTripContent = () => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
+    setDisableButton(false);
   };
 
   const handleRadiusChange = (radius) => {
@@ -114,6 +114,7 @@ const ZoneTripContent = () => {
           },
         },
       ]);
+      setDisableButton(false)
     }
   }, []);
 
@@ -130,7 +131,6 @@ const ZoneTripContent = () => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
   };
 

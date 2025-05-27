@@ -4,7 +4,7 @@ import StepIndicator from "../components/StepIndicator";
 import StepContent from "../components/forms/StepContent";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance, axiosUser } from "../utils/axiosInstance";
+import { axiosUser } from "../utils/axiosInstance";
 import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
@@ -19,14 +19,21 @@ function Forms() {
   const savedSubQuestionIndex = localStorage.getItem("subQuestionIndex");
   const savedStep6SubStep = localStorage.getItem("step6SubStep");
   const savedIsGroup = localStorage.getItem("isGroup");
-  
+
   // Initialize state with localStorage values if available
-  const [currentStep, setCurrentStep] = useState(savedStep ? Number(savedStep) : 1);
-  const [subQuestionIndex, setSubQuestionIndex] = useState(savedSubQuestionIndex ? Number(savedSubQuestionIndex) : 0);
-  const [step6SubStep, setStep6SubStep] = useState(savedStep6SubStep ? Number(savedStep6SubStep) : 0);
+  const [currentStep, setCurrentStep] = useState(
+    savedStep ? Number(savedStep) : 1
+  );
+  const [subQuestionIndex, setSubQuestionIndex] = useState(
+    savedSubQuestionIndex ? Number(savedSubQuestionIndex) : 0
+  );
+  const [step6SubStep, setStep6SubStep] = useState(
+    savedStep6SubStep ? Number(savedStep6SubStep) : 0
+  );
   const [isGroup, setIsGroup] = useState(savedIsGroup === "true");
-  
+
   const totalSteps = 6;
+  const [disableButton, setDisableButton] = useState(true);
   const [answers, setAnswers] = useState([]);
   const [totalSubQuestions, setTotalSubQuestions] = useState(0);
   const navigate = useNavigate();
@@ -49,12 +56,8 @@ function Forms() {
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const initialize = async () => {
-      console.log("Initializing - Current step is:", currentStep);
-      
       // Load saved answers if available
       const savedAnswers = localStorage.getItem("answers");
-      
-      
       // Load addedUsers from localStorage if they exist
       const savedAddedUsers = localStorage.getItem("addedUsers");
       if (savedAddedUsers) {
@@ -70,17 +73,11 @@ function Forms() {
           setAddedUsers([]);
         }
       }
-      
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-        
-        if (savedAnswers) {
-          setAnswers(JSON.parse(savedAnswers));
-        } else {
           const QA = qs.map((q) => ({ ...q}));
           setAnswers(QA);
-        }
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }
@@ -117,7 +114,13 @@ function Forms() {
       : 0;
 
   const handleNext = () => {
-    // For Step 5, check if the current question has an answer before allowing to proceed
+    setDisableButton(true);
+    const profile = localStorage.getItem("Preferences Profile");
+    if (profile === "Old" && currentStep === 5) {
+      setCurrentStep((prev) => prev + 1);
+      return;
+    }
+
     if (currentStep === 5) {
       // Check if current question has an answer
 
@@ -161,6 +164,13 @@ function Forms() {
   };
 
   const handleBack = () => {
+    setDisableButton(true);
+    const profile = localStorage.getItem("Preferences Profile");
+    if (currentStep === 6 && profile === "Old") {
+      setCurrentStep(5);
+      setSubQuestionIndex(0);
+      return;
+    }
     if (currentStep === 1) return;
 
     if (currentStep < 5) {
@@ -186,7 +196,7 @@ function Forms() {
         setStep6SubStep(0);
       } else {
         setCurrentStep(currentStep - 1);
-        setSubQuestionIndex(totalSubQuestions - 1); // Go back to the last question of step 5
+        setSubQuestionIndex(0); // Go back to the last question of step 5
       }
     }
   };
@@ -203,7 +213,6 @@ function Forms() {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     savedRatings[subQuestionIndex] = rating;
     localStorage.setItem("userRatings", JSON.stringify(savedRatings));
-    console.log("Updated userRatings in localStorage:", savedRatings);
   };
 
   const handleLeave = () => {
@@ -359,7 +368,6 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
-    console.log("answers:", answers);
 
     const formData = {
       budget: parseFloat(budget),
@@ -373,7 +381,7 @@ function Forms() {
       must_visit_places: formattedMustVisitPlaces,
       keywords: keywords,
       preferences: {
-        "questions": userRatings.map((answer, index) => ({
+        questions: userRatings.map((answer, index) => ({
           question_id: index,
           value: parseInt(answer) || 0,
           type: "scale",
@@ -398,8 +406,6 @@ function Forms() {
       // for trip-management to make the distinction between guest and authenticated users for preferences and trip saving
       formData["guest"] = true;
     }
-    console.log("Creating trip via WebSocket:", formData);
-
     try {
       setShowProgress(true);
       setProgressPercent(0);
@@ -418,7 +424,6 @@ function Forms() {
           setProgressPercent(progress);
         },
         onSuccess: async (message, responseData, tripId) => {
-          console.log("Trip created successfully with ID:", tripId);
           setProgressMessage("Trip created successfully!");
           setProgressPercent(100);
 
@@ -510,6 +515,49 @@ function Forms() {
       />
     );
   }
+  const renderNextOrFinishButton = () => {
+    const isDisabled = disableButton 
+
+    const baseNextButton = (
+      <button
+        onClick={handleNext}
+        className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${
+          isDisabled ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+        disabled={isDisabled}
+      >
+        Next <TiArrowRight className="ml-1" />
+      </button>
+    );
+
+      if (
+      (currentStep >= 1 && currentStep < 5) ||
+      (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1)
+    ) {
+      return baseNextButton;
+    }
+
+    if (currentStep === 5 || (currentStep === 6 && step6SubStep === 0)) {
+      return (
+        <button
+          onClick={handleNext}
+          className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+        >
+          Next <TiArrowRight className="ml-1" />
+        </button>
+      );
+    }
+
+    if (currentStep === 6 && step6SubStep === 1) {
+      return (
+        <button onClick={handleNext} className="ml-auto btn btn-primary">
+          Finish
+        </button>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <PageTemplate>
@@ -532,7 +580,9 @@ function Forms() {
               setCurrentStep={setCurrentStep}
               subQuestionIndex={subQuestionIndex}
               totalSubQuestions={totalSubQuestions}
+              setSubQuestionIndex={setSubQuestionIndex}
               answers={answers}
+              setDisableButton={setDisableButton}
               onRatingSelect={handleRatingSelect}
               onValidationChange={setIsStep5Valid}
               setShowLeaveButton={setShowLeaveButton}
@@ -552,16 +602,15 @@ function Forms() {
             )}
 
             <div className="flex justify-between mt-8">
+              {/* Leave Button */}
               {currentStep === 1 && showLeaveButton && (
-                <button
-                  onClick={() => handleLeave()}
-                  className="btn btn-primary"
-                >
+                <button onClick={handleLeave} className="btn btn-primary">
                   <BsArrowLeftSquareFill className="text-white" /> Leave
                 </button>
               )}
 
-              {currentStep > 1 && (
+              {/* Back Button */}
+              {currentStep>1 && (
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"
@@ -570,45 +619,7 @@ function Forms() {
                 </button>
               )}
 
-              {/* Modified Next/Finish button logic */}
-              {(currentStep >= 3 && currentStep < 5) ||
-              (currentStep === 5 &&
-                subQuestionIndex < totalSubQuestions - 1) ? (
-                <button
-                  onClick={handleNext}
-                  className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${
-                    currentStep === 5 && !answers[subQuestionIndex]?.answer
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                  disabled={
-                    currentStep === 5 && !answers[subQuestionIndex]?.answer
-                  }
-                >
-                  Next <TiArrowRight className="ml-1" />
-                </button>
-              ) : currentStep === 5 ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
-                >
-                  Next <TiArrowRight className="ml-1" />
-                </button>
-              ) : currentStep === 6 && step6SubStep === 0 ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
-                >
-                  Next <TiArrowRight className="ml-1" />
-                </button>
-              ) : currentStep === 6 && step6SubStep === 1 ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto btn btn-primary"
-                >
-                  Finish
-                </button>
-              ) : null}
+              {renderNextOrFinishButton()}
             </div>
 
             {currentStep === 5 && (

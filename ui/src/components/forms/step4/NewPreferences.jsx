@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import Step5ContentPP from "../Step5ContentPP";
 import Notification from "../../Notification";
 import { useAuth } from "../../../context/AuthContext";
 
-const NewPreferences = ({ questionsStep5 }) => {
+const NewPreferences = ({ questionsStep5, setDisableButton ,setForward,forward}) => {
   const [name, setName] = useState(null);
-  const [forward, setForward] = useState(false);
   const [notification, setNotification] = useState(null);
   const { isAuthenticated } = useAuth();
   
@@ -24,6 +23,19 @@ const NewPreferences = ({ questionsStep5 }) => {
     localStorage.setItem("preferencesName", name);
     setForward(true);
   };
+  useEffect(() => {
+    // check if the current questions is already answered if so enable the button
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+    if (forward && questionsStep5.currentQuestion) {
+      if (savedRatings[questionsStep5.subQuestionIndex] !== undefined) {
+        setDisableButton(false);
+      } else {
+        setDisableButton(true);
+
+      }
+    }
+  }, [forward, questionsStep5.currentQuestion, questionsStep5.subQuestionIndex, setDisableButton]);
+
 
   // For unauthenticated users, show questions directly
   // For authenticated users, show name input first, then questions after name is entered

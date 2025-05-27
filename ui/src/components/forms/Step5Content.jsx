@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react";
 import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6";
-import { FaUser, FaUserGroup } from "react-icons/fa6";
-import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
 import { useAuth } from "../../context/AuthContext";
 import NewPreferences from "./step4/NewPreferences";
 import OldPreferences from "./step4/OldPreferences";
 
 function Step5Content({
+  setSubQuestionIndex,
   subQuestionIndex,
   totalSubQuestions,
   answers,
   onRatingSelect,
   setCurrentStep,
+  setDisableButton,
   onValidationChange,
   handleNext,
 }) {
   const [isValid, setIsValid] = useState(false);
   const [showNewPreferences, setShowNewPreferences] = useState(null);
   const [tripDimension, setTripDimension] = useState("individual");
+  const [forward, setForward] = useState(false);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -30,13 +31,24 @@ function Step5Content({
     
     // Check if preferences profile choice already exists
     const preferencesProfile = localStorage.getItem("Preferences Profile");
-    
-    // If user has already made a choice, set the state accordingly
-    if (preferencesProfile === "New") {
-      setShowNewPreferences(true);
-    } else if (preferencesProfile === "Reuse") {
-      setShowNewPreferences(false);
+
+    const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
+
+    // If a profile already exists as "New" or if there are ratings for the current question
+    if (preferencesProfile === "New" || savedRatings[subQuestionIndex]) {
+      // verify if the user is logged in otherwise just continue, for preferences saving
+      if (!isAuthenticated) {
+        setShowNewPreferences(true);
+        setForward(true);
+      }
     }
+    else
+    {
+      // If no profile exists, show the options to create a new one or reuse an old one
+      setShowNewPreferences(null);
+      setDisableButton(true); // Disable the button until a choice is made
+    }
+
   }, []);
 
   const handleRatingSelect = (rating) => {
@@ -60,8 +72,12 @@ function Step5Content({
       const currentQuestion = answers[subQuestionIndex];
       return (
         <NewPreferences
+          forward={forward}
+          setForward={setForward}
+          setDisableButton={setDisableButton}
           questionsStep5={{
             currentQuestion,
+            setSubQuestionIndex,
             subQuestionIndex,
             totalSubQuestions,
             handleRatingSelect,
@@ -72,15 +88,20 @@ function Step5Content({
         />
       );
     } else if (!showNewPreferences) {
-      return <OldPreferences  answers={answers} setCurrentStep={setCurrentStep} />;
+      return <OldPreferences  answers={answers} setCurrentStep={setCurrentStep} setDisableButton={setDisableButton}/>;
     }
   }
+  else{
+  setDisableButton(true);
   const individualCardData = [
     {
       id: "reuse",
       icon: FaRecycle,
       title: "Reuse Preferences Profile",
-      onClick: () => setShowNewPreferences(false),
+      onClick: () => {
+        setShowNewPreferences(false)
+        localStorage.setItem("Preferences Profile", "Old");
+      },
     },
     {
       id: "new",
@@ -88,6 +109,7 @@ function Step5Content({
       title: "New Preferences Profile",
       onClick: () => {
         setShowNewPreferences(true);
+        localStorage.setItem("Preferences Profile", "New");
       },
     },
   ];
@@ -111,5 +133,7 @@ function Step5Content({
       </div>
     </div>
   );
+  }
+
 }
 export default Step5Content;
