@@ -7,7 +7,7 @@ import LoadingAnimation from "../../LoadingAnimation";
 import { ToastContainer } from "react-toastify";
 import Notification from "../../Notification";
 
-const VisitPlaceContent = () => {
+const VisitPlaceContent = ({setDisableButton}) => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [suggestionlist, setSuggestionList] = useState([]);
   const [currentText, setCurrentText] = useState("");
@@ -25,7 +25,6 @@ const VisitPlaceContent = () => {
       const response = await axiosPlace.post("/search/", {
         place_name: location,
       });
-      console.log(response.data);
       let m = {
         position: {
           lat: response.data.latitude,
@@ -45,9 +44,9 @@ const VisitPlaceContent = () => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
+    setDisableButton(false)
   };
 
   useEffect(() => {
@@ -72,6 +71,7 @@ const VisitPlaceContent = () => {
         };
         setMarkers([m]);
       }
+    setDisableButton(false)
     }
     //clean up timeout when the component unmounts
     if (timeoutRef.current) {
@@ -94,7 +94,6 @@ const VisitPlaceContent = () => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
   };
 
@@ -120,7 +119,6 @@ const VisitPlaceContent = () => {
 
   const handleSuggestionsSelection = (event) => {
     if (suggestionlist.length === 0) return;
-    console.log(event);
     let key = event.key;
     let suggestionsL = suggestionlist.length != 0 ? suggestionlist.length : 1;
     if (key === "ArrowDown") {
@@ -131,7 +129,6 @@ const VisitPlaceContent = () => {
       );
     } else if (key === "Enter") {
       let currentSelectedSuggestion = suggestionlist[suggestionHovered];
-      console.log(currentSelectedSuggestion);
       handleSelectLocation(currentSelectedSuggestion.text);
     }
   };

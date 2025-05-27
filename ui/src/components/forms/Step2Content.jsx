@@ -14,6 +14,7 @@ const Step2Content = ({ setCurrentStep }) => {
     const savedSelection = localStorage.getItem("Trip Type");
     if (savedSelection) {
       setSelectedCard(savedSelection);
+
     }
   }, []);
 
