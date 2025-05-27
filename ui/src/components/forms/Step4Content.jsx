@@ -41,7 +41,6 @@ const Step4Content = ({ setDisableButton }) => {
           const day = parseInt(parts[2], 10);
 
           const parsedDate = new Date(year, month, day);
-          console.log("Parsed start date:", parsedDate);
 
           if (!isNaN(parsedDate.getTime())) {
             parsedStartDate = parsedDate;
@@ -62,7 +61,6 @@ const Step4Content = ({ setDisableButton }) => {
           const day = parseInt(parts[2], 10);
 
           const parsedDate = new Date(year, month, day);
-          console.log("Parsed end date:", parsedDate);
 
           if (!isNaN(parsedDate.getTime())) {
             parsedEndDate = parsedDate;
@@ -119,8 +117,6 @@ const Step4Content = ({ setDisableButton }) => {
           const day = endDate.getDate().toString().padStart(2, "0");
 
           const dateString = `${year}-${month}-${day}`;
-          console.log("Saving end date:", dateString);
-
           localStorage.setItem("End Date", dateString);
         }
       } catch (error) {

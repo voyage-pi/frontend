@@ -67,14 +67,12 @@ const Step1Content = ({ setDisableButton,setCurrentStep, setShowLeaveButton, set
       setShowFriendsInvite(true);
       setShowLeaveButton(false);
       setIsGroup(true);
-      console.log("Selected group trip, setIsGroup(true)");
     } else {
       setShowLeaveButton(true);
       setIsGroup(false);
       setTimeout(() => {
         setCurrentStep(2);
       }, 300);
-      console.log("Selected individual trip, setIsGroup(false)");
     }
   };
   

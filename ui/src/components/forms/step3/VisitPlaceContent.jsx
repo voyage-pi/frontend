@@ -25,7 +25,6 @@ const VisitPlaceContent = ({setDisableButton}) => {
       const response = await axiosPlace.post("/search/", {
         place_name: location,
       });
-      console.log(response.data);
       let m = {
         position: {
           lat: response.data.latitude,
@@ -45,7 +44,6 @@ const VisitPlaceContent = ({setDisableButton}) => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
     setDisableButton(false)
@@ -96,7 +94,6 @@ const VisitPlaceContent = ({setDisableButton}) => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
   };
 
@@ -122,7 +119,6 @@ const VisitPlaceContent = ({setDisableButton}) => {
 
   const handleSuggestionsSelection = (event) => {
     if (suggestionlist.length === 0) return;
-    console.log(event);
     let key = event.key;
     let suggestionsL = suggestionlist.length != 0 ? suggestionlist.length : 1;
     if (key === "ArrowDown") {
@@ -133,7 +129,6 @@ const VisitPlaceContent = ({setDisableButton}) => {
       );
     } else if (key === "Enter") {
       let currentSelectedSuggestion = suggestionlist[suggestionHovered];
-      console.log(currentSelectedSuggestion);
       handleSelectLocation(currentSelectedSuggestion.text);
     }
   };

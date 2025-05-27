@@ -56,7 +56,6 @@ function Forms() {
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const initialize = async () => {
-      console.log("Initializing - Current step is:", currentStep);
       // Load saved answers if available
       const savedAnswers = localStorage.getItem("answers");
       // Load addedUsers from localStorage if they exist
@@ -118,7 +117,6 @@ function Forms() {
     setDisableButton(true);
     const profile = localStorage.getItem("Preferences Profile");
     if (profile === "Old" && currentStep === 5) {
-      console.log("Old profile detected, skipping step 5");
       setCurrentStep((prev) => prev + 1);
       return;
     }
@@ -215,7 +213,6 @@ function Forms() {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     savedRatings[subQuestionIndex] = rating;
     localStorage.setItem("userRatings", JSON.stringify(savedRatings));
-    console.log("Updated userRatings in localStorage:", savedRatings);
   };
 
   const handleLeave = () => {
@@ -277,7 +274,6 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
-    console.log("answers:", answers);
 
     const formData = {
       budget: parseFloat(localStorage.getItem("Budget")) || 0,
@@ -308,8 +304,6 @@ function Forms() {
       // for trip-management to make the distinction between guest and authenticated users for preferences and trip saving
       formData["guest"] = true;
     }
-    console.log("Creating trip via WebSocket:", formData);
-
     try {
       setShowProgress(true);
       setProgressPercent(0);
@@ -328,7 +322,6 @@ function Forms() {
           setProgressPercent(progress);
         },
         onSuccess: async (message, responseData, tripId) => {
-          console.log("Trip created successfully with ID:", tripId);
           setProgressMessage("Trip created successfully!");
           setProgressPercent(100);
 

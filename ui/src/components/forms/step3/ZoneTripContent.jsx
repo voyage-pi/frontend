@@ -56,7 +56,6 @@ const ZoneTripContent = ({setDisableButton}) => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
     localStorage.setItem("Location", location);
     setDisableButton(false);
@@ -132,7 +131,6 @@ const ZoneTripContent = ({setDisableButton}) => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
     }
   };
 
