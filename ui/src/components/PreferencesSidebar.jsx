@@ -8,6 +8,8 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
   const [isLoading, setIsLoading] = useState(false);
   const [questionsLoading, setQuestionsLoading] = useState(false);
   const [currentPreferenceId, setCurrentPreferenceId] = useState(null);
+  const [regenerationProgress, setRegenerationProgress] = useState(0);
+  const [regenerationStatus, setRegenerationStatus] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -78,6 +80,70 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
       setQuestionsLoading(false);
     }
   };
+
+  const handleWebSocketRegeneration = (tripId, preferencesData) => {
+    return new Promise((resolve, reject) => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/api/v1/trip-management/ws/trip-regeneration/${tripId}`;
+      
+      console.log("Connecting to WebSocket:", wsUrl);
+      const ws = new WebSocket(wsUrl);
+      
+      ws.onopen = () => {
+        console.log("WebSocket connected, sending preferences data");
+        ws.send(JSON.stringify(preferencesData));
+      };
+      
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("WebSocket message:", data);
+        
+        if (data.type === 'progress') {
+          setRegenerationProgress(data.progress);
+          setRegenerationStatus(data.message);
+          if (showNotification) {
+            showNotification("info", `${data.message} (${data.progress}%)`);
+          }
+        } else if (data.type === 'success') {
+          setRegenerationProgress(100);
+          setRegenerationStatus("Trip regenerated successfully!");
+          resolve(data.data);
+          ws.close();
+        } else if (data.type === 'error') {
+          console.error("WebSocket error:", data.message);
+          reject(new Error(data.message));
+          ws.close();
+        }
+      };
+      
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        reject(new Error("WebSocket connection failed"));
+      };
+      
+      ws.onclose = () => {
+        console.log("WebSocket connection closed");
+      };
+      
+      // Cleanup function
+      const cleanup = () => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
+      };
+      
+      // Set a timeout
+      setTimeout(() => {
+        if (ws.readyState !== WebSocket.CLOSED) {
+          cleanup();
+          reject(new Error("WebSocket operation timed out"));
+        }
+      }, 180000); // 3 minutes timeout
+      
+      // Return cleanup function
+      return cleanup;
+    });
+  };
   
   const handleRatingChange = useCallback((questionIndex, rating) => {
     setUserPreferences(prevPreferences => {
@@ -104,6 +170,9 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
 
     if (tripId && onPreferencesUpdated) {
       setIsLoading(true);
+      setRegenerationProgress(0);
+      setRegenerationStatus("Updating preferences...");
+      
       try {
         console.log("Making preferences update request...");
         console.log("Current trip ID:", tripId);
@@ -127,18 +196,41 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
 
         console.log("Payload:", payload);
 
-        // FIXED: Call the user-management service endpoint instead of trip-management
+        // Update preferences first (synchronous operation)
         console.log("Sending request to:", `/preferences/trip/${tripId}`);
         const response = await axiosUser.put(`/preferences/trip/${tripId}`, payload);
         
-        if (response.data && response.data.response) {
-          console.log("Trip preferences updated and trip regenerated successfully");
-          // The response structure should match what processItineraryData expects
-          onPreferencesUpdated(response.data);
+        if (response.data && response.data.response && response.data.response.websocket_regeneration) {
+          console.log("Preferences updated, starting WebSocket regeneration...");
+          
           if (showNotification) {
-            showNotification("success", "Trip preferences updated and trip regenerated successfully!");
+            showNotification("info", "Preferences updated! Starting trip regeneration...");
           }
-          onClose(); 
+          
+          // Use WebSocket for trip regeneration
+          try {
+            const regenerationResult = await handleWebSocketRegeneration(tripId, payload);
+            console.log("Trip regeneration completed:", regenerationResult);
+            
+            // Process the result similar to the old HTTP response
+            if (regenerationResult && regenerationResult.itinerary) {
+              onPreferencesUpdated({ response: regenerationResult });
+              if (showNotification) {
+                showNotification("success", "Trip preferences updated and trip regenerated successfully!");
+              }
+              onClose();
+            }
+          } catch (wsError) {
+            console.error("WebSocket regeneration failed:", wsError);
+            if (showNotification) {
+              showNotification("error", `Trip regeneration failed: ${wsError.message}`);
+            }
+          }
+        } else {
+          console.error("Unexpected response format:", response.data);
+          if (showNotification) {
+            showNotification("error", "Unexpected response from server");
+          }
         }
       } catch (error) {
         console.error("Error updating trip preferences:", error);
@@ -159,6 +251,8 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
         }
       } finally {
         setIsLoading(false);
+        setRegenerationProgress(0);
+        setRegenerationStatus("");
       }
     } else {
       onClose(); 
@@ -258,9 +352,30 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
                 }`}
                 type="button"
               >
-                {isLoading ? "Updating..." : "Save & Update Trip"}
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    {regenerationProgress > 0 ? `${regenerationProgress}%` : "Updating..."}
+                  </div>
+                ) : (
+                  "Save & Update Trip"
+                )}
               </button>
             </div>
+            
+            {/* Progress indicator */}
+            {isLoading && regenerationProgress > 0 && (
+              <div className="mt-4">
+                <div className="text-sm text-gray-600 mb-2">{regenerationStatus}</div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${regenerationProgress}%` }}
+                  ></div>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">{regenerationProgress}% complete</div>
+              </div>
+            )}
           </div>
         </motion.div>
       )}
