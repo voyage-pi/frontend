@@ -434,6 +434,7 @@ function Itinerary() {
         tripId={tripId}
         onPreferencesUpdated={handlePreferencesUpdated}
         participants={tripData.participants}
+        showNotification={showNotification}
       />
 
 

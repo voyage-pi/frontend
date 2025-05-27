@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
-import { axiosUser } from "../utils/axiosInstance";
+import { axiosUser, axiosInstance } from "../utils/axiosInstance";
 
-const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, participants }) => {
+const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, participants, showNotification }) => {
   const [userPreferences, setUserPreferences] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [questionsLoading, setQuestionsLoading] = useState(false);
@@ -91,6 +91,7 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
       }
       
       const ratings = updatedPreferences.map(q => Number(q.answer));
+      // Keep localStorage as backup
       localStorage.setItem("userRatings", JSON.stringify(ratings));
       
       return updatedPreferences;
@@ -104,15 +105,58 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
     if (tripId && onPreferencesUpdated) {
       setIsLoading(true);
       try {
-        // format payload
-        // make the api call
+        console.log("Making preferences update request...");
+        console.log("Current trip ID:", tripId);
+        console.log("Current preference ID:", currentPreferenceId);
+        
+        // Check if we have a valid preference_id
+        if (!currentPreferenceId) {
+          throw new Error("No preference profile found for this trip");
+        }
+        
+        // Prepare the payload for updating trip preferences
+        const answers = userPreferences.map((question, index) => ({
+          question_id: index,
+          value: Number(question.answer)
+        }));
+
+        const payload = {
+          preference_id: currentPreferenceId,
+          answers: answers
+        };
+
+        console.log("Payload:", payload);
+
+        // FIXED: Call the user-management service endpoint instead of trip-management
+        console.log("Sending request to:", `/preferences/trip/${tripId}`);
+        const response = await axiosUser.put(`/preferences/trip/${tripId}`, payload);
         
         if (response.data && response.data.response) {
+          console.log("Trip preferences updated and trip regenerated successfully");
+          // The response structure should match what processItineraryData expects
           onPreferencesUpdated(response.data);
+          if (showNotification) {
+            showNotification("success", "Trip preferences updated and trip regenerated successfully!");
+          }
           onClose(); 
         }
       } catch (error) {
-        console.error("Error updating preferences:", error);
+        console.error("Error updating trip preferences:", error);
+        console.error("Full error details:", error.response?.data);
+        
+        // Show more specific error message
+        let errorMessage = "Failed to update trip preferences. Please try again.";
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        if (showNotification) {
+          showNotification("error", errorMessage);
+        } else {
+          alert(errorMessage);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -137,7 +181,7 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
                 Preferences Profile
                 {currentPreferenceId && (
                   <span className="text-sm font-normal text-gray-500 block">
-                    Current Trip Profile
+                    Current Trip Profile (ID: {currentPreferenceId})
                   </span>
                 )}
               </h2>
@@ -208,9 +252,9 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
               </button>
               <button
                 onClick={handleSavePreferences}
-                disabled={isLoading || questionsLoading}
+                disabled={isLoading || questionsLoading || !currentPreferenceId}
                 className={`px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors ${
-                  isLoading || questionsLoading ? "opacity-70 cursor-not-allowed" : ""
+                  isLoading || questionsLoading || !currentPreferenceId ? "opacity-70 cursor-not-allowed" : ""
                 }`}
                 type="button"
               >
@@ -224,4 +268,4 @@ const PreferencesSidebar = ({ isOpen, onClose, tripId, onPreferencesUpdated, par
   );
 };
 
-export default PreferencesSidebar; 
+export default PreferencesSidebar;
