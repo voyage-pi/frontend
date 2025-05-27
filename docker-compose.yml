@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   frontend:
@@ -7,6 +7,3 @@ services:
     volumes:
       - .:/ui
       - /ui/node_modules
-    environment:
-      - ENV_VAR=example
-    command: npm run dev

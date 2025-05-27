@@ -1,0 +1,106 @@
+.friends-scroll::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+.scrollbar-container {
+  position: relative;
+}
+
+.scrollbar-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #e5e7eb;
+  z-index: 10;
+  border-radius: 9999px;
+}
+
+.friends-scroll {
+  scrollbar-width: none; /* For Firefox */
+}
+
+.scrollbar-container::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 2px;
+  background-color: #b0b5b0;
+  z-index: 20;
+
+  /* Adjusted thumb styling */
+  opacity: 1;
+  height: var(--scroll-thumb-height, 30%);
+  top: var(--scroll-thumb-top, 0);
+  transition: top 0.05s ease-out;
+  border-radius: 9999px;
+}
+
+.friends-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  scroll-behavior: smooth;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.6);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+.scroll-container {
+  position: relative;
+}
+
+.scroll-container.has-scroll-up::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 6px;
+  height: 15px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95),
+    transparent
+  );
+  z-index: 5;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.scroll-container.has-scroll-down::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 6px;
+  height: 15px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.95), transparent);
+  z-index: 5;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
