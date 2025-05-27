@@ -21,6 +21,8 @@ const defaultCenter = {
 };
 const defaultZoom = 5;
 
+const GOOGLE_MAPS_LIBRARIES = ["geometry", "places"];
+
 const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   const key = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
   const [mapInstance, setMapInstance] = useState(null);
@@ -33,11 +35,13 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   const { isLoaded } = useJsApiLoader({
     id: "2430af244ef47a1f",
     googleMapsApiKey: key,
-    libraries: ["geometry", "places"],
+    libraries: GOOGLE_MAPS_LIBRARIES,
   });
 
   useEffect(() => {
-    const validMarkersCount = markers.filter(marker => marker !== null).length;
+    const validMarkersCount = markers.filter(
+      (marker) => marker !== null
+    ).length;
     setHasElements(validMarkersCount > 0 || polylines.length > 0);
   }, [markers, polylines]);
 
@@ -96,7 +100,12 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
     if (markers.length > 0 && markers != previousMarkers) {
       setPreviousMarkers(markers);
       markers.forEach((marker) => {
-        if (marker && marker.position && marker.position.lat && marker.position.lng) {
+        if (
+          marker &&
+          marker.position &&
+          marker.position.lat &&
+          marker.position.lng
+        ) {
           bounds.extend(
             new window.google.maps.LatLng(
               marker.position.lat,
@@ -130,7 +139,9 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
 
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
-      const validMarkersCount = markers.filter(marker => marker !== null).length;
+      const validMarkersCount = markers.filter(
+        (marker) => marker !== null
+      ).length;
       if (validMarkersCount === 1) {
         mapInstance.setZoom(9);
       }
@@ -218,7 +229,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
     >
       {/* Render only markers using React components */}
       {markers.length !== 0 &&
-        markers.map((marker, index) => 
+        markers.map((marker, index) =>
           marker ? (
             <Marker
               key={`marker-${index}`}

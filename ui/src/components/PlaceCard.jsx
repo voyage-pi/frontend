@@ -3,6 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TfiReload } from "react-icons/tfi";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { useAuth } from "../context/AuthContext";
+import {
+  getCategoryFromTypes,
+  getCategoryColor,
+  getPrimaryType,
+} from "../utils/categoryUtils";
 
 const PlaceCard = ({
   id,
@@ -16,7 +21,8 @@ const PlaceCard = ({
   road = false,
   refreshing = false,
   onClick,
-  participants
+  participants,
+  activityTypes = [],
 }) => {
   const { LoggedUser } = useAuth();
 
@@ -26,6 +32,10 @@ const PlaceCard = ({
     (LoggedUser &&
       participants &&
       participants.some((p) => p.user_id === LoggedUser.id));
+
+  // Get category and primary type for the activity
+  const category = getCategoryFromTypes(activityTypes);
+  const primaryType = getPrimaryType(activityTypes);
 
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState(image);
@@ -122,10 +132,22 @@ const PlaceCard = ({
                   transition={{ duration: 0.3 }}
                 />
                 <div className="flex-1">
-                  <h3 className="font-semibold">{place}</h3>
-                  <p className="text-sm text-gray-500">{time}</p>
+                  <h3 className="font-semibold mb-1">{place}</h3>
+                  <p className="text-sm text-gray-500 mb-1">{time}</p>
+                  {category && (
+                    <motion.span
+                      className={`inline-block px-2 py-0.5 text-xs font-medium rounded-md ${getCategoryColor(
+                        category
+                      )} transition-all duration-200`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.3 }}
+                    >
+                      {category}
+                    </motion.span>
+                  )}
                   {transport && transport.type && transport.duration && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 mt-1">
                       {transport.type} - {transport.duration}
                     </p>
                   )}
