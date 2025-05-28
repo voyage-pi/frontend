@@ -32,6 +32,8 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   const [previousMarkers, setPreviousMarkers] = useState(markers);
   const [previousPoly, setPreviousPoly] = useState(polylines);
 
+
+
   const { isLoaded } = useJsApiLoader({
     id: "2430af244ef47a1f",
     googleMapsApiKey: key,
@@ -97,9 +99,9 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
     let hasValidBounds = false;
 
     // Add markers to bounds
-    if (markers.length > 0 && markers != previousMarkers) {
+    if (markers.length > 0 && JSON.stringify(markers) !== JSON.stringify(previousMarkers)) {
       setPreviousMarkers(markers);
-      markers.forEach((marker) => {
+      markers.forEach((marker, index) => {
         if (
           marker &&
           marker.position &&
@@ -113,11 +115,18 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
             )
           );
           hasValidBounds = true;
+        } else {
+          console.log(`Marker ${index} is invalid:`, marker);
         }
+      });
+    } else {
+      console.log('Skipping marker bounds calculation:', {
+        markersLength: markers.length,
+        markersChanged: JSON.stringify(markers) !== JSON.stringify(previousMarkers)
       });
     }
     // Add polylines to bounds
-    if (polylines.length > 0 && polylines != previousPoly) {
+    if (polylines.length > 0 && JSON.stringify(polylines) !== JSON.stringify(previousPoly)) {
       setPreviousPoly(polylines);
       polylines.forEach((polylineGroup) => {
         if (polylineGroup.polylines) {
@@ -228,9 +237,9 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
       onUnmount={onUnmount}
     >
       {/* Render only markers using React components */}
-      {markers.length !== 0 &&
-        markers.map((marker, index) =>
-          marker ? (
+      {markers.length !== 0 ? (
+        markers.map((marker, index) => {
+          return marker ? (
             <Marker
               key={`marker-${index}`}
               position={marker.position}
@@ -242,8 +251,14 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
               }}
               onClick={() => handleMarkerClick(marker)}
             />
-          ) : null
-        )}
+          ) : null;
+        })
+      ) : (
+        (() => {
+          console.log('No markers to render');
+          return null;
+        })()
+      )}
       {renderCircles()}
 
       {selectedMarker && (

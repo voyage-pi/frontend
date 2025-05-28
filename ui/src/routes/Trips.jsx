@@ -165,13 +165,10 @@ function Trips() {
 
         try {
           // Different approach based on whether viewing own trips or someone else's
-          console.log('Fetching own trips');
           const myTripsResponse = await axiosUser.get(`/trip-info/trips/${userToFetch.id}`);
-          console.log('My trips data:', myTripsResponse.data);
           
           // The trip_ids are actually inside data.data.trip_ids
           if (myTripsResponse.data && myTripsResponse.data.data && myTripsResponse.data.data.trip_ids) {
-            console.log('Trip IDs array:', myTripsResponse.data.data.trip_ids);
             
             // Create user trips objects from the trip_ids array
             userTrips = myTripsResponse.data.data.trip_ids.map(tripId => {
@@ -187,7 +184,6 @@ function Trips() {
               };
             }).filter(trip => trip !== null); // Remove any null entries
             
-            console.log('Transformed user trips:', userTrips);
           } else {
             console.log('No trip_ids found in response');
             userTrips = [];
@@ -241,6 +237,7 @@ function Trips() {
               // The response structure follows the ResponseBody format with nested itinerary
               if (tripResponse.data && tripResponse.data.response && tripResponse.data.response.itinerary) {
                 const itinerary = tripResponse.data.response.itinerary;
+                
                 // Fetch the photo URL
                 const imageUrl = await getFirstPhotoUrl(itinerary);
                 
@@ -255,12 +252,28 @@ function Trips() {
                       longitude: itinerary.original_place_data.center.longitude
                     }
                   };
+                } else if (itinerary.trip_type === 'zone' && itinerary.center_coordinates) {
+                  // Fallback for zone trips without original_place_data
+                  locationData = {
+                    location: {
+                      latitude: itinerary.center_coordinates.latitude,
+                      longitude: itinerary.center_coordinates.longitude
+                    }
+                  };
                 } else if (itinerary.trip_type === 'place' && itinerary.original_place_data?.coordinates) {
                   // For place trips, use the coordinates
                   locationData = {
                     location: {
                       latitude: itinerary.original_place_data.coordinates.latitude,
                       longitude: itinerary.original_place_data.coordinates.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'place' && itinerary.place_coordinates) {
+                  // Fallback for place trips without original_place_data
+                  locationData = {
+                    location: {
+                      latitude: itinerary.place_coordinates.latitude,
+                      longitude: itinerary.place_coordinates.longitude
                     }
                   };
                 } else if (itinerary.trip_type === 'road' && itinerary.original_place_data?.origin && itinerary.original_place_data?.destination) {
@@ -281,6 +294,49 @@ function Trips() {
                       name: itinerary.original_place_data.destination.name
                     }
                   };
+                } else if (itinerary.trip_type === 'road' && itinerary.origin_coordinates && itinerary.destination_coordinates) {
+                  // Fallback for road trips without original_place_data
+                  locationData = {
+                    location: {
+                      latitude: itinerary.origin_coordinates.latitude,
+                      longitude: itinerary.origin_coordinates.longitude
+                    },
+                    location_origin: {
+                      latitude: itinerary.origin_coordinates.latitude,
+                      longitude: itinerary.origin_coordinates.longitude,
+                      name: 'Origin'
+                    },
+                    location_destination: {
+                      latitude: itinerary.destination_coordinates.latitude,
+                      longitude: itinerary.destination_coordinates.longitude,
+                      name: 'Destination'
+                    }
+                  };
+                } else {
+                  
+                  // Fallback: Extract location from first activity
+                  if (itinerary.days && itinerary.days.length > 0) {
+                    const firstDay = itinerary.days[0];
+                    for (const timeSlot of ['morning_activities', 'afternoon_activities', 'evening_activities']) {
+                      if (firstDay[timeSlot] && firstDay[timeSlot].length > 0) {
+                        const firstActivity = firstDay[timeSlot][0];
+                        if (firstActivity && firstActivity.place && firstActivity.place.location) {
+                          console.log(`Found location in ${timeSlot}:`, firstActivity.place.location);
+                          locationData = {
+                            location: {
+                              latitude: firstActivity.place.location.latitude,
+                              longitude: firstActivity.place.location.longitude
+                            }
+                          };
+                          break;
+                        }
+                      }
+                    }
+                  }
+                  
+                  if (!locationData.location) {
+                    console.log(`No location data could be extracted for trip ${tripId}`);
+                  }
                 }
                 
                 return {
@@ -374,26 +430,34 @@ function Trips() {
 
       if (itinerary.trip_type === 'zone' && itinerary.original_place_data?.center) {
         markers.push({
-          lat: itinerary.original_place_data.center.latitude,
-          lng: itinerary.original_place_data.center.longitude,
-          name: itinerary.name
+          position: {
+            lat: itinerary.original_place_data.center.latitude,
+            lng: itinerary.original_place_data.center.longitude
+          },
+          title: itinerary.name
         });
       } else if (itinerary.trip_type === 'place' && itinerary.original_place_data?.coordinates) {
         markers.push({
-          lat: itinerary.original_place_data.coordinates.latitude,
-          lng: itinerary.original_place_data.coordinates.longitude,
-          name: itinerary.name
+          position: {
+            lat: itinerary.original_place_data.coordinates.latitude,
+            lng: itinerary.original_place_data.coordinates.longitude
+          },
+          title: itinerary.name
         });
       } else if (itinerary.trip_type === 'road' && itinerary.original_place_data?.origin && itinerary.original_place_data?.destination) {
         markers.push({
-          lat: itinerary.original_place_data.origin.location.latitude,
-          lng: itinerary.original_place_data.origin.location.longitude,
-          name: itinerary.original_place_data.origin.name
+          position: {
+            lat: itinerary.original_place_data.origin.location.latitude,
+            lng: itinerary.original_place_data.origin.location.longitude
+          },
+          title: itinerary.original_place_data.origin.name
         });
         markers.push({
-          lat: itinerary.original_place_data.destination.location.latitude,
-          lng: itinerary.original_place_data.destination.location.longitude,
-          name: itinerary.original_place_data.destination.name
+          position: {
+            lat: itinerary.original_place_data.destination.location.latitude,
+            lng: itinerary.original_place_data.destination.location.longitude
+          },
+          title: itinerary.original_place_data.destination.name
         });
       }
 
@@ -464,14 +528,12 @@ function Trips() {
       tripNumbers.set(trip.id, index + 1);
     });
     
-    console.log('Filtered trips for marker generation:', filteredTrips);
     
     filteredTrips.forEach(trip => {
       const tripNumber = tripNumbers.get(trip.id);
-      console.log(`Processing trip ${trip.id} (${trip.type}):`, trip);
       
       // Handle all trip types that have a primary location (zone, place, and now road trips)
-      if (trip.location) {
+      if (trip.location && trip.location.latitude && trip.location.longitude) {
         const locationKey = `${trip.location.latitude},${trip.location.longitude}`;
         if (!uniqueLocations.has(locationKey)) {
           uniqueLocations.set(locationKey, {
@@ -498,11 +560,11 @@ function Trips() {
           existing.title = `${existing.tripCount} trips in this area`;
         }
       } else {
-        console.log(`No primary location found for trip ${trip.id}`);
+        console.log(`No valid primary location found for trip ${trip.id}:`, trip.location);
       }
       
       // For road trips, also add the destination as a separate marker
-      if (trip.type === 'road' && trip.location_destination) {
+      if (trip.type === 'road' && trip.location_destination && trip.location_destination.latitude && trip.location_destination.longitude) {
         const destKey = `${trip.location_destination.latitude},${trip.location_destination.longitude}`;
         
         if (!uniqueLocations.has(destKey)) {
@@ -528,7 +590,7 @@ function Trips() {
           existing.title = `${existing.tripCount} trips to this area`;
         }
       } else if (trip.type === 'road') {
-        console.log(`Road trip ${trip.id} missing location_destination:`, trip);
+        console.log(`Road trip ${trip.id} missing valid location_destination:`, trip.location_destination);
       }
     });
     
