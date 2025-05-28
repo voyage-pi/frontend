@@ -259,7 +259,7 @@ function Forms() {
       return;
     }
 
-    if (!budget) {
+    if (!budget && tripType !== "road") {
       setShowError(true);
       setProgressMessage("Please complete the budget and duration selection first.");
       setTimeout(() => {
