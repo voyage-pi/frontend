@@ -76,8 +76,8 @@ function Forms() {
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-          const QA = qs.map((q) => ({ ...q}));
-          setAnswers(QA);
+        const QA = qs.map((q) => ({ ...q }));
+        setAnswers(QA);
       } catch (error) {
         console.error("Failed to fetch questions:", error);
       }
@@ -268,6 +268,9 @@ function Forms() {
       }, 3000);
       return;
     }
+    else if (!budget && tripType == "road") {
+      budget = 0.0
+    }
 
     let obj = {};
 
@@ -275,7 +278,7 @@ function Forms() {
       const radius = localStorage.getItem("radius");
       const latitude = localStorage.getItem("Latitude");
       const longitude = localStorage.getItem("Longitude");
-      
+
       if (!radius || !latitude || !longitude) {
         setShowError(true);
         setProgressMessage("Missing zone trip data. Please complete the location selection.");
@@ -285,7 +288,7 @@ function Forms() {
         }, 3000);
         return;
       }
-      
+
       obj.radius = parseInt(radius);
       obj.center = {
         latitude: parseFloat(latitude),
@@ -295,7 +298,7 @@ function Forms() {
     } else if (tripType === "place") {
       const latitude = localStorage.getItem("Latitude");
       const longitude = localStorage.getItem("Longitude");
-      
+
       if (!latitude || !longitude) {
         setShowError(true);
         setProgressMessage("Missing place trip data. Please complete the location selection.");
@@ -305,7 +308,7 @@ function Forms() {
         }, 3000);
         return;
       }
-      
+
       obj.coordinates = {
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
@@ -316,7 +319,7 @@ function Forms() {
       const origin = localStorage.getItem("origin");
       const destination = localStorage.getItem("destination");
       const route = localStorage.getItem("route");
-      
+
       if (!origin || !destination || !route) {
         setShowError(true);
         setProgressMessage("Missing road trip data. Please complete the route selection.");
@@ -326,10 +329,10 @@ function Forms() {
         }, 3000);
         return;
       }
-      
+
       const originData = JSON.parse(origin);
       const destinationData = JSON.parse(destination);
-      
+
       // Transform the data structure to match backend expectations
       obj.origin = {
         id: originData.id,
@@ -389,12 +392,12 @@ function Forms() {
       },
       is_group: isGroup,
     };
-    
+
     // If the user is authenticated, include preferences name in the formData
     if (isAuthenticated) {
       formData.preferences["preferencesName"] =
         localStorage.getItem("preferencesName");
-      
+
       // Include selectedPreferenceId if it exists (for reused preferences)
       const selectedPreferenceId = localStorage.getItem("selectedPreferenceId");
       if (selectedPreferenceId) {
@@ -402,7 +405,7 @@ function Forms() {
         console.log("Including existing preference ID:", selectedPreferenceId);
       }
     }
-    else{
+    else {
       // for trip-management to make the distinction between guest and authenticated users for preferences and trip saving
       formData["guest"] = true;
     }
@@ -516,21 +519,20 @@ function Forms() {
     );
   }
   const renderNextOrFinishButton = () => {
-    const isDisabled = disableButton 
+    const isDisabled = disableButton
 
     const baseNextButton = (
       <button
         onClick={handleNext}
-        className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${
-          isDisabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         disabled={isDisabled}
       >
         Next <TiArrowRight className="ml-1" />
       </button>
     );
 
-      if (
+    if (
       (currentStep >= 1 && currentStep < 5) ||
       (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1)
     ) {
@@ -610,7 +612,7 @@ function Forms() {
               )}
 
               {/* Back Button */}
-              {currentStep>1 && (
+              {currentStep > 1 && (
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 text-primary hover:text-rose-700 flex items-center"
