@@ -17,9 +17,8 @@ const KeyWordsContent = () => {
     localStorage.setItem("Keywords", JSON.stringify(keywords));
   }, [keywords]);
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && currentKeyword.trim()) {
-      e.preventDefault();
+  const addKeyword = () => {
+    if (currentKeyword.trim()) {
       if (!keywords.includes(currentKeyword.trim())) {
         setKeywords([...keywords, currentKeyword.trim()]);
         setCurrentKeyword("");
@@ -27,13 +26,15 @@ const KeyWordsContent = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (currentKeyword.trim()) {
-      if (!keywords.includes(currentKeyword.trim())) {
-        setKeywords([...keywords, currentKeyword.trim()]);
-        setCurrentKeyword("");
-      }
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addKeyword();
     }
+  };
+
+  const handleSubmit = () => {
+    addKeyword();
   };
 
   const removeKeyword = (keywordToRemove) => {
