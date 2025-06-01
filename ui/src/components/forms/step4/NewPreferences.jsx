@@ -14,7 +14,7 @@ const NewPreferences = ({ questionsStep5, setDisableButton ,setForward,forward})
       setNotification(
         <Notification
           type="info"
-          text="Input field must not be empty"
+          text="Input field must at least 4 letters long"
           onClose={() => setNotification(null)}
         />
       );
