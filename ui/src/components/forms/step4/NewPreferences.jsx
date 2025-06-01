@@ -52,7 +52,7 @@ const NewPreferences = ({ questionsStep5, setDisableButton ,setForward,forward})
           <div className="p-6 flex justify-center text-center">
             <input
               className="input bg-white w-4/5 pr-4 rounded-full text-lg shadow-sm focus:border-transparent"
-              placeholder="Barcelona, adventurous"
+              placeholder="Barcelona, adventure"
               type="text"
               onChange={(e) => {
                 setName(e.target.value);
@@ -66,6 +66,7 @@ const NewPreferences = ({ questionsStep5, setDisableButton ,setForward,forward})
               <FaArrowRight className="text-white mx-auto" />
             </button>
           </div>
+          <p className="text-sm text-gray-500 mt-2">Profile name must be at least 4 letters long</p>
         </div>
       ) : (
         <Step5ContentPP
