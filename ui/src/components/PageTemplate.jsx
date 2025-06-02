@@ -17,13 +17,7 @@ function PageTemplate({ children, headerIcon, headerTitle, headerContent }) {
   const handleMenuItemClick = (item) => {
     if (item === "Share") {
       setShareModalOpen(true);
-    } else if (["Friends", "Saved", "Settings"].includes(item)) {
-      setNotification({
-        type: "info",
-        text: `${item} feature coming soon!`,
-        key: Date.now(),
-      });
-    }
+    } 
   };
 
   const handleNotificationClose = () => {

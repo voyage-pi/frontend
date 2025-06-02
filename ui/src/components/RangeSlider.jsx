@@ -49,7 +49,7 @@ const RangeSlider = ({
   }
 
   return (
-    <div className="text-center">
+    <div className="text-center w-full">
       <input
         type="range"
         min={min}
