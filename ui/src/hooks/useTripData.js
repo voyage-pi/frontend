@@ -7,7 +7,7 @@ const initialState = {
   title: "",
   totalDays: 0,
   totalPeople: 0,
-  price_range: {"start_price":0.0,"end_price":0.0,"currency":"EUR"},
+  price_range: { start_price: 0.0, end_price: 0.0, currency: "EUR" },
   locationName: "",
   calendar: [],
   days: {},
@@ -38,8 +38,8 @@ function tripReducer(state, action) {
     case ACTION_TYPES.SET_TRIP_TYPE:
       return { ...state, tripType: action.payload };
 
-    case ACTION_TYPES.PROCESS_ROAD_DATA:
-      { const {
+    case ACTION_TYPES.PROCESS_ROAD_DATA: {
+      const {
         itinerary,
         title,
         routes,
@@ -57,7 +57,8 @@ function tripReducer(state, action) {
         distancePill,
         participants: roadParticipants,
         loading: false,
-      }; }
+      };
+    }
 
     case ACTION_TYPES.UPDATE_STOPS:
       return {
@@ -65,8 +66,8 @@ function tripReducer(state, action) {
         stops: action.payload,
       };
 
-    case ACTION_TYPES.PROCESS_ITINERARY_DATA:
-      { const {
+    case ACTION_TYPES.PROCESS_ITINERARY_DATA: {
+      const {
         itinerary: itineraryData,
         title: titleData,
         totalDays,
@@ -94,7 +95,8 @@ function tripReducer(state, action) {
         markers: markersData,
         participants: itineraryParticipants,
         loading: false,
-      }; }
+      };
+    }
 
     default:
       return state;
@@ -251,6 +253,7 @@ export function useTripData(tripId, getPhotoUrl) {
         tripParticipants = data.participants || [];
       }
       console.log("Processing itinerary data:", responseItinerary);
+      console.log("Processing participants data:", tripParticipants);
 
       const calendar = [];
       const AllroutesData = [];
@@ -369,13 +372,16 @@ export function useTripData(tripId, getPhotoUrl) {
           type: ACTION_TYPES.PROCESS_ITINERARY_DATA,
           payload: {
             itinerary: responseItinerary,
-            title: responseItinerary.name,
-            totalDays,
-            totalPeople: responseItinerary.total_people || 1,
-            price_range: responseItinerary.price_range,
-            locationName: locationTrip,
-            calendar,
-            days,
+            title: responseItinerary.title || "",
+            totalDays: responseItinerary.days?.length || 0,
+            price_range: responseItinerary.price_range || {
+              start_price: 0.0,
+              end_price: 0.0,
+              currency: "EUR",
+            },
+            locationName: responseItinerary.locationName || "",
+            calendar: calendar,
+            days: days,
             routes: AllroutesData,
             markers: AllmarkersData,
             participants: tripParticipants,

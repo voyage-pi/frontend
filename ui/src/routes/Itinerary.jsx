@@ -58,6 +58,7 @@ function Itinerary() {
   const [isPreferencesSidebarOpen, setIsPreferencesSidebarOpen] =
     useState(false);
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(null);
+  const [isPreferencesUpdating, setIsPreferencesUpdating] = useState(false);
 
   // Cursor tracking state
   const {
@@ -88,6 +89,7 @@ function Itinerary() {
     actions,
     showNotification,
     currentParticipants: tripData.participants,
+    onPreferencesUpdate: setIsPreferencesUpdating,
   });
 
   // State for participants count
@@ -129,11 +131,43 @@ function Itinerary() {
 
   const handlePreferencesUpdated = async (newItineraryData) => {
     try {
+      // If this is a start notification, just set the loading state
+      if (newItineraryData.type === "preferences-update-start") {
+        setIsPreferencesUpdating(true);
+        return;
+      }
+
       console.log("Received updated itinerary data:", newItineraryData);
       await actions.processItineraryData(newItineraryData);
-      // Show some kind of success notification if desired
+
+      // Set the timestamp of this update
+      const updateTimestamp = new Date().toISOString();
+      setLastUpdateTimestamp(updateTimestamp);
+
+      // Broadcast the update to other users
+      await supabase.channel(`trip-${tripId}`).send({
+        type: "broadcast",
+        event: "trip-update",
+        payload: {
+          tripId: tripId,
+          timestamp: updateTimestamp,
+          userId: LoggedUser?.id,
+          action: "preferences-update",
+        },
+      });
     } catch (error) {
       console.error("Error processing updated itinerary:", error);
+    } finally {
+      // Only hide the loading state if we're not in the middle of a preferences update
+      if (
+        !newItineraryData.type ||
+        newItineraryData.type !== "preferences-update-start"
+      ) {
+        // Add a small delay before hiding the loading state to ensure smooth transition
+        setTimeout(() => {
+          setIsPreferencesUpdating(false);
+        }, 1000);
+      }
     }
   };
 
@@ -163,7 +197,9 @@ function Itinerary() {
       let preferencesId = null;
       if (tripData.participants && tripData.participants.length > 0) {
         // Look for the preferences_id from any participant (usually the creator)
-        const participantWithPreferences = tripData.participants.find(p => p.preference_id);
+        const participantWithPreferences = tripData.participants.find(
+          (p) => p.preference_id
+        );
         if (participantWithPreferences) {
           preferencesId = participantWithPreferences.preference_id;
         }
@@ -186,7 +222,10 @@ function Itinerary() {
         saveData.preference_id = preferencesId;
       }
 
-      const trip_management_response = await axiosInstance.post("/save", saveData);
+      const trip_management_response = await axiosInstance.post(
+        "/save",
+        saveData
+      );
 
       if (trip_management_response.status === 200) {
         console.log("Trip saved successfully in trip-management");
@@ -576,7 +615,7 @@ function Itinerary() {
                   key={selectedDay}
                   days={days}
                   selectedDay={selectedDay}
-                  loading={loading}
+                  loading={loading || isPreferencesUpdating}
                   refreshingActivity={activityOperationsRefreshingActivity}
                   photoCache={photoCache}
                   getPhotoUrl={getPhotoUrl}
