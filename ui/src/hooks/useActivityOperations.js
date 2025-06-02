@@ -75,7 +75,7 @@ export function useActivityOperations({
                   }, 1000);
                 }
               })
-              .catch((error) =>  );
+              .catch((error) =>  console.error(error));
           }
         }
       })
