@@ -100,9 +100,10 @@ function Friends() {
           } else {
             setSentInvitations([]);
           }
-          setIsLoading(false);
         } catch (error) {
           console.error("Error fetching sent friend requests:", error);
+        }
+        finally{
           setIsLoading(false);
         }
       }
@@ -140,7 +141,6 @@ function Friends() {
       
       fetchDebounceTimeoutRef.current = setTimeout(async () => {
         try {
-          setIsLoading(true);
           console.log(`Fetching friends for user ${userToFetch.id}`);
           
           // Use the authenticated endpoint if viewing own friends
@@ -217,6 +217,7 @@ function Friends() {
 
   // Create filtered friends with proper error handling
   const filteredFriends = useMemo(() => {
+
     // Ensure friends array exists and has items
     if (!friends || !Array.isArray(friends) || friends.length === 0) {
       return [];
@@ -468,11 +469,12 @@ function Friends() {
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
-              ) : filteredFriends.length > 0 ? (
+              ) : (filteredFriends.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
-                  {filteredFriends.map(friend => (
+                  {filteredFriends.map((friend ,index)=> (
                     <div key={friend.id} className="transform-gpu">
                       <FriendCard 
+                        index={index}
                         friend={friend}
                         onClick={handleFriendClick}
                         selected={selectedFriend && selectedFriend.id === friend.id}
@@ -489,7 +491,7 @@ function Friends() {
                       : "This user hasn't added any friends yet"}
                   </p>
                 </div>
-              )}
+              ))}
             </div>
           </div>
 
