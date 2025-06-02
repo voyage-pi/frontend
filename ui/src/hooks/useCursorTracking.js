@@ -21,7 +21,7 @@ export function useCursorTracking({ tripId, isAuthenticated, LoggedUser }) {
           .delete()
           .match({ id: cursorId, trip_id: tripId })
           .then(() => {
-            console.log("Cursor data cleaned up");
+             ;
           });
       }
     };
@@ -42,7 +42,7 @@ export function useCursorTracking({ tripId, isAuthenticated, LoggedUser }) {
       .on("broadcast", { event: "user-joined" }, handleUserJoined)
       .on("broadcast", { event: "user-left" }, handleUserLeft)
       .subscribe((status) => {
-        console.log(`Cursor channel status: ${status}`);
+         ;
 
         if (status === "SUBSCRIBED" && isAuthenticated) {
           cursorChannel.send({
@@ -71,7 +71,7 @@ export function useCursorTracking({ tripId, isAuthenticated, LoggedUser }) {
         });
       }
 
-      console.log("Unsubscribing from cursor channel");
+       ;
       cursorChannel.unsubscribe();
       window._cursorChannel = null;
     };
@@ -218,7 +218,7 @@ export function useCursorTracking({ tripId, isAuthenticated, LoggedUser }) {
         payload: { cursor: cursorData },
       })
       .catch((error) => {
-        console.error("Error sending cursor position:", error);
+         ;
       });
   };
 
@@ -259,7 +259,7 @@ export function useCursorTracking({ tripId, isAuthenticated, LoggedUser }) {
         payload: { cursor: cursorData },
       })
       .catch((error) => {
-        console.error("Error sending cursor click:", error);
+         ;
       });
   };
 

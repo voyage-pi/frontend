@@ -139,7 +139,7 @@ export function useTripData(tripId, getPhotoUrl) {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo URL:", error);
+       ;
       // Use placeholder on error
       const fallbackUrl = generatePlaceholderImage(place.name);
       if (isMounted.current) {
@@ -252,8 +252,8 @@ export function useTripData(tripId, getPhotoUrl) {
         responseItinerary = data.itinerary;
         tripParticipants = data.participants || [];
       }
-      console.log("Processing itinerary data:", responseItinerary);
-      console.log("Processing participants data:", tripParticipants);
+       ;
+       ;
 
       const calendar = [];
       const AllroutesData = [];
@@ -407,20 +407,20 @@ export function useTripData(tripId, getPhotoUrl) {
     if (!tripId) return;
 
     dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
-    console.log("Loading trip data for ID:", tripId);
+     ;
 
     axiosInstance
       .get(`/trips/${tripId}`)
       .then((response) => {
         const data = response.data.response;
-        console.log("Loaded itinerary data from API:", data);
+         ;
 
         if (data.questions && data.questions.user123) {
           const userQuestions = data.questions.user123;
           const ratings = userQuestions.map((q) => q.value);
           if (ratings.length > 0) {
             localStorage.setItem("userRatings", JSON.stringify(ratings));
-            console.log("Loaded user ratings from API:", ratings);
+             ;
           }
         }
 
@@ -438,8 +438,8 @@ export function useTripData(tripId, getPhotoUrl) {
         }
       })
       .catch((error) => {
-        console.error("Error loading itinerary from API:", error);
-        console.error("Error details:", error.response?.data);
+         ;
+         ;
         if (isMounted.current) {
           dispatch({ type: ACTION_TYPES.SET_LOADING, payload: false });
         }

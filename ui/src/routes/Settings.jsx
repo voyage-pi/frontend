@@ -65,7 +65,7 @@ function Settings() {
     setIsLoading(false);
     
     // Debug
-    console.log("Settings - User Data:", userData);
+     ;
   };
 
   const handleProfileImageChange = (e) => {
@@ -120,7 +120,7 @@ function Settings() {
       
       return response.data;
     } catch (error) {
-      console.error("Failed to upload profile image:", error);
+       ;
       throw new Error("Failed to upload profile image");
     }
   };
@@ -140,7 +140,7 @@ function Settings() {
       
       return response.data;
     } catch (error) {
-      console.error("Failed to upload banner image:", error);
+       ;
       throw new Error("Failed to upload banner image");
     }
   };
@@ -158,7 +158,7 @@ function Settings() {
       
       return response.data;
     } catch (error) {
-      console.error("Failed to update user bio:", error);
+       ;
       throw new Error("Failed to update user bio");
     }
   };

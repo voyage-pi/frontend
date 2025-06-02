@@ -62,7 +62,7 @@ function Saved() {
   // Get photo URL using the same logic as Trips.jsx
   const getPhotoUrl = async (photo) => {
     if (!photo || !photo.name) {
-      console.log("No photo available");
+       ;
       return generatePlaceholderImage("place");
     }
 
@@ -91,7 +91,7 @@ function Saved() {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo:", error);
+       ;
       return generatePlaceholderImage("place");
     }
   };
@@ -135,7 +135,7 @@ function Saved() {
               image: photoUrl
             });
           } catch (error) {
-            console.error(`Error fetching details for place ${place.place_id}:`, error);
+             ;
           }
         }
         setSavedPlaces(formattedPlaces);
@@ -143,7 +143,7 @@ function Saved() {
         setSavedPlaces([]);
       }
     } catch (error) {
-      console.error("Error fetching saved places:", error);
+       ;
       setSavedPlaces([]);
     } finally {
       setLoading(false);
@@ -161,7 +161,7 @@ function Saved() {
             setViewingUser(response.data.response);
           }
         } catch (error) {
-          console.error("Error fetching user by tag:", error);
+           ;
           // If user not found, redirect to home
           navigate('/');
         }
@@ -222,7 +222,7 @@ function Saved() {
         showNotification('Place added to favorites', 'success');
       }
     } catch (error) {
-      console.error("Error toggling saved place:", error);
+       ;
       showNotification('Failed to update favorites', 'error');
     }
   };
@@ -264,7 +264,7 @@ function Saved() {
   });
   
   const getMarkers = () => {
-    console.log("fileted places",filteredPlaces)
+     
     return filteredPlaces.map(place => ({
       position: place.position || { lat: 0, lng: 0 },
       title: place.name || 'Unknown Place',

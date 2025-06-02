@@ -21,8 +21,8 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
   
   // Debug log to check user information
   useEffect(() => {
-    console.log("[InboxComponent] Auth context:", auth);
-    console.log("[InboxComponent] Using user ID:", userId);
+     ;
+     ;
   }, [auth, userId]);
   
   const handleAcceptFriendRequest = useCallback(async (requestId, name) => {
@@ -34,11 +34,11 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
       return;
     }
 
-    console.log(`Accepting friend request from user ${requestId} to user ${userId}`);
+     ;
     
     // Safety check - make sure we have valid IDs
     if (!requestId) {
-      console.error(`Missing required ID for friend request: requestId=${requestId}`);
+       ;
       setNotification({
         type: 'error',
         message: 'Invalid request data',
@@ -48,7 +48,6 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     
     // Validate that we're not trying to accept a request from ourselves
     if (requestId === userId) {
-      console.log(`Error: Cannot accept a friend request from yourself (${requestId} = ${userId})`);
       setNotification({
         type: 'error',
         message: 'Cannot accept a friend request from yourself',
@@ -57,13 +56,13 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     }
     
     try {
-      console.log(`Making API call to accept friend request from user_id=${requestId}`);
+       ;
       
       const response = await axiosUser.post('/friends/accept', {
         friend_id: parseInt(requestId)  // Now we only need to provide the friend_id (sender)
       });
       
-      console.log("API response:", response);
+       ;
       
       if (response.data) {
         // Remove from UI immediately
@@ -74,7 +73,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         });
       }
     } catch (error) {
-      console.error("Error accepting friend request:", error);
+       ;
       setNotification({
         type: 'error',
         message: error.response?.data?.message || `Failed to accept friend request from ${name}. Please try again.`,
@@ -92,7 +91,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     }
 
     try {
-      console.log(`Rejecting friend request from user ${requestId}`);
+       ;
       
       // API call to reject friend request
       const response = await axiosUser.delete('/friends/requests', {
@@ -110,7 +109,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         });
       }
     } catch (error) {
-      console.error("Error rejecting friend request:", error);
+       ;
       setNotification({
         type: 'error',
         message: `Failed to decline friend request from ${name}. Please try again.`,
@@ -128,7 +127,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     }
 
     try {
-      console.log(`Accepting trip invite ${inviteId}`);
+       ;
       
       // API call to accept trip invite
       const response = await axiosUser.post(`/trips/accept/${inviteId}`);
@@ -142,7 +141,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         });
       }
     } catch (error) {
-      console.error("Error accepting trip invite:", error);
+       ;
       setNotification({
         type: 'error',
         message: error.response?.data?.message || `Failed to accept trip invitation to "${tripName}". Please try again.`,
@@ -160,7 +159,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
     }
 
     try {
-      console.log(`Rejecting trip invite ${inviteId}`);
+       ;
       
       // API call to reject trip invite
       const response = await axiosUser.post(`/trips/reject/${inviteId}`);
@@ -174,7 +173,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         });
       }
     } catch (error) {
-      console.error("Error rejecting trip invite:", error);
+       ;
       setNotification({
         type: 'error',
         message: `Failed to decline trip invitation to "${tripName}". Please try again.`,
@@ -184,11 +183,11 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
 
   const handleRefresh = useCallback(async () => {
     if (isRefreshing) {
-      console.log("[InboxComponent] Already refreshing, ignoring refresh request");
+       ;
       return;
     }
     try {
-      console.log("[InboxComponent] Manually refreshing notifications");
+       ;
       const success = await refreshNotifications();
       if (success) {
         setNotification({
@@ -202,7 +201,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
         });
       }
     } catch (error) {
-      console.error("[InboxComponent] Error refreshing notifications:", error);
+       ;
       setNotification({
         type: 'error',
         message: 'Failed to refresh notifications'
@@ -253,7 +252,7 @@ const InboxComponent = ({ onClose, setNotification, currentUserId }) => {
               {notifications.friendRequests.map((request, index) => {
                 // Ensure we have a valid ID for the request
                 const requestSenderId = request.user_id || request.id;
-                console.log(`Rendering friend request ${index}: id=${requestSenderId}, name=${request.name}`);
+                 ;
                 
                 return (
                   <div key={request.requestId || `${requestSenderId}_${index}`} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">

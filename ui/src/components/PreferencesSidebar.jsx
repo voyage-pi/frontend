@@ -72,10 +72,10 @@ const PreferencesSidebar = ({
             };
           });
 
-          console.log("Loaded trip preference profile:", preferenceData.name);
+           ;
           setPreferencesLoaded(true);
         } catch (error) {
-          console.error("Error fetching trip preference profile:", error);
+           ;
           // Fallback to localStorage if preference fetch fails
           const savedRatings =
             JSON.parse(localStorage.getItem("userRatings")) || [];
@@ -98,7 +98,7 @@ const PreferencesSidebar = ({
 
       setUserPreferences(preferences);
     } catch (error) {
-      console.error("Error fetching questions:", error);
+       ;
       // Fallback to empty array if API fails
       setUserPreferences([]);
       setPreferencesLoaded(false);
@@ -112,17 +112,17 @@ const PreferencesSidebar = ({
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const wsUrl = `${protocol}//${window.location.host}/api/v1/trip-management/ws/trip-regeneration/${tripId}`;
 
-      console.log("Connecting to WebSocket:", wsUrl);
+       ;
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        console.log("WebSocket connected, sending preferences data");
+         ;
         ws.send(JSON.stringify(preferencesData));
       };
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("WebSocket message:", data);
+         ;
 
         if (data.type === "progress") {
           setRegenerationProgress(data.progress);
@@ -136,19 +136,19 @@ const PreferencesSidebar = ({
           resolve(data.data);
           ws.close();
         } else if (data.type === "error") {
-          console.error("WebSocket error:", data.message);
+           ;
           reject(new Error(data.message));
           ws.close();
         }
       };
 
       ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+         ;
         reject(new Error("WebSocket connection failed"));
       };
 
       ws.onclose = () => {
-        console.log("WebSocket connection closed");
+         ;
       };
 
       // Cleanup function
@@ -216,13 +216,13 @@ const PreferencesSidebar = ({
           },
         });
       } catch (error) {
-        console.error("Error broadcasting preferences update start:", error);
+         ;
       }
 
       try {
-        console.log("Making preferences update request...");
-        console.log("Current trip ID:", tripId);
-        console.log("Current preference ID:", currentPreferenceId);
+         ;
+         ;
+         ;
 
         // Check if we have a valid preference_id
         if (!currentPreferenceId) {
@@ -241,10 +241,10 @@ const PreferencesSidebar = ({
           participants: participants,
         };
 
-        console.log("Payload:", payload);
+         ;
 
         // Update preferences first (synchronous operation)
-        console.log("Sending request to:", `/preferences/trip/${tripId}`);
+         ;
         const response = await axiosUser.put(
           `/preferences/trip/${tripId}`,
           payload
@@ -272,7 +272,7 @@ const PreferencesSidebar = ({
               tripId,
               payload
             );
-            console.log("Trip regeneration completed:", regenerationResult);
+             ;
 
             // Process the result similar to the old HTTP response
             if (regenerationResult && regenerationResult.itinerary) {
@@ -293,7 +293,7 @@ const PreferencesSidebar = ({
               onClose();
             }
           } catch (wsError) {
-            console.error("WebSocket regeneration failed:", wsError);
+             ;
             if (showNotification) {
               showNotification(
                 "error",
@@ -302,14 +302,14 @@ const PreferencesSidebar = ({
             }
           }
         } else {
-          console.error("Unexpected response format:", response.data);
+           ;
           if (showNotification) {
             showNotification("error", "Unexpected response from server");
           }
         }
       } catch (error) {
-        console.error("Error updating trip preferences:", error);
-        console.error("Full error details:", error.response?.data);
+         ;
+         ;
 
         // Show more specific error message
         let errorMessage =

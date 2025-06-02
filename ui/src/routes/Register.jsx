@@ -81,7 +81,7 @@ function Register() {
         navigate('/login');
       }, 2000);
     } catch (error) {
-      console.error('Error during registration:', error);
+       ;
       const errorMessage = error.response?.data?.message || 'An error occurred. Please try again later.';
       setRegisterStatus({ type: 'error', message: errorMessage });
     } finally {

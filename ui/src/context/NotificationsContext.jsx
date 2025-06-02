@@ -39,7 +39,7 @@ export const NotificationsProvider = ({ children }) => {
   // Handle auth changes - fetch initial data when user logs in
   useEffect(() => {
     const attemptInitialFetch = async () => {
-      console.log("[NotificationsContext] Auth state changed:", auth?.LoggedUser?.id ? "User logged in" : "No user or loading");
+       ;
       
       // Clear any existing retry timeout
       if (retryTimeoutRef.current) {
@@ -49,7 +49,7 @@ export const NotificationsProvider = ({ children }) => {
       
       if (auth?.LoggedUser?.id && !initialDataLoaded.current) {
         // User is definitely logged in, fetch immediately
-        console.log("[NotificationsContext] User logged in, fetching notifications");
+         ;
         const success = await refreshNotifications();
         if (success) {
           initialDataLoaded.current = true;
@@ -57,12 +57,12 @@ export const NotificationsProvider = ({ children }) => {
         }
       } else if (auth?.isAuthenticated === true && !initialDataLoaded.current) {
         // Auth says we're authenticated but LoggedUser isn't loaded yet
-        console.log("[NotificationsContext] Auth says we're authenticated but LoggedUser isn't loaded yet");
+         ;
         refreshNotifications();
       } else if (!initialDataLoaded.current && retryCountRef.current < 3) {
         // Not loaded and under retry limit, schedule retry
         retryCountRef.current++;
-        console.log(`[NotificationsContext] Scheduling retry attempt ${retryCountRef.current}/3`);
+         ;
         retryTimeoutRef.current = setTimeout(attemptInitialFetch, 2000); // Retry after 2 seconds
       }
     };
@@ -81,7 +81,7 @@ export const NotificationsProvider = ({ children }) => {
   const fetchFriendRequests = useCallback(async () => {
     // Prevent concurrent fetches
     if (isFetchingRef.current) {
-      console.log("[NotificationsContext] Friend requests fetch already in progress, skipping");
+       ;
       return true;
     }
     
@@ -89,9 +89,9 @@ export const NotificationsProvider = ({ children }) => {
       // Set fetching flag to prevent duplicate calls
       isFetchingRef.current = true;
       
-      console.log("[NotificationsContext] Fetching friend requests - API call starts");
+       ;
       const response = await axiosUser.get('/friends/requests/received/users/');
-      console.log("[NotificationsContext] Response from fetchFriendRequests:", response.data);
+       ;
       
       // Clear existing requests only if we got a successful response
       clearFriendRequests();
@@ -108,18 +108,18 @@ export const NotificationsProvider = ({ children }) => {
         for (const request of response.data) {
           try {
             // Debug logging to see the request structure
-            console.log("friend_id:", request.friend_id);
-            console.log("user_id:", request.user_id);
+             ;
+             ;
             
             // Fetch user info for this friend request if needed
             let userData = null;
             if (request.user_id) {
               try {
                 const userResponse = await axiosUser.get(`/user/${request.user_id}`);
-                console.log("friend info:", userResponse.data);
+                 ;
                 userData = userResponse.data;
               } catch (error) {
-                console.error("Error fetching friend user info:", error);
+                 ;
               }
             }
             
@@ -136,7 +136,7 @@ export const NotificationsProvider = ({ children }) => {
             // Use Map to ensure uniqueness by ID
             uniqueRequests.set(friendRequest.id, friendRequest);
           } catch (error) {
-            console.error("Error processing individual request:", error);
+             ;
           }
         }
         
@@ -152,7 +152,7 @@ export const NotificationsProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Error fetching requests:", error);
+       ;
       return false;
     } finally {
       isFetchingRef.current = false;
@@ -163,7 +163,7 @@ export const NotificationsProvider = ({ children }) => {
   const fetchTripInvites = useCallback(async () => {
     // Prevent concurrent fetches
     if (isFetchingTripInvitesRef.current) {
-      console.log("[NotificationsContext] Trip invites fetch already in progress, skipping");
+       ;
       return true;
     }
     
@@ -171,9 +171,9 @@ export const NotificationsProvider = ({ children }) => {
       // Set fetching flag to prevent duplicate calls
       isFetchingTripInvitesRef.current = true;
       
-      console.log("[NotificationsContext] Fetching trip invites - API call starts");
+       ;
       const response = await axiosUser.get('/trips/invitations');
-      console.log("[NotificationsContext] Response from fetchTripInvites:", response.data);
+       ;
       
       // Clear existing invites only if we got a successful response
       setNotifications(prev => ({ ...prev, tripInvites: [] }));
@@ -190,18 +190,18 @@ export const NotificationsProvider = ({ children }) => {
         for (const invite of response.data) {
           try {
             // Debug logging to see the invite structure
-            console.log("trip_id:", invite.trip_id);
-            console.log("user_id:", invite.user_id);
+             ;
+             ;
             
             // Fetch trip info for this invite
             let tripData = null;
             if (invite.trip_id) {
               try {
                 const tripResponse = await axiosInstance.get(`/trips/${invite.trip_id}`);
-                console.log("trip info:", tripResponse.data);
+                 ;
                 tripData = tripResponse.data.response;
               } catch (error) {
-                console.error("Error fetching trip info:", error);
+                 ;
               }
             }
 
@@ -221,7 +221,7 @@ export const NotificationsProvider = ({ children }) => {
                 })
               );
             } catch (error) {
-              console.error("Error fetching trip participants or tags:", error);
+               ;
             }
 
             const tripInvite = {
@@ -236,7 +236,7 @@ export const NotificationsProvider = ({ children }) => {
             // Use Map to ensure uniqueness by ID
             uniqueInvites.set(tripInvite.id, tripInvite);
           } catch (error) {
-            console.error("Error processing individual invite:", error);
+             ;
           }
         }
         
@@ -252,7 +252,7 @@ export const NotificationsProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Error fetching trip invites:", error);
+       ;
       return false;
     } finally {
       isFetchingTripInvitesRef.current = false;
@@ -312,7 +312,7 @@ export const NotificationsProvider = ({ children }) => {
   const refreshNotifications = useCallback(async () => {
     // If already refreshing, don't start another refresh
     if (isRefreshing) {
-      console.log("[NotificationsContext] Already refreshing, skipping");
+       ;
       return true;
     }
     
@@ -328,7 +328,7 @@ export const NotificationsProvider = ({ children }) => {
       const invitesResult = await fetchTripInvites();
       return friendsResult && invitesResult;
     } catch (error) {
-      console.error("[NotificationsContext] Error refreshing notifications:", error);
+       ;
       return false;
     } finally {
       setIsRefreshing(false);

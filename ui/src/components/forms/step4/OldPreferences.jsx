@@ -14,10 +14,10 @@ const OldPreferences = ({setDisableButton, setCurrentStep }) => {
     setDisableButton(true);
       try {
         const response = await axiosUser.get("/preferences/user");
-        console.log("Fetched preferences:", response.data);
+         ;
         setPreferences(response.data.response.preferences);
       } catch (error) {
-        console.error("Error fetching preferences:", error);
+         ;
         setLoadingAnimation;
       } finally {
         setLoadingAnimation(false);
@@ -49,9 +49,9 @@ const OldPreferences = ({setDisableButton, setCurrentStep }) => {
     localStorage.setItem("userRatings", JSON.stringify(ratings));
     localStorage.setItem("preferencesName", selectedProfile.name);
     
-    console.log("Selected preference ID:", selectedProfileId);
-    console.log("Selected preference name:", selectedProfile.name);
-    console.log("Selected ratings:", ratings);
+     ;
+     ;
+     ;
     
     setDisableButton(false);
   };

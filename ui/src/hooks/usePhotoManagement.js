@@ -14,7 +14,7 @@ export function usePhotoManagement() {
 
   const getPhotoUrl = async (place) => {
     if (!place || !place.photos || !place.photos.length) {
-      console.log("No photos available for", place?.name);
+       ;
       return generatePlaceholderImage(place ? place.name : "place");
     }
 
@@ -28,7 +28,7 @@ export function usePhotoManagement() {
       const response = await axiosPlace.post("/places/photo", {
         gRPC: photo.name,
       });
-      console.log(response);
+       ;
       if (response.status == 429) {
         return getPhotoUrl(place);
       }
@@ -40,7 +40,7 @@ export function usePhotoManagement() {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo:", error);
+       ;
       return generatePlaceholderImage(place.name);
     }
   };

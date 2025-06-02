@@ -69,7 +69,7 @@ function Forms() {
             setIsGroup(true);
           }
         } catch (error) {
-          console.error("Error parsing saved addedUsers:", error);
+           ;
           setAddedUsers([]);
         }
       }
@@ -79,7 +79,7 @@ function Forms() {
         const QA = qs.map((q) => ({ ...q }));
         setAnswers(QA);
       } catch (error) {
-        console.error("Failed to fetch questions:", error);
+         ;
       }
     };
     initialize();
@@ -402,7 +402,7 @@ function Forms() {
       const selectedPreferenceId = localStorage.getItem("selectedPreferenceId");
       if (selectedPreferenceId) {
         formData.preference_id = parseInt(selectedPreferenceId);
-        console.log("Including existing preference ID:", selectedPreferenceId);
+         ;
       }
     }
     else {
@@ -485,13 +485,13 @@ function Forms() {
               try {
                 await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
               } catch (e) {
-                console.error(`Failed to invite user ${user.id}:`, e);
+                 ;
               }
             }
           }, 1500);
         },
         onError: (message, progress) => {
-          console.error("WebSocket error:", message);
+           ;
           setProgressMessage(`Error: ${message}`);
           setTimeout(() => {
             setShowProgress(false);
@@ -503,7 +503,7 @@ function Forms() {
       await client.connect();
       client.sendTripData(formData);
     } catch (error) {
-      console.error("Error creating trip via WebSocket:", error);
+       ;
       setShowProgress(false);
       setIsNavigating(false);
     }

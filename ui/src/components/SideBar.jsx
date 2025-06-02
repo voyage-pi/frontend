@@ -37,12 +37,12 @@ function SideBar({ onToggle, onMenuItemClick }) {
     // Debug user data structure
     useEffect(() => {
         if (LoggedUser) {
-            console.log("SideBar - User Data:", LoggedUser);
-            console.log("SideBar - User Stats:", LoggedUser.stats);
+             ;
+             ;
             
             // If stats don't exist or trips count is incorrect, fetch fresh data
             if (!LoggedUser.stats || typeof LoggedUser.stats.trips === 'undefined') {
-                console.log("Stats missing or incomplete, refreshing user data");
+                 ;
                 loadUserData();
             }
         }
@@ -181,9 +181,9 @@ function SideBar({ onToggle, onMenuItemClick }) {
             const handleLogout = async () => {
                 try {
                     await axiosUser.post('/user/logout');
-                    console.log('Logout successful');
+                     ;
                 } catch (error) {
-                    console.error('Logout error:', error);
+                     ;
                 } finally {
                     // Update authentication context
                     setIsAuthenticated(false);
