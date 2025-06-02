@@ -5,7 +5,7 @@ export const useNotifications = () => {
   const lastNotificationRef = useRef({ type: null, text: null, timestamp: 0 });
 
   const showNotification = useCallback((type, text) => {
-    console.log(`[Notification Attempt] Type: ${type}, Text: ${text}`);
+     ;
 
     // Prevent duplicate notifications within 3 seconds
     const now = Date.now();
@@ -22,7 +22,7 @@ export const useNotifications = () => {
 
     // Update last notification info
     lastNotificationRef.current = { type, text, timestamp: now };
-    console.log("[Notification Spawned] Showing new notification");
+     ;
 
     // Map our notification types to toast types
     const toastType =

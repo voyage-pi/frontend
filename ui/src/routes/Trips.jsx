@@ -50,7 +50,7 @@ function Trips() {
             setViewingUser(response.data.response);
           }
         } catch (error) {
-          console.error("Error fetching user by tag:", error);
+           ;
           if (error.response && error.response.status === 404) {
             navigate('/not-found');
           } else {
@@ -63,7 +63,7 @@ function Trips() {
       } else if (LoggedUser) {
         // Only set viewingUser to LoggedUser if it's not already set to prevent extra renders
         if (!viewingUser || viewingUser.id !== LoggedUser.id) {
-          console.log("Setting viewingUser to LoggedUser");
+           ;
           setViewingUser(LoggedUser);
         }
       }
@@ -84,7 +84,7 @@ function Trips() {
   // Get photo URL using the same logic as Itinerary.jsx
   const getPhotoUrl = async (place) => {
     if (!place || !place.photos || !place.photos.length) {
-      console.log("No photos available for", place?.name);
+       ;
       return generatePlaceholderImage(place ? place.name : "place");
     }
 
@@ -111,7 +111,7 @@ function Trips() {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo:", error);
+       ;
       return generatePlaceholderImage(place.name);
     }
   };
@@ -132,7 +132,7 @@ function Trips() {
       }
       return generatePlaceholderImage(itinerary?.name || "trip");
     } catch (error) {
-      console.error("Error getting first photo URL:", error);
+       ;
       return generatePlaceholderImage(itinerary?.name || "trip");
     }
   };
@@ -142,7 +142,7 @@ function Trips() {
     const fetchTrips = async () => {
       // Prevent duplicate fetches while one is in progress
       if (fetchingTripsRef.current) {
-        console.log('Trip fetch already in progress, skipping');
+         ;
         return;
       }
 
@@ -155,7 +155,7 @@ function Trips() {
 
         // Check if we have a user to fetch trips for
         if (!userToFetch) {
-          console.log('No user to fetch trips for');
+           ;
           setTrips([]);
           setLoading(false);
           return;
@@ -185,11 +185,11 @@ function Trips() {
             }).filter(trip => trip !== null); // Remove any null entries
             
           } else {
-            console.log('No trip_ids found in response');
+             ;
             userTrips = [];
           }
         } catch (fetchError) {
-          console.error('Error fetching user trips list:', fetchError);
+           ;
           setNotification({
             message: "Could not load trips. Please try again later.",
             type: "error"
@@ -200,7 +200,7 @@ function Trips() {
         }
 
         if (!userTrips || !userTrips.length) {
-          console.log('No trips found for user');
+           ;
           setTrips([]);
           setLoading(false);
           return;
@@ -210,16 +210,16 @@ function Trips() {
         const tripDetailsPromises = userTrips.map(async (userTrip) => {
           try {
             if (!userTrip || !userTrip.trip_id) {
-              console.error('Invalid user trip data:', userTrip);
+               ;
               return null;
             }
             
             const tripId = userTrip.trip_id;
-            console.log(`Fetching trip details for trip ID: ${tripId}`);
+             ;
             
             // Make sure tripId is a valid format before fetching
             if (!tripId || typeof tripId !== 'string' || tripId.trim() === '') {
-              console.error('Invalid trip ID format:', tripId);
+               ;
               return null;
             }
             
@@ -321,7 +321,7 @@ function Trips() {
                       if (firstDay[timeSlot] && firstDay[timeSlot].length > 0) {
                         const firstActivity = firstDay[timeSlot][0];
                         if (firstActivity && firstActivity.place && firstActivity.place.location) {
-                          console.log(`Found location in ${timeSlot}:`, firstActivity.place.location);
+                           ;
                           locationData = {
                             location: {
                               latitude: firstActivity.place.location.latitude,
@@ -335,7 +335,7 @@ function Trips() {
                   }
                   
                   if (!locationData.location) {
-                    console.log(`No location data could be extracted for trip ${tripId}`);
+                     ;
                   }
                 }
                 
@@ -353,11 +353,11 @@ function Trips() {
                   ...locationData // Add location data to the trip object
                 };
               } else {
-                console.error('Invalid trip response structure:', tripResponse.data);
+                 ;
                 return null;
               }
             } catch (tripError) {
-              console.error(`Error fetching trip ${tripId}:`, tripError);
+               ;
               // Create a placeholder trip with minimal data when details fetch fails
               return {
                 id: tripId,
@@ -372,17 +372,17 @@ function Trips() {
               };
             }
           } catch (error) {
-            console.error(`Error processing trip:`, error);
+             ;
             return null;
           }
         });
 
         const tripDetails = await Promise.all(tripDetailsPromises);
         const validTrips = tripDetails.filter(trip => trip !== null);
-        console.log('Processed trips:', validTrips);
+         ;
         setTrips(validTrips);
       } catch (error) {
-        console.error("Error fetching user trips:", error);
+         ;
         setTrips([]);
         setNotification({
           message: "Failed to load trips. Please try refreshing the page.",
@@ -396,7 +396,7 @@ function Trips() {
 
     // Only fetch trips when we have a user to fetch for
     if (!isUserLoading && (viewingUser || LoggedUser)) {
-      console.log("Triggering trip fetch - dependencies changed");
+       ;
       fetchTrips();
     }
   }, [viewingUser, LoggedUser, isUserLoading]); // Removed isViewingOwnTrips dependency
@@ -489,7 +489,7 @@ function Trips() {
 
       return uniquePlaceIds.size;
     } catch (error) {
-      console.error("Error counting destinations:", error);
+       ;
       return 0;
     }
   };
@@ -560,7 +560,7 @@ function Trips() {
           existing.title = `${existing.tripCount} trips in this area`;
         }
       } else {
-        console.log(`No valid primary location found for trip ${trip.id}:`, trip.location);
+         ;
       }
       
       // For road trips, also add the destination as a separate marker
@@ -590,7 +590,7 @@ function Trips() {
           existing.title = `${existing.tripCount} trips to this area`;
         }
       } else if (trip.type === 'road') {
-        console.log(`Road trip ${trip.id} missing valid location_destination:`, trip.location_destination);
+         ;
       }
     });
     

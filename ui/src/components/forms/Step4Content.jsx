@@ -49,7 +49,7 @@ const Step4Content = ({ setDisableButton }) => {
           }
         }
       } catch (error) {
-        console.error("Error parsing start date from localStorage:", error);
+         ;
       }
     }
 
@@ -69,7 +69,7 @@ const Step4Content = ({ setDisableButton }) => {
           }
         }
       } catch (error) {
-        console.error("Error parsing end date from localStorage:", error);
+         ;
       }
     }
 
@@ -84,7 +84,7 @@ const Step4Content = ({ setDisableButton }) => {
           parsedBudget = budgetValue;
         }
       } catch (error) {
-        console.error("Error parsing budget from localStorage:", error);
+         ;
       }
     }
 
@@ -106,7 +106,7 @@ const Step4Content = ({ setDisableButton }) => {
           localStorage.setItem("Start Date", dateString);
         }
       } catch (error) {
-        console.error("Error saving start date to localStorage:", error);
+         ;
       }
     }
 
@@ -122,7 +122,7 @@ const Step4Content = ({ setDisableButton }) => {
           localStorage.setItem("End Date", dateString);
         }
       } catch (error) {
-        console.error("Error saving end date to localStorage:", error);
+         ;
       }
     }
   }, [startDate, endDate]);
@@ -174,7 +174,7 @@ const Step4Content = ({ setDisableButton }) => {
 
       // Validate both dates are valid
       if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) {
-        console.error("Invalid date in calculateDays");
+         ;
         return 0;
       }
 
@@ -187,7 +187,7 @@ const Step4Content = ({ setDisableButton }) => {
         Math.floor((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1
       );
     } catch (error) {
-      console.error("Error calculating days:", error);
+       ;
       return 0;
     }
   };
@@ -248,7 +248,7 @@ const Step4Content = ({ setDisableButton }) => {
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
     } catch (error) {
-      console.error("Error formatting date:", error);
+       ;
       return "Invalid date";
     }
   };

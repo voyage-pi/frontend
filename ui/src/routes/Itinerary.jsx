@@ -137,7 +137,7 @@ function Itinerary() {
         return;
       }
 
-      console.log("Received updated itinerary data:", newItineraryData);
+       ;
       await actions.processItineraryData(newItineraryData);
 
       // Set the timestamp of this update
@@ -156,7 +156,7 @@ function Itinerary() {
         },
       });
     } catch (error) {
-      console.error("Error processing updated itinerary:", error);
+       ;
     } finally {
       // Only hide the loading state if we're not in the middle of a preferences update
       if (
@@ -178,7 +178,7 @@ function Itinerary() {
   const handleSaveTrip = async () => {
     try {
       if (!isAuthenticated) {
-        console.error("User is not authenticated");
+         ;
         showNotification(
           "error",
           "You need to be LogIn to save the itinerary."
@@ -228,7 +228,7 @@ function Itinerary() {
       );
 
       if (trip_management_response.status === 200) {
-        console.log("Trip saved successfully in trip-management");
+         ;
         showNotification("success", trip_management_response.data.message);
 
         // Set the timestamp of this update
@@ -247,7 +247,7 @@ function Itinerary() {
         });
       }
     } catch (error) {
-      console.error("Error saving trip:", error);
+       ;
       showNotification("info", "Are you sure you are logged in?");
     }
   };
@@ -266,9 +266,9 @@ function Itinerary() {
           `${stop.place.location.latitude},${stop.place.location.longitude}`
         );
       }
-      console.log(origin);
-      console.log(destination);
-      console.log(waypoints);
+       ;
+       ;
+       ;
     } else {
       if (!itinerary.days || !itinerary.days[dayIndex]) return null;
 
@@ -318,7 +318,7 @@ function Itinerary() {
 
     const waypointsStr =
       waypoints.length > 0 ? `&waypoints=${waypoints.join("|")}` : "";
-    console.log(waypointsStr);
+     ;
     return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsStr}&travelmode=driving`;
   };
 
@@ -368,7 +368,7 @@ function Itinerary() {
           );
           isSaved = savedResponse.data?.is_saved || false;
         } catch (error) {
-          console.error("Error checking if place is saved:", error);
+           ;
         }
       }
 
@@ -393,7 +393,7 @@ function Itinerary() {
       setSelectedPlace(formattedPlaceData);
       setIsPlaceSidebarOpen(true);
     } catch (error) {
-      console.error("Error fetching place details:", error);
+       ;
 
       // For fallback, also try to check if this place is saved
       let isSaved = false;
@@ -407,7 +407,7 @@ function Itinerary() {
           );
           isSaved = savedResponse.data?.is_saved || false;
         } catch (err) {
-          console.error("Error checking if place is saved:", err);
+           ;
         }
       }
 
@@ -431,7 +431,7 @@ function Itinerary() {
     }
 
     if (!placeId) {
-      console.error("No place ID provided");
+       ;
       return;
     }
 
@@ -465,7 +465,7 @@ function Itinerary() {
         }));
       }
     } catch (error) {
-      console.error("Error toggling place save:", error);
+       ;
       showNotification("error", "Failed to update saved places");
     } finally {
       setSavingPlace(false);

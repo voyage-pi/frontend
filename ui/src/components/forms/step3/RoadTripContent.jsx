@@ -172,7 +172,7 @@ const RoadTripContent = ({ setDisableButton }) => {
         key: Date.now(),
       });
       setDisableButton(true);
-      console.error("Search error:", error);
+       ;
     }
   };
   const autocompleteSearch = async (origin) => {
@@ -195,7 +195,7 @@ const RoadTripContent = ({ setDisableButton }) => {
         text: `There was an error ${error}`,
         key: Date.now(),
       });
-      console.error("Search error:", error);
+       ;
     } finally {
       origin ? setLoadingOrigin(false) : setLoadingDes(false);
     }
@@ -319,7 +319,7 @@ const RoadTripContent = ({ setDisableButton }) => {
             key: Date.now(),
           });
           setDisableButton(true);
-          console.error("Routing error:", error);
+           ;
         }
       }
     };

@@ -29,6 +29,10 @@ const FriendsInvite = ({
       try {
         const res = await axiosUser.get("/friends/users/");
         const friendsData = res.data;
+        if (!Array.isArray(friendsData)) {
+          setFriends([]); // Or handle it however appropriate
+          return;
+        }
         // Fetch full info for each friend
         const friendsPromises = friendsData.map(async (friend) => {
           try {
@@ -59,7 +63,7 @@ const FriendsInvite = ({
 
         setFriends(updatedFriendsList);
       } catch (err) {
-        setError("Failed to load friends.");
+        setError("Failed to fetch friends...");
       } finally {
         setLoading(false);
       }
@@ -264,7 +268,7 @@ const FriendsInvite = ({
               </>
             ) : error ? (
               <div className="text-red-500">{error}</div>
-            ) : (
+            ) : friends.length > 0 ?(
               <div
                 ref={friendsContainerRef}
                 className="grid grid-cols-4 gap-4 pr-3 h-full overflow-y-scroll friends-scroll"
@@ -299,6 +303,10 @@ const FriendsInvite = ({
                     <span className="text-sm">{friend.name}</span>
                   </div>
                 ))}
+              </div>
+            ):(
+              <div className="my-4">
+                You don't have any friends...🥲
               </div>
             )}
           </div>

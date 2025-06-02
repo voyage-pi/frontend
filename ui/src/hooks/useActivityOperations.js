@@ -75,7 +75,7 @@ export function useActivityOperations({
                   }, 1000);
                 }
               })
-              .catch((error) => console.error("Error refreshing trip:", error));
+              .catch((error) =>  );
           }
         }
       })
@@ -129,14 +129,14 @@ export function useActivityOperations({
         await actions.processItineraryData(newItineraryData);
         showNotification("success", "Activity regenerated successfully");
       } else {
-        console.error("Invalid response structure:", response);
+         ;
         showNotification(
           "error",
           "Failed to regenerate activity - invalid response from server"
         );
       }
     } catch (error) {
-      console.error("Error refreshing activity:", error);
+       ;
       showNotification(
         "error",
         "Failed to regenerate activity: " +
@@ -201,7 +201,7 @@ export function useActivityOperations({
             showNotification("success", "Activity deleted successfully");
           }
         } catch (reloadError) {
-          console.error("Error reloading trip data:", reloadError);
+           ;
           showNotification(
             "error",
             "Activity deleted but failed to update the view. Please refresh the page."
@@ -209,7 +209,7 @@ export function useActivityOperations({
         }
       }
     } catch (error) {
-      console.error("Error deleting activity:", error);
+       ;
       showNotification(
         "error",
         "Error deleting activity: " +

@@ -55,11 +55,11 @@ export const AuthProvider = ({ children }) => {
         try {
             // Fetch user trip statistics
             const statsResponse = await axiosUser.get(`/trip-info/stats/${userId}`);
-            console.log(`Trip stats for user ${userId}:`, statsResponse.data);
+             ;
 
             // Fetch user's friends
             const friendsResponse = await axiosUser.get('/friends/users/');
-            console.log(`Friends for user ${userId}:`, friendsResponse.data);
+             ;
 
             // Process the stats response
             const stats = statsResponse.data.data;
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
                 saved: stats.saved || 0
             };
         } catch (error) {
-            console.error("Error fetching user stats:", error);
+             ;
             // Return default stats object instead of null to prevent further errors
             return {
                 trips: 0,
@@ -93,13 +93,13 @@ export const AuthProvider = ({ children }) => {
         setIsUserLoading(true);
         try {
             const response = await axiosUser.get('/user/current_user');
-            console.log('User data refresh - API call successful:', response);
+             ;
             
             // Extract user data from the nested response structure
             let userData = response.data.response;
             
             if (userData && userData.id) {
-                console.log('User data loaded successfully with ID:', userData.id);
+                 ;
                 
                 try {
                     // Try to load user statistics but don't let it block authentication
@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
                         userData.stats.saved = stats.saved;
                     }
                 } catch (statsError) {
-                    console.error("Failed to load user stats, continuing with default values:", statsError);
+                     ;
                     // Ensure stats object exists with default values
                     userData.stats = {
                         trips: 0,
@@ -136,11 +136,11 @@ export const AuthProvider = ({ children }) => {
                 setUser(userData);
                 setIsAuthenticated(true);
             } else {
-                console.error('Invalid user data structure:', response.data);
+                 ;
                 throw new Error('User data is missing required properties');
             }
         } catch (error) {
-            console.log('User data refresh - API call error:', error);
+             ;
             setUser(null);
             setIsAuthenticated(false);
         } finally {
@@ -152,13 +152,13 @@ export const AuthProvider = ({ children }) => {
         const checkAuth = async () => {
             try {
                 const response = await axiosUser.get('/user/current_user');
-                console.log('API call successful:', response);
+                 ;
                 
                 // Extract user data from the nested response structure
                 let userData = response.data.response;
                 
                 if (userData && userData.id) {
-                    console.log('User data loaded successfully with ID:', userData.id);
+                     ;
                     
                     try {
                         // Try to load user statistics but don't let it block authentication
@@ -176,7 +176,7 @@ export const AuthProvider = ({ children }) => {
                             userData.stats.saved = stats.saved;
                         }
                     } catch (statsError) {
-                        console.error("Failed to load user stats, continuing with default values:", statsError);
+                         ;
                         // Ensure stats object exists with default values
                         userData.stats = {
                             trips: 0,
@@ -194,13 +194,13 @@ export const AuthProvider = ({ children }) => {
                     setUser(userData);
                     setIsAuthenticated(true);
                 } else {
-                    console.error('Invalid user data structure:', response.data);
+                     ;
                     throw new Error('User data is missing required properties');
                 }
                 
                 setIsUserLoading(false);
             } catch (error) {
-                console.log('API call error:', error);
+                 ;
                 //401 error enters has guest or not logged in
                 setUser(null)
                 setIsAuthenticated(false)

@@ -116,7 +116,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
           );
           hasValidBounds = true;
         } else {
-          console.log(`Marker ${index} is invalid:`, marker);
+           ;
         }
       });
     } else {
@@ -171,7 +171,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
   }, [clearPolylines]);
 
   const onLoad = useCallback(function callback(map) {
-    console.log("LoadingAgain");
+     ;
     setMapInstance(map);
   }, []);
 
@@ -255,7 +255,7 @@ const MapComponent = ({ polylines = [], markers = [], circles = [] }) => {
         })
       ) : (
         (() => {
-          console.log('No markers to render');
+           ;
           return null;
         })()
       )}

@@ -17,7 +17,7 @@ class TripCreationWebSocket {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log("WebSocket connected");
+           ;
           resolve();
         };
 
@@ -26,12 +26,12 @@ class TripCreationWebSocket {
             const data = JSON.parse(event.data);
             this.handleMessage(data);
           } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
+             ;
           }
         };
 
         this.ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
+           ;
           if (this.onError) {
             this.onError("Connection error");
           }
@@ -39,13 +39,13 @@ class TripCreationWebSocket {
         };
 
         this.ws.onclose = (event) => {
-          console.log("WebSocket closed:", event.code, event.reason);
+           ;
           if (event.code !== 1000 && this.onError) {
             this.onError("Connection closed unexpectedly");
           }
         };
       } catch (error) {
-        console.error("Error creating WebSocket:", error);
+         ;
         reject(error);
       }
     });

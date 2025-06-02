@@ -41,7 +41,7 @@ const Step1Content = ({ setDisableButton,setCurrentStep, setShowLeaveButton, set
             setShowLeaveButton(true);
           }
         } catch (error) {
-          console.error("Error parsing saved addedUsers:", error);
+           ;
           setShowLeaveButton(true);
         }
       } else {

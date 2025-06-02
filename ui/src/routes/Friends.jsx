@@ -64,7 +64,7 @@ function Friends() {
             setViewingUser(response.data.response);
           }
         } catch (error) {
-          console.error("Error fetching user by tag:", error);
+           ;
           // If user not found, redirect to home
           navigate('/');
         }
@@ -101,7 +101,7 @@ function Friends() {
             setSentInvitations([]);
           }
         } catch (error) {
-          console.error("Error fetching sent friend requests:", error);
+           ;
         }
         finally{
           setIsLoading(false);
@@ -124,13 +124,13 @@ function Friends() {
       const userToFetch = isViewingOwnFriends ? LoggedUser : viewingUser;
       
       if (!userToFetch || !userToFetch.id) {
-        console.log("No valid user to fetch friends for");
+         ;
         return;
       }
       
       // Skip if we've already fetched for this user recently
       if (fetchedForUserRef.current === userToFetch.id) {
-        console.log(`Already fetched friends for user ${userToFetch.id}, skipping`);
+         ;
         return;
       }
       
@@ -141,7 +141,7 @@ function Friends() {
       
       fetchDebounceTimeoutRef.current = setTimeout(async () => {
         try {
-          console.log(`Fetching friends for user ${userToFetch.id}`);
+           ;
           
           // Use the authenticated endpoint if viewing own friends
           const endpoint = isViewingOwnFriends 
@@ -149,7 +149,7 @@ function Friends() {
             : `/friends/users/${userToFetch.id}`;
             
           const response = await axiosUser.get(endpoint);
-          console.log("Friends API response:", response);
+           ;
 
           const friendsData = response.data;
           
@@ -164,14 +164,14 @@ function Friends() {
                   ...userData
                 };
               } catch (error) {
-                console.error(`Error fetching user ${friend.friend_id}:`, error);
+                 ;
                 return null;
               }
             });
 
             // Wait for all the friend data to be fetched
             const friendsList = await Promise.all(friendsPromises);
-            console.log("Processed friends list:", friendsList);
+             ;
             
             // Filter out any null values from failed fetches
             const validFriends = friendsList.filter(f => f !== null);
@@ -180,13 +180,13 @@ function Friends() {
             // Mark that we've fetched for this user
             fetchedForUserRef.current = userToFetch.id;
           } else if (friendsData && friendsData.message) {
-            console.log("Friends response message:", friendsData.message);
+             ;
             setFriends([]);
           } else {
             setFriends([]);
           }
         } catch (error) {
-          console.error("Error fetching friends:", error);
+           ;
           setFriends([]);
         } finally {
           setIsLoading(false);
@@ -312,7 +312,7 @@ function Friends() {
         setSearchResults([]);
       }
     } catch (error) {
-      console.error("Error searching for users:", error);
+       ;
       setNotification({
         message: "Error searching for users. Please try again.",
         type: "error"
@@ -380,7 +380,7 @@ function Friends() {
         setSearchResults([]);
       }
     } catch (error) {
-      console.error("Error sending friend request:", error);
+       ;
       let errorMessage = "Error sending friend request. Please try again.";
       
       // Check for specific error responses

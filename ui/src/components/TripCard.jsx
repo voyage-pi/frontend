@@ -71,7 +71,7 @@ function TripCard({
         
         onCardClick(formattedPlaceData);
       } catch (error) {
-        console.error("Error fetching place details:", error);
+         ;
         // Fallback to basic data if fetch fails
         onCardClick(placeData || {
           id: Math.random(),
@@ -89,7 +89,7 @@ function TripCard({
   return (
     <>
     <div onClick={() => {
-      console.log(id);
+       ;
       handleCardClick();
     }} className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative btn btn-ghost transition-transform duration-300 hover:scale-102 text-start group"
       >
