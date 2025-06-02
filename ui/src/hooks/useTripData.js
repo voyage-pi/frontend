@@ -379,7 +379,7 @@ export function useTripData(tripId, getPhotoUrl) {
               end_price: 0.0,
               currency: "EUR",
             },
-            locationName: responseItinerary.locationName || "",
+            locationName: locationTrip || "",
             calendar: calendar,
             days: days,
             routes: AllroutesData,
