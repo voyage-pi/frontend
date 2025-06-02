@@ -236,7 +236,7 @@ function Forms() {
 
     const tripType = localStorage.getItem("Trip Type");
     const location = localStorage.getItem("Location");
-    const budget = localStorage.getItem("Budget");
+    var budget = localStorage.getItem("Budget");
 
     // Validate required form data
     if (!tripType) {
