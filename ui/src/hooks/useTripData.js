@@ -372,14 +372,14 @@ export function useTripData(tripId, getPhotoUrl) {
           type: ACTION_TYPES.PROCESS_ITINERARY_DATA,
           payload: {
             itinerary: responseItinerary,
-            title: responseItinerary.title || "",
+            title: responseItinerary.name || "",
             totalDays: responseItinerary.days?.length || 0,
             price_range: responseItinerary.price_range || {
               start_price: 0.0,
               end_price: 0.0,
               currency: "EUR",
             },
-            locationName: responseItinerary.locationName || "",
+            locationName: locationTrip || "",
             calendar: calendar,
             days: days,
             routes: AllroutesData,
