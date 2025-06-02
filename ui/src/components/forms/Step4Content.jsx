@@ -439,7 +439,7 @@ const Step4Content = ({ setDisableButton }) => {
               min={0}
               max={2500}
               step={1}
-              rangeClassName="range range-error range-sm"
+              rangeClassName="range range-error range-sm w-full"
               showLabels={true}
               labelClassName="text-error text-lg font-bold"
             />
