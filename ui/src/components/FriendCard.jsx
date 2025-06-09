@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaMapMarkerAlt, FaGlobeAmericas, FaPlane } from "react-icons/fa";
 import { axiosUser } from "../utils/axiosInstance";
-
-const FriendCard = ({ friend, onClick, selected }) => {
+import { motion } from "motion/react";
+const FriendCard = ({ index,friend, onClick, selected }) => {
   const [stats, setStats] = useState(null);
   const [lastTrip, setLastTrip] = useState(null);
 
@@ -37,7 +37,21 @@ const FriendCard = ({ friend, onClick, selected }) => {
   }, [friend]);
 
   return (
-    <div 
+    <motion.div 
+      initial={{
+        opacity:0,
+        y:100,
+        
+      }}
+      animate={{
+        y:0,
+        opacity:1,
+      }}
+      transition={{
+        ease: [0, 0.71, 0.2, 1.01],
+        duration:0.4,
+        delay:index*0.1
+      }}
       className={`w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-102 ${selected ? 'border-1 border-primary/30' : 'border border-gray-100'}`}
       onClick={() => onClick(friend)}
     >
@@ -99,7 +113,7 @@ const FriendCard = ({ friend, onClick, selected }) => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

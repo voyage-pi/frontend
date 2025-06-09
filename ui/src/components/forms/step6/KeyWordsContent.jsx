@@ -17,14 +17,24 @@ const KeyWordsContent = () => {
     localStorage.setItem("Keywords", JSON.stringify(keywords));
   }, [keywords]);
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && currentKeyword.trim()) {
-      e.preventDefault();
+  const addKeyword = () => {
+    if (currentKeyword.trim()) {
       if (!keywords.includes(currentKeyword.trim())) {
         setKeywords([...keywords, currentKeyword.trim()]);
         setCurrentKeyword("");
       }
     }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addKeyword();
+    }
+  };
+
+  const handleSubmit = () => {
+    addKeyword();
   };
 
   const removeKeyword = (keywordToRemove) => {
@@ -40,14 +50,22 @@ const KeyWordsContent = () => {
       <div className="flex flex-col items-center">
         {/* Input Box */}
         <div className="w-full max-w-2xl mb-6">
-          <input
-            type="text"
-            value={currentKeyword}
-            onChange={(e) => setCurrentKeyword(e.target.value)}
-            onKeyDown={handleKeyPress}
-            className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none"
-            placeholder="Type a keyword and press Enter..."
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={currentKeyword}
+              onChange={(e) => setCurrentKeyword(e.target.value)}
+              onKeyDown={handleKeyPress}
+              className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none"
+              placeholder="Type a keyword and press Enter..."
+            />
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200"
+            >
+              Add
+            </button>
+          </div>
         </div>
 
         {/* Keywords Display */}

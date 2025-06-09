@@ -57,12 +57,12 @@ const MustVisitPlacesContent = () => {
       };
 
       setMustVisitPlaces((prev) => [...prev, newPlace]);
-      console.log("Place added:", mustVisitPlaces);
+       ;
 
       setCurrentText("");
       setSuggestionList([]);
     } catch (error) {
-      console.error("Add place error:", error);
+       ;
     } finally {
       setPlacesLoading(false);
     }
@@ -78,7 +78,7 @@ const MustVisitPlacesContent = () => {
 
   const getPhotoUrl = async (place) => {
     if (!place || !place.photos || !place.photos.length) {
-      console.log("No photos available for", place?.name);
+       ;
       return generatePlaceholderImage(place ? place.name : "place");
     }
 
@@ -92,7 +92,7 @@ const MustVisitPlacesContent = () => {
       const response = await axiosPlace.post("/places/photo", {
         gRPC: photo.name,
       });
-      console.log(response);
+       ;
       if (response.status == 429) {
         return getPhotoUrl(place);
       }
@@ -103,7 +103,7 @@ const MustVisitPlacesContent = () => {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo:", error);
+       ;
       return generatePlaceholderImage(place.name);
     }
   };
@@ -122,7 +122,7 @@ const MustVisitPlacesContent = () => {
       setSuggestionList(response.data.suggestions_list);
       setLoading(false);
     } catch (error) {
-      console.error("Search error:", error);
+       ;
     }
   };
 

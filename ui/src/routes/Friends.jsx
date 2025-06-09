@@ -64,7 +64,7 @@ function Friends() {
             setViewingUser(response.data.response);
           }
         } catch (error) {
-          console.error("Error fetching user by tag:", error);
+           ;
           // If user not found, redirect to home
           navigate('/');
         }
@@ -100,9 +100,10 @@ function Friends() {
           } else {
             setSentInvitations([]);
           }
-          setIsLoading(false);
         } catch (error) {
-          console.error("Error fetching sent friend requests:", error);
+           ;
+        }
+        finally{
           setIsLoading(false);
         }
       }
@@ -123,13 +124,13 @@ function Friends() {
       const userToFetch = isViewingOwnFriends ? LoggedUser : viewingUser;
       
       if (!userToFetch || !userToFetch.id) {
-        console.log("No valid user to fetch friends for");
+         ;
         return;
       }
       
       // Skip if we've already fetched for this user recently
       if (fetchedForUserRef.current === userToFetch.id) {
-        console.log(`Already fetched friends for user ${userToFetch.id}, skipping`);
+         ;
         return;
       }
       
@@ -140,8 +141,7 @@ function Friends() {
       
       fetchDebounceTimeoutRef.current = setTimeout(async () => {
         try {
-          setIsLoading(true);
-          console.log(`Fetching friends for user ${userToFetch.id}`);
+           ;
           
           // Use the authenticated endpoint if viewing own friends
           const endpoint = isViewingOwnFriends 
@@ -149,7 +149,7 @@ function Friends() {
             : `/friends/users/${userToFetch.id}`;
             
           const response = await axiosUser.get(endpoint);
-          console.log("Friends API response:", response);
+           ;
 
           const friendsData = response.data;
           
@@ -164,14 +164,14 @@ function Friends() {
                   ...userData
                 };
               } catch (error) {
-                console.error(`Error fetching user ${friend.friend_id}:`, error);
+                 ;
                 return null;
               }
             });
 
             // Wait for all the friend data to be fetched
             const friendsList = await Promise.all(friendsPromises);
-            console.log("Processed friends list:", friendsList);
+             ;
             
             // Filter out any null values from failed fetches
             const validFriends = friendsList.filter(f => f !== null);
@@ -180,13 +180,13 @@ function Friends() {
             // Mark that we've fetched for this user
             fetchedForUserRef.current = userToFetch.id;
           } else if (friendsData && friendsData.message) {
-            console.log("Friends response message:", friendsData.message);
+             ;
             setFriends([]);
           } else {
             setFriends([]);
           }
         } catch (error) {
-          console.error("Error fetching friends:", error);
+           ;
           setFriends([]);
         } finally {
           setIsLoading(false);
@@ -217,6 +217,7 @@ function Friends() {
 
   // Create filtered friends with proper error handling
   const filteredFriends = useMemo(() => {
+
     // Ensure friends array exists and has items
     if (!friends || !Array.isArray(friends) || friends.length === 0) {
       return [];
@@ -311,7 +312,7 @@ function Friends() {
         setSearchResults([]);
       }
     } catch (error) {
-      console.error("Error searching for users:", error);
+       ;
       setNotification({
         message: "Error searching for users. Please try again.",
         type: "error"
@@ -379,7 +380,7 @@ function Friends() {
         setSearchResults([]);
       }
     } catch (error) {
-      console.error("Error sending friend request:", error);
+       ;
       let errorMessage = "Error sending friend request. Please try again.";
       
       // Check for specific error responses
@@ -468,11 +469,12 @@ function Friends() {
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
-              ) : filteredFriends.length > 0 ? (
+              ) : (filteredFriends.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
-                  {filteredFriends.map(friend => (
+                  {filteredFriends.map((friend ,index)=> (
                     <div key={friend.id} className="transform-gpu">
                       <FriendCard 
+                        index={index}
                         friend={friend}
                         onClick={handleFriendClick}
                         selected={selectedFriend && selectedFriend.id === friend.id}
@@ -489,7 +491,7 @@ function Friends() {
                       : "This user hasn't added any friends yet"}
                   </p>
                 </div>
-              )}
+              ))}
             </div>
           </div>
 

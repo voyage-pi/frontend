@@ -7,7 +7,7 @@ const initialState = {
   title: "",
   totalDays: 0,
   totalPeople: 0,
-  price_range: {"start_price":0.0,"end_price":0.0,"currency":"EUR"},
+  price_range: { start_price: 0.0, end_price: 0.0, currency: "EUR" },
   locationName: "",
   calendar: [],
   days: {},
@@ -38,8 +38,8 @@ function tripReducer(state, action) {
     case ACTION_TYPES.SET_TRIP_TYPE:
       return { ...state, tripType: action.payload };
 
-    case ACTION_TYPES.PROCESS_ROAD_DATA:
-      { const {
+    case ACTION_TYPES.PROCESS_ROAD_DATA: {
+      const {
         itinerary,
         title,
         routes,
@@ -57,7 +57,8 @@ function tripReducer(state, action) {
         distancePill,
         participants: roadParticipants,
         loading: false,
-      }; }
+      };
+    }
 
     case ACTION_TYPES.UPDATE_STOPS:
       return {
@@ -65,8 +66,8 @@ function tripReducer(state, action) {
         stops: action.payload,
       };
 
-    case ACTION_TYPES.PROCESS_ITINERARY_DATA:
-      { const {
+    case ACTION_TYPES.PROCESS_ITINERARY_DATA: {
+      const {
         itinerary: itineraryData,
         title: titleData,
         totalDays,
@@ -94,7 +95,8 @@ function tripReducer(state, action) {
         markers: markersData,
         participants: itineraryParticipants,
         loading: false,
-      }; }
+      };
+    }
 
     default:
       return state;
@@ -137,7 +139,7 @@ export function useTripData(tripId, getPhotoUrl) {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo URL:", error);
+       ;
       // Use placeholder on error
       const fallbackUrl = generatePlaceholderImage(place.name);
       if (isMounted.current) {
@@ -250,7 +252,8 @@ export function useTripData(tripId, getPhotoUrl) {
         responseItinerary = data.itinerary;
         tripParticipants = data.participants || [];
       }
-      console.log("Processing itinerary data:", responseItinerary);
+       ;
+       ;
 
       const calendar = [];
       const AllroutesData = [];
@@ -369,13 +372,16 @@ export function useTripData(tripId, getPhotoUrl) {
           type: ACTION_TYPES.PROCESS_ITINERARY_DATA,
           payload: {
             itinerary: responseItinerary,
-            title: responseItinerary.name,
-            totalDays,
-            totalPeople: responseItinerary.total_people || 1,
-            price_range: responseItinerary.price_range,
-            locationName: locationTrip,
-            calendar,
-            days,
+            title: responseItinerary.name || "",
+            totalDays: responseItinerary.days?.length || 0,
+            price_range: responseItinerary.price_range || {
+              start_price: 0.0,
+              end_price: 0.0,
+              currency: "EUR",
+            },
+            locationName: locationTrip || "",
+            calendar: calendar,
+            days: days,
             routes: AllroutesData,
             markers: AllmarkersData,
             participants: tripParticipants,
@@ -401,20 +407,20 @@ export function useTripData(tripId, getPhotoUrl) {
     if (!tripId) return;
 
     dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
-    console.log("Loading trip data for ID:", tripId);
+     ;
 
     axiosInstance
       .get(`/trips/${tripId}`)
       .then((response) => {
         const data = response.data.response;
-        console.log("Loaded itinerary data from API:", data);
+         ;
 
         if (data.questions && data.questions.user123) {
           const userQuestions = data.questions.user123;
           const ratings = userQuestions.map((q) => q.value);
           if (ratings.length > 0) {
             localStorage.setItem("userRatings", JSON.stringify(ratings));
-            console.log("Loaded user ratings from API:", ratings);
+             ;
           }
         }
 
@@ -432,8 +438,8 @@ export function useTripData(tripId, getPhotoUrl) {
         }
       })
       .catch((error) => {
-        console.error("Error loading itinerary from API:", error);
-        console.error("Error details:", error.response?.data);
+         ;
+         ;
         if (isMounted.current) {
           dispatch({ type: ACTION_TYPES.SET_LOADING, payload: false });
         }

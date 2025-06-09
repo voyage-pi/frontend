@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaClock, FaUsers, FaLocationDot, FaEye, FaHeart } from "react-icons/fa6";
+import { FaClock, FaUsers, FaLocationDot, FaHeart, FaRegHeart } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { axiosPlace } from "../utils/axiosInstance";
 
@@ -18,7 +18,8 @@ function TripCard({
   onToggleSave,
   onCardClick,
   id,
-  placeData
+  placeData,
+  markerNumber
 }) {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ function TripCard({
         
         onCardClick(formattedPlaceData);
       } catch (error) {
-        console.error("Error fetching place details:", error);
+         ;
         // Fallback to basic data if fetch fails
         onCardClick(placeData || {
           id: Math.random(),
@@ -88,7 +89,7 @@ function TripCard({
   return (
     <>
     <div onClick={() => {
-      console.log(id);
+       ;
       handleCardClick();
     }} className="card w-[15rem] h-[15rem] rounded-xl overflow-hidden shadow-sm relative btn btn-ghost transition-transform duration-300 hover:scale-102 text-start group"
       >
@@ -124,10 +125,10 @@ function TripCard({
           </div>
 
           <div className="absolute right-2 top-2">
-            {!isSavedPlace && (
-              <button className="btn btn-circle btn-xs bg-gray-700/70 text-white border-none hover:bg-gray-600">
-                <FaEye className="h-3 w-3" />
-              </button>
+            {!isSavedPlace && markerNumber && (
+              <div className="btn btn-circle btn-xs bg-gray-700/70 text-white border-none hover:bg-gray-600 cursor-default">
+                <span className="text-xs font-bold">{markerNumber}</span>
+              </div>
             )}
             
             {isSavedPlace && (

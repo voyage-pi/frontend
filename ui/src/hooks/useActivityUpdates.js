@@ -69,7 +69,7 @@ export function useActivityUpdates({ tripId, onItineraryUpdate }) {
         onItineraryUpdate(response.data);
       }
     } catch (error) {
-      console.error("Error refreshing activity:", error);
+       ;
       onItineraryUpdate({
         type: "error",
         text: "Failed to refresh activity",
@@ -115,7 +115,7 @@ export function useActivityUpdates({ tripId, onItineraryUpdate }) {
         }
       }
     } catch (error) {
-      console.error("Error deleting activity:", error);
+       ;
       onItineraryUpdate({
         type: "error",
         text: "Failed to delete activity",

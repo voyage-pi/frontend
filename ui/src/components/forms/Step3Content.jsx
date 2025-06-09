@@ -4,7 +4,7 @@ import RoadTripContent from './step3/RoadTripContent';
 import ZoneTripContent from './step3/ZoneTripContent';
 import Notification from '../Notification';
 
-const Step3Content = ({ setCurrentStep }) => {
+const Step3Content = ({ setCurrentStep,setDisableButton }) => {
   const [tripType, setTripType] = useState('place'); 
   const [error, setError] = useState(null);
 
@@ -61,9 +61,9 @@ const Step3Content = ({ setCurrentStep }) => {
         />
       )}
       
-      {tripType === 'place' && <VisitPlaceContent />}
-      {tripType === 'road' && <RoadTripContent />}
-      {tripType === 'zone' && <ZoneTripContent />}
+      {tripType === 'place' && <VisitPlaceContent setDisableButton={setDisableButton} />}
+      {tripType === 'road' && <RoadTripContent    setDisableButton={setDisableButton} />}
+      {tripType === 'zone' && <ZoneTripContent    setDisableButton={setDisableButton} />}
     </div>
   );
 };

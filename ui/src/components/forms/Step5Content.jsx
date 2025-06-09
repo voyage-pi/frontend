@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react";
 import { FaFileCirclePlus, FaRecycle, FaCircleInfo } from "react-icons/fa6";
-import { FaUser, FaUserGroup } from "react-icons/fa6";
-import Step5ContentPP from "./Step5ContentPP";
 import FormCard from "./FormCard";
 import { useAuth } from "../../context/AuthContext";
 import NewPreferences from "./step4/NewPreferences";
 import OldPreferences from "./step4/OldPreferences";
 
 function Step5Content({
+  setSubQuestionIndex,
   subQuestionIndex,
   totalSubQuestions,
   answers,
   onRatingSelect,
   setCurrentStep,
+  setDisableButton,
   onValidationChange,
   handleNext,
 }) {
   const [isValid, setIsValid] = useState(false);
   const [showNewPreferences, setShowNewPreferences] = useState(null);
   const [tripDimension, setTripDimension] = useState("individual");
+  const [forward, setForward] = useState(false);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -27,7 +28,8 @@ function Step5Content({
     if (savedTripDimension) {
       setTripDimension(savedTripDimension);
     }
-    // Check if preferences profile already exists
+
+    // Check if preferences profile choice already exists
     const preferencesProfile = localStorage.getItem("Preferences Profile");
 
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
@@ -37,9 +39,14 @@ function Step5Content({
       // verify if the user is logged in otherwise just continue, for preferences saving
       if (!isAuthenticated) {
         setShowNewPreferences(true);
+        setForward(true);
       }
+    } else {
+      // If no profile exists, show the options to create a new one or reuse an old one
+      setShowNewPreferences(null);
+      setDisableButton(true); // Disable the button until a choice is made
     }
-  }, [subQuestionIndex]);
+  }, []);
 
   const handleRatingSelect = (rating) => {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
@@ -62,56 +69,73 @@ function Step5Content({
       const currentQuestion = answers[subQuestionIndex];
       return (
         <NewPreferences
+          forward={forward}
+          setForward={setForward}
+          setDisableButton={setDisableButton}
           questionsStep5={{
             currentQuestion,
+            setSubQuestionIndex,
             subQuestionIndex,
             totalSubQuestions,
             handleRatingSelect,
             handleValidationChange,
             handleNext,
-
           }}
         />
       );
     } else if (!showNewPreferences) {
-      return <OldPreferences  answers={answers} setCurrentStep={setCurrentStep} />;
+      return (
+        <OldPreferences
+          answers={answers}
+          setCurrentStep={setCurrentStep}
+          setDisableButton={setDisableButton}
+        />
+      );
     }
-  }
-  const individualCardData = [
-    {
-      id: "reuse",
-      icon: FaRecycle,
-      title: "Reuse Preferences Profile",
-      onClick: () => setShowNewPreferences(false),
-    },
-    {
-      id: "new",
-      icon: FaFileCirclePlus,
-      title: "New Preferences Profile",
-      onClick: () => {
-        setShowNewPreferences(true);
+  } else {
+    setDisableButton(true);
+    const individualCardData = [
+      {
+        id: "reuse",
+        icon: FaRecycle,
+        title: "Reuse Preferences Profile",
+        text: "Choose this option if you want to use a previously saved preferences profile. This is perfect if you have similar travel preferences across different trips or want to maintain consistency in your travel experiences.",
+        onClick: () => {
+          setShowNewPreferences(false);
+          localStorage.setItem("Preferences Profile", "Old");
+        },
       },
-    },
-  ];
+      {
+        id: "new",
+        icon: FaFileCirclePlus,
+        title: "New Preferences Profile",
+        text: "Create a fresh preferences profile tailored specifically for this trip. This option is ideal if you're planning a different type of trip or want to explore new experiences and preferences.",
+        onClick: () => {
+          setShowNewPreferences(true);
+          localStorage.setItem("Preferences Profile", "New");
+        },
+      },
+    ];
 
-  return (
-    <div className="text-center p-6 -mb-10">
-      <div className="flex justify-center space-x-40 pt-9">
-        {individualCardData.map((card) => (
-          <FormCard
-            key={card.id}
-            icon={card.icon}
-            title={card.title}
-            selected={false}
-            onClick={card.onClick || (() => {})}
-            iconSize={100}
-            infoSize={25}
-            text={card.text}
-            id={card.id}
-          />
-        ))}
+    return (
+      <div className="text-center p-6 -mb-10">
+        <div className="flex justify-center space-x-40 pt-9">
+          {individualCardData.map((card) => (
+            <FormCard
+              key={card.id}
+              icon={card.icon}
+              title={card.title}
+              selected={false}
+              onClick={card.onClick || (() => {})}
+              iconSize={100}
+              infoSize={25}
+              text={card.text}
+              id={card.id}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 export default Step5Content;

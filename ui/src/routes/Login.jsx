@@ -52,7 +52,7 @@ function Login() {
         password: formData.password,
       });
 
-      console.log("Login response:", response);
+       ;
       setLoginStatus({ type: "success", message: "Login successful!" });
 
       // Load user data after successful login
@@ -64,7 +64,7 @@ function Login() {
           navigate("/");
         }, 500);
       } catch (userError) {
-        console.error("Error loading user data after login:", userError);
+         ;
         setLoginStatus({
           type: "error",
           message:
@@ -72,7 +72,7 @@ function Login() {
         });
       }
     } catch (error) {
-      console.error("Error during login:", error);
+       ;
       const errorMessage =
         error.response?.data?.message ||
         "Invalid credentials. Please try again.";

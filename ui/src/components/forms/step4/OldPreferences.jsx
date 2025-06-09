@@ -4,19 +4,20 @@ import { axiosUser } from "../../../utils/axiosInstance";
 import { FaArrowRight } from "react-icons/fa";
 import LoadingAnimation from "../../LoadingAnimation";
 
-const OldPreferences = ({ setCurrentStep }) => {
+const OldPreferences = ({setDisableButton, setCurrentStep }) => {
   const [notification, setNotification] = useState(null);
   const [preferences, setPreferences] = useState([]);
   const [loading, setLoadingAnimation] = useState(true);
 
   useEffect(() => {
     const fetchPreferences = async () => {
+    setDisableButton(true);
       try {
         const response = await axiosUser.get("/preferences/user");
-        console.log("Fetched preferences:", response.data);
+         ;
         setPreferences(response.data.response.preferences);
       } catch (error) {
-        console.error("Error fetching preferences:", error);
+         ;
         setLoadingAnimation;
       } finally {
         setLoadingAnimation(false);
@@ -25,10 +26,13 @@ const OldPreferences = ({ setCurrentStep }) => {
     fetchPreferences();
   }, []);
 
-  const handlePrefererences = () => {
-    const selectedProfile = parseInt(document.querySelector("select").value);
-    console.log("Selected profile:", parseInt(selectedProfile));
-    if (isNaN(selectedProfile)) {
+  const handlePrefererences = (e) => {
+    // get the selected profile from the select element
+    const selectedProfileId = e.target.value;
+    const selectedProfile= preferences.find(
+      (pref) => pref.id === parseInt(selectedProfileId)
+    );
+    if (selectedProfile === null || selectedProfile === "") {
       setNotification(
         <Notification
           type="info"
@@ -38,15 +42,18 @@ const OldPreferences = ({ setCurrentStep }) => {
       );
       return;
     }
-    preferences.forEach((pref) => {
-      if (pref.id === selectedProfile) {
-        const ratings = pref.answers.map((q) => q.value);
-        console.log("Selected profile ratings:", ratings);
-        localStorage.setItem("userRatings", JSON.stringify(ratings));
-        localStorage.setItem("preferencesName", pref.name);
-      }
-    });
-    setCurrentStep((prev) => prev + 1);
+    const ratings = selectedProfile.answers.map((q) => q.value);
+    
+    // Save the selected preference ID and ratings to localStorage
+    localStorage.setItem("selectedPreferenceId", selectedProfileId);
+    localStorage.setItem("userRatings", JSON.stringify(ratings));
+    localStorage.setItem("preferencesName", selectedProfile.name);
+    
+     ;
+     ;
+     ;
+    
+    setDisableButton(false);
   };
   return (
     <>
@@ -60,7 +67,7 @@ const OldPreferences = ({ setCurrentStep }) => {
             <LoadingAnimation />
           ) : (
             <>
-              <select defaultValue="Pick a color" className="select">
+              <select onChange={handlePrefererences} defaultValue="" className="select">
                 <option value="" disabled={true}>
                   Pick a preferences profile
                 </option>
@@ -74,12 +81,12 @@ const OldPreferences = ({ setCurrentStep }) => {
                   </>
                 )}
               </select>
-              <button
+              {/* <button
                 onClick={handlePrefererences}
                 className="rounded-full bg-primary text-white text-center p-1 m-3"
               >
                 <FaArrowRight className="text-white mx-auto" />
-              </button>
+              </button> */}
             </>
           )}
         </div>

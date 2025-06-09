@@ -4,7 +4,7 @@ import StepIndicator from "../components/StepIndicator";
 import StepContent from "../components/forms/StepContent";
 import VoyageLogo from "../assets/voyage-complete-logo-navy.png";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance, axiosUser } from "../utils/axiosInstance";
+import { axiosUser } from "../utils/axiosInstance";
 import LoadingItinerary from "../components/LoadingItinerary";
 import { BsArrowLeftSquareFill } from "react-icons/bs";
 import { TiArrowLeft, TiArrowRight } from "react-icons/ti";
@@ -19,14 +19,21 @@ function Forms() {
   const savedSubQuestionIndex = localStorage.getItem("subQuestionIndex");
   const savedStep6SubStep = localStorage.getItem("step6SubStep");
   const savedIsGroup = localStorage.getItem("isGroup");
-  
+
   // Initialize state with localStorage values if available
-  const [currentStep, setCurrentStep] = useState(savedStep ? Number(savedStep) : 1);
-  const [subQuestionIndex, setSubQuestionIndex] = useState(savedSubQuestionIndex ? Number(savedSubQuestionIndex) : 0);
-  const [step6SubStep, setStep6SubStep] = useState(savedStep6SubStep ? Number(savedStep6SubStep) : 0);
+  const [currentStep, setCurrentStep] = useState(
+    savedStep ? Number(savedStep) : 1
+  );
+  const [subQuestionIndex, setSubQuestionIndex] = useState(
+    savedSubQuestionIndex ? Number(savedSubQuestionIndex) : 0
+  );
+  const [step6SubStep, setStep6SubStep] = useState(
+    savedStep6SubStep ? Number(savedStep6SubStep) : 0
+  );
   const [isGroup, setIsGroup] = useState(savedIsGroup === "true");
-  
+
   const totalSteps = 6;
+  const [disableButton, setDisableButton] = useState(true);
   const [answers, setAnswers] = useState([]);
   const [totalSubQuestions, setTotalSubQuestions] = useState(0);
   const navigate = useNavigate();
@@ -49,12 +56,8 @@ function Forms() {
   // Carregar o progresso do localStorage quando o componente for montado
   useEffect(() => {
     const initialize = async () => {
-      console.log("Initializing - Current step is:", currentStep);
-      
       // Load saved answers if available
       const savedAnswers = localStorage.getItem("answers");
-      
-      
       // Load addedUsers from localStorage if they exist
       const savedAddedUsers = localStorage.getItem("addedUsers");
       if (savedAddedUsers) {
@@ -66,23 +69,17 @@ function Forms() {
             setIsGroup(true);
           }
         } catch (error) {
-          console.error("Error parsing saved addedUsers:", error);
+           ;
           setAddedUsers([]);
         }
       }
-      
       try {
         const qs = await getQuestions();
         setTotalSubQuestions(qs.length);
-        
-        if (savedAnswers) {
-          setAnswers(JSON.parse(savedAnswers));
-        } else {
-          const QA = qs.map((q) => ({ ...q}));
-          setAnswers(QA);
-        }
+        const QA = qs.map((q) => ({ ...q }));
+        setAnswers(QA);
       } catch (error) {
-        console.error("Failed to fetch questions:", error);
+         ;
       }
     };
     initialize();
@@ -117,7 +114,13 @@ function Forms() {
       : 0;
 
   const handleNext = () => {
-    // For Step 5, check if the current question has an answer before allowing to proceed
+    setDisableButton(true);
+    const profile = localStorage.getItem("Preferences Profile");
+    if (profile === "Old" && currentStep === 5) {
+      setCurrentStep((prev) => prev + 1);
+      return;
+    }
+
     if (currentStep === 5) {
       // Check if current question has an answer
 
@@ -161,6 +164,13 @@ function Forms() {
   };
 
   const handleBack = () => {
+    setDisableButton(true);
+    const profile = localStorage.getItem("Preferences Profile");
+    if (currentStep === 6 && profile === "Old") {
+      setCurrentStep(5);
+      setSubQuestionIndex(0);
+      return;
+    }
     if (currentStep === 1) return;
 
     if (currentStep < 5) {
@@ -186,7 +196,7 @@ function Forms() {
         setStep6SubStep(0);
       } else {
         setCurrentStep(currentStep - 1);
-        setSubQuestionIndex(totalSubQuestions - 1); // Go back to the last question of step 5
+        setSubQuestionIndex(0); // Go back to the last question of step 5
       }
     }
   };
@@ -203,7 +213,6 @@ function Forms() {
     const savedRatings = JSON.parse(localStorage.getItem("userRatings")) || [];
     savedRatings[subQuestionIndex] = rating;
     localStorage.setItem("userRatings", JSON.stringify(savedRatings));
-    console.log("Updated userRatings in localStorage:", savedRatings);
   };
 
   const handleLeave = () => {
@@ -226,36 +235,133 @@ function Forms() {
     );
 
     const tripType = localStorage.getItem("Trip Type");
+    const location = localStorage.getItem("Location");
+    var budget = localStorage.getItem("Budget");
+
+    // Validate required form data
+    if (!tripType) {
+      setShowError(true);
+      setProgressMessage("Please complete the trip type selection first.");
+      setTimeout(() => {
+        setShowError(false);
+        setCurrentStep(2); // Go back to step 2 where trip type is selected
+      }, 3000);
+      return;
+    }
+
+    if (!location) {
+      setShowError(true);
+      setProgressMessage("Please complete the location selection first.");
+      setTimeout(() => {
+        setShowError(false);
+        setCurrentStep(3); // Go back to step 3 where location is selected
+      }, 3000);
+      return;
+    }
+
+    if (!budget && tripType !== "road") {
+      setShowError(true);
+      setProgressMessage("Please complete the budget and duration selection first.");
+      setTimeout(() => {
+        setShowError(false);
+        setCurrentStep(4); // Go back to step 4 where budget is selected
+      }, 3000);
+      return;
+    }
+    else if (!budget && tripType == "road") {
+      budget = 0.0
+    }
+
     let obj = {};
 
     if (tripType === "zone") {
-      obj.radius = localStorage.getItem("radius");
+      const radius = localStorage.getItem("radius");
+      const latitude = localStorage.getItem("Latitude");
+      const longitude = localStorage.getItem("Longitude");
+
+      if (!radius || !latitude || !longitude) {
+        setShowError(true);
+        setProgressMessage("Missing zone trip data. Please complete the location selection.");
+        setTimeout(() => {
+          setShowError(false);
+          setCurrentStep(3);
+        }, 3000);
+        return;
+      }
+
+      obj.radius = parseInt(radius);
       obj.center = {
-        latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-        longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
       };
       obj.type = "zone";
-    } else if (tripType == "place") {
+    } else if (tripType === "place") {
+      const latitude = localStorage.getItem("Latitude");
+      const longitude = localStorage.getItem("Longitude");
+
+      if (!latitude || !longitude) {
+        setShowError(true);
+        setProgressMessage("Missing place trip data. Please complete the location selection.");
+        setTimeout(() => {
+          setShowError(false);
+          setCurrentStep(3);
+        }, 3000);
+        return;
+      }
+
       obj.coordinates = {
-        latitude: parseFloat(localStorage.getItem("Latitude")) || 0,
-        longitude: parseFloat(localStorage.getItem("Longitude")) || 0,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
       };
-      obj.place_name = localStorage.getItem("Location");
+      obj.place_name = location;
       obj.type = "place";
-    } else if (tripType == "road") {
-      obj.origin = JSON.parse(localStorage.getItem("origin"));
-      obj.destination = JSON.parse(localStorage.getItem("destination"));
-      obj.polylines = localStorage.getItem("route");
+    } else if (tripType === "road") {
+      const origin = localStorage.getItem("origin");
+      const destination = localStorage.getItem("destination");
+      const route = localStorage.getItem("route");
+
+      if (!origin || !destination || !route) {
+        setShowError(true);
+        setProgressMessage("Missing road trip data. Please complete the route selection.");
+        setTimeout(() => {
+          setShowError(false);
+          setCurrentStep(3);
+        }, 3000);
+        return;
+      }
+
+      const originData = JSON.parse(origin);
+      const destinationData = JSON.parse(destination);
+
+      // Transform the data structure to match backend expectations
+      obj.origin = {
+        id: originData.id,
+        name: originData.name,
+        types: originData.types,
+        location: {
+          latitude: originData.location.latitude,
+          longitude: originData.location.longitude,
+        },
+      };
+      obj.destination = {
+        id: destinationData.id,
+        name: destinationData.name,
+        types: destinationData.types,
+        location: {
+          latitude: destinationData.location.latitude,
+          longitude: destinationData.location.longitude,
+        },
+      };
+      obj.polylines = route;
       obj.type = "road";
     }
 
     const formattedMustVisitPlaces = mustVisitPlaces.map((obj) => obj.place);
-    const location = localStorage.getItem("Location") || "";
     let locationParts;
     let country;
     let city;
 
-    if (localStorage.getItem("Trip Type") === "road") {
+    if (tripType === "road") {
       const destinationText = localStorage.getItem("currentTextDes") || "";
       locationParts = destinationText.split(",").map((part) => part.trim());
       country = locationParts[locationParts.length - 1] || null;
@@ -265,21 +371,20 @@ function Forms() {
       country = locationParts[locationParts.length - 1] || null;
       city = locationParts[locationParts.length - 2] || null;
     }
-    console.log("answers:", answers);
 
     const formData = {
-      budget: parseFloat(localStorage.getItem("Budget")) || 0,
+      budget: parseFloat(budget),
       startDate: formattedDate,
       duration: duration,
       tripType: tripType,
-      display_name: localStorage.getItem("Location"),
+      display_name: location,
       country: country,
       city: city,
       data_type: obj,
       must_visit_places: formattedMustVisitPlaces,
       keywords: keywords,
       preferences: {
-        "questions": userRatings.map((answer, index) => ({
+        questions: userRatings.map((answer, index) => ({
           question_id: index,
           value: parseInt(answer) || 0,
           type: "scale",
@@ -287,18 +392,23 @@ function Forms() {
       },
       is_group: isGroup,
     };
-    // If the user is authenticated, include preferences name in the formData
 
+    // If the user is authenticated, include preferences name in the formData
     if (isAuthenticated) {
       formData.preferences["preferencesName"] =
         localStorage.getItem("preferencesName");
+
+      // Include selectedPreferenceId if it exists (for reused preferences)
+      const selectedPreferenceId = localStorage.getItem("selectedPreferenceId");
+      if (selectedPreferenceId) {
+        formData.preference_id = parseInt(selectedPreferenceId);
+         ;
+      }
     }
-    else{
+    else {
       // for trip-management to make the distinction between guest and authenticated users for preferences and trip saving
       formData["guest"] = true;
     }
-    console.log("Creating trip via WebSocket:", formData);
-
     try {
       setShowProgress(true);
       setProgressPercent(0);
@@ -317,7 +427,6 @@ function Forms() {
           setProgressPercent(progress);
         },
         onSuccess: async (message, responseData, tripId) => {
-          console.log("Trip created successfully with ID:", tripId);
           setProgressMessage("Trip created successfully!");
           setProgressPercent(100);
 
@@ -354,6 +463,10 @@ function Forms() {
               "route",
               "isGroup",
               "addedUsers",
+              "selectedPreferenceId",
+              "preferencesName",
+              "Preferences Profile",
+              "Trip Dimension",
             ];
 
             keysToRemove.forEach((key) => localStorage.removeItem(key));
@@ -372,13 +485,13 @@ function Forms() {
               try {
                 await axiosUser.post(`/trips/invite/${user.id}/${tripId}`);
               } catch (e) {
-                console.error(`Failed to invite user ${user.id}:`, e);
+                 ;
               }
             }
           }, 1500);
         },
         onError: (message, progress) => {
-          console.error("WebSocket error:", message);
+           ;
           setProgressMessage(`Error: ${message}`);
           setTimeout(() => {
             setShowProgress(false);
@@ -390,7 +503,7 @@ function Forms() {
       await client.connect();
       client.sendTripData(formData);
     } catch (error) {
-      console.error("Error creating trip via WebSocket:", error);
+       ;
       setShowProgress(false);
       setIsNavigating(false);
     }
@@ -405,6 +518,48 @@ function Forms() {
       />
     );
   }
+  const renderNextOrFinishButton = () => {
+    const isDisabled = disableButton
+
+    const baseNextButton = (
+      <button
+        onClick={handleNext}
+        className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        disabled={isDisabled}
+      >
+        Next <TiArrowRight className="ml-1" />
+      </button>
+    );
+
+    if (
+      (currentStep >= 1 && currentStep < 5) ||
+      (currentStep === 5 && subQuestionIndex < totalSubQuestions - 1)
+    ) {
+      return baseNextButton;
+    }
+
+    if (currentStep === 5 || (currentStep === 6 && step6SubStep === 0)) {
+      return (
+        <button
+          onClick={handleNext}
+          className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
+        >
+          Next <TiArrowRight className="ml-1" />
+        </button>
+      );
+    }
+
+    if (currentStep === 6 && step6SubStep === 1) {
+      return (
+        <button onClick={handleNext} className="ml-auto btn btn-primary">
+          Finish
+        </button>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <PageTemplate>
@@ -427,7 +582,9 @@ function Forms() {
               setCurrentStep={setCurrentStep}
               subQuestionIndex={subQuestionIndex}
               totalSubQuestions={totalSubQuestions}
+              setSubQuestionIndex={setSubQuestionIndex}
               answers={answers}
+              setDisableButton={setDisableButton}
               onRatingSelect={handleRatingSelect}
               onValidationChange={setIsStep5Valid}
               setShowLeaveButton={setShowLeaveButton}
@@ -441,21 +598,20 @@ function Forms() {
             {showError && (
               <Notification
                 type="error"
-                text="You must select an answer before proceeding"
+                text={progressMessage || "You must select an answer before proceeding"}
                 onClose={() => setShowError(false)}
               />
             )}
 
             <div className="flex justify-between mt-8">
+              {/* Leave Button */}
               {currentStep === 1 && showLeaveButton && (
-                <button
-                  onClick={() => handleLeave()}
-                  className="btn btn-primary"
-                >
+                <button onClick={handleLeave} className="btn btn-primary">
                   <BsArrowLeftSquareFill className="text-white" /> Leave
                 </button>
               )}
 
+              {/* Back Button */}
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
@@ -465,45 +621,7 @@ function Forms() {
                 </button>
               )}
 
-              {/* Modified Next/Finish button logic */}
-              {(currentStep >= 3 && currentStep < 5) ||
-              (currentStep === 5 &&
-                subQuestionIndex < totalSubQuestions - 1) ? (
-                <button
-                  onClick={handleNext}
-                  className={`ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center ${
-                    currentStep === 5 && !answers[subQuestionIndex]?.answer
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                  disabled={
-                    currentStep === 5 && !answers[subQuestionIndex]?.answer
-                  }
-                >
-                  Next <TiArrowRight className="ml-1" />
-                </button>
-              ) : currentStep === 5 ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
-                >
-                  Next <TiArrowRight className="ml-1" />
-                </button>
-              ) : currentStep === 6 && step6SubStep === 0 ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto px-4 text-primary hover:text-rose-700 font-medium flex items-center"
-                >
-                  Next <TiArrowRight className="ml-1" />
-                </button>
-              ) : currentStep === 6 && step6SubStep === 1 ? (
-                <button
-                  onClick={handleNext}
-                  className="ml-auto btn btn-primary"
-                >
-                  Finish
-                </button>
-              ) : null}
+              {renderNextOrFinishButton()}
             </div>
 
             {currentStep === 5 && (

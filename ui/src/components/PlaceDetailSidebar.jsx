@@ -16,7 +16,7 @@ const generatePlaceholderImage = (seed) => {
 // Get photo URL using the same logic as TripCard.jsx
 const getPhotoUrl = async (photo) => {
   if (!photo || !photo.name) {
-    console.log("No photo available");
+     ;
     return generatePlaceholderImage("place");
   }
 
@@ -31,7 +31,7 @@ const getPhotoUrl = async (photo) => {
 
     return response.data?.uri;
   } catch (error) {
-    console.error("Error fetching photo:", error);
+     ;
     return generatePlaceholderImage("place");
   }
 };
@@ -69,7 +69,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
         setPhotoUrls(urls);
         setCurrentImage(urls[0]); // Set first photo as current
       } catch (error) {
-        console.error("Error fetching photos:", error);
+         ;
         setPhotoUrls([generatePlaceholderImage(place?.name)]);
       } finally {
         setLoadingPhotos(false);
@@ -97,7 +97,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
   const handleToggleSave = async () => {
     if (!isAuthenticated || !place || !place.id) {
       // Handle non-authenticated state or invalid place
-      console.log("Cannot save: User not authenticated or invalid place");
+       ;
       return;
     }
 
@@ -106,7 +106,7 @@ function PlaceDetailSidebar({ place, isOpen, onClose, onToggleSave, savingState 
       await onToggleSave(place.id);
       // The parent component will update the isSaved state via the place prop
     } catch (error) {
-      console.error("Error toggling save state:", error);
+       ;
     }
   };
 

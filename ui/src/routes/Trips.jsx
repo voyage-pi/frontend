@@ -5,7 +5,7 @@ import PageTemplate from "../components/PageTemplate";
 import TripCard from "../components/TripCard";
 import SearchHeader from "../components/SearchBar";
 import TabBar from "../components/TabBar";
-import Map from "../components/Map";
+import MapComponent from "../components/Map";
 import { FaEarthAmericas, FaEnvelope } from "react-icons/fa6";
 import { axiosInstance, axiosUser, axiosPlace } from "../utils/axiosInstance";
 import { useNotifications } from "../context/NotificationsContext";
@@ -50,7 +50,7 @@ function Trips() {
             setViewingUser(response.data.response);
           }
         } catch (error) {
-          console.error("Error fetching user by tag:", error);
+           ;
           if (error.response && error.response.status === 404) {
             navigate('/not-found');
           } else {
@@ -63,7 +63,7 @@ function Trips() {
       } else if (LoggedUser) {
         // Only set viewingUser to LoggedUser if it's not already set to prevent extra renders
         if (!viewingUser || viewingUser.id !== LoggedUser.id) {
-          console.log("Setting viewingUser to LoggedUser");
+           ;
           setViewingUser(LoggedUser);
         }
       }
@@ -84,7 +84,7 @@ function Trips() {
   // Get photo URL using the same logic as Itinerary.jsx
   const getPhotoUrl = async (place) => {
     if (!place || !place.photos || !place.photos.length) {
-      console.log("No photos available for", place?.name);
+       ;
       return generatePlaceholderImage(place ? place.name : "place");
     }
 
@@ -111,7 +111,7 @@ function Trips() {
 
       return photoUrl;
     } catch (error) {
-      console.error("Error fetching photo:", error);
+       ;
       return generatePlaceholderImage(place.name);
     }
   };
@@ -132,7 +132,7 @@ function Trips() {
       }
       return generatePlaceholderImage(itinerary?.name || "trip");
     } catch (error) {
-      console.error("Error getting first photo URL:", error);
+       ;
       return generatePlaceholderImage(itinerary?.name || "trip");
     }
   };
@@ -142,7 +142,7 @@ function Trips() {
     const fetchTrips = async () => {
       // Prevent duplicate fetches while one is in progress
       if (fetchingTripsRef.current) {
-        console.log('Trip fetch already in progress, skipping');
+         ;
         return;
       }
 
@@ -155,7 +155,7 @@ function Trips() {
 
         // Check if we have a user to fetch trips for
         if (!userToFetch) {
-          console.log('No user to fetch trips for');
+           ;
           setTrips([]);
           setLoading(false);
           return;
@@ -165,13 +165,10 @@ function Trips() {
 
         try {
           // Different approach based on whether viewing own trips or someone else's
-          console.log('Fetching own trips');
           const myTripsResponse = await axiosUser.get(`/trip-info/trips/${userToFetch.id}`);
-          console.log('My trips data:', myTripsResponse.data);
           
           // The trip_ids are actually inside data.data.trip_ids
           if (myTripsResponse.data && myTripsResponse.data.data && myTripsResponse.data.data.trip_ids) {
-            console.log('Trip IDs array:', myTripsResponse.data.data.trip_ids);
             
             // Create user trips objects from the trip_ids array
             userTrips = myTripsResponse.data.data.trip_ids.map(tripId => {
@@ -187,13 +184,12 @@ function Trips() {
               };
             }).filter(trip => trip !== null); // Remove any null entries
             
-            console.log('Transformed user trips:', userTrips);
           } else {
-            console.log('No trip_ids found in response');
+             ;
             userTrips = [];
           }
         } catch (fetchError) {
-          console.error('Error fetching user trips list:', fetchError);
+           ;
           setNotification({
             message: "Could not load trips. Please try again later.",
             type: "error"
@@ -204,7 +200,7 @@ function Trips() {
         }
 
         if (!userTrips || !userTrips.length) {
-          console.log('No trips found for user');
+           ;
           setTrips([]);
           setLoading(false);
           return;
@@ -214,16 +210,16 @@ function Trips() {
         const tripDetailsPromises = userTrips.map(async (userTrip) => {
           try {
             if (!userTrip || !userTrip.trip_id) {
-              console.error('Invalid user trip data:', userTrip);
+               ;
               return null;
             }
             
             const tripId = userTrip.trip_id;
-            console.log(`Fetching trip details for trip ID: ${tripId}`);
+             ;
             
             // Make sure tripId is a valid format before fetching
             if (!tripId || typeof tripId !== 'string' || tripId.trim() === '') {
-              console.error('Invalid trip ID format:', tripId);
+               ;
               return null;
             }
             
@@ -241,17 +237,107 @@ function Trips() {
               // The response structure follows the ResponseBody format with nested itinerary
               if (tripResponse.data && tripResponse.data.response && tripResponse.data.response.itinerary) {
                 const itinerary = tripResponse.data.response.itinerary;
-                // Debug log the itinerary structure
-                console.log('Itinerary structure:', JSON.stringify({
-                  has_days: Boolean(itinerary.days),
-                  days_length: itinerary.days ? itinerary.days.length : 0,
-                  name: itinerary.name,
-                  start_date: itinerary.start_date,
-                  end_date: itinerary.end_date
-                }));
                 
                 // Fetch the photo URL
                 const imageUrl = await getFirstPhotoUrl(itinerary);
+                
+                // Extract location data based on trip type
+                let locationData = {};
+                
+                if (itinerary.trip_type === 'zone' && itinerary.original_place_data?.center) {
+                  // For zone trips, use the center location
+                  locationData = {
+                    location: {
+                      latitude: itinerary.original_place_data.center.latitude,
+                      longitude: itinerary.original_place_data.center.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'zone' && itinerary.center_coordinates) {
+                  // Fallback for zone trips without original_place_data
+                  locationData = {
+                    location: {
+                      latitude: itinerary.center_coordinates.latitude,
+                      longitude: itinerary.center_coordinates.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'place' && itinerary.original_place_data?.coordinates) {
+                  // For place trips, use the coordinates
+                  locationData = {
+                    location: {
+                      latitude: itinerary.original_place_data.coordinates.latitude,
+                      longitude: itinerary.original_place_data.coordinates.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'place' && itinerary.place_coordinates) {
+                  // Fallback for place trips without original_place_data
+                  locationData = {
+                    location: {
+                      latitude: itinerary.place_coordinates.latitude,
+                      longitude: itinerary.place_coordinates.longitude
+                    }
+                  };
+                } else if (itinerary.trip_type === 'road' && itinerary.original_place_data?.origin && itinerary.original_place_data?.destination) {
+                  // For road trips, use a consistent structure with a primary location (origin) and additional destination info
+                  locationData = {
+                    location: {
+                      latitude: itinerary.original_place_data.origin.location.latitude,
+                      longitude: itinerary.original_place_data.origin.location.longitude
+                    },
+                    location_origin: {
+                      latitude: itinerary.original_place_data.origin.location.latitude,
+                      longitude: itinerary.original_place_data.origin.location.longitude,
+                      name: itinerary.original_place_data.origin.name
+                    },
+                    location_destination: {
+                      latitude: itinerary.original_place_data.destination.location.latitude,
+                      longitude: itinerary.original_place_data.destination.location.longitude,
+                      name: itinerary.original_place_data.destination.name
+                    }
+                  };
+                } else if (itinerary.trip_type === 'road' && itinerary.origin_coordinates && itinerary.destination_coordinates) {
+                  // Fallback for road trips without original_place_data
+                  locationData = {
+                    location: {
+                      latitude: itinerary.origin_coordinates.latitude,
+                      longitude: itinerary.origin_coordinates.longitude
+                    },
+                    location_origin: {
+                      latitude: itinerary.origin_coordinates.latitude,
+                      longitude: itinerary.origin_coordinates.longitude,
+                      name: 'Origin'
+                    },
+                    location_destination: {
+                      latitude: itinerary.destination_coordinates.latitude,
+                      longitude: itinerary.destination_coordinates.longitude,
+                      name: 'Destination'
+                    }
+                  };
+                } else {
+                  
+                  // Fallback: Extract location from first activity
+                  if (itinerary.days && itinerary.days.length > 0) {
+                    const firstDay = itinerary.days[0];
+                    for (const timeSlot of ['morning_activities', 'afternoon_activities', 'evening_activities']) {
+                      if (firstDay[timeSlot] && firstDay[timeSlot].length > 0) {
+                        const firstActivity = firstDay[timeSlot][0];
+                        if (firstActivity && firstActivity.place && firstActivity.place.location) {
+                           ;
+                          locationData = {
+                            location: {
+                              latitude: firstActivity.place.location.latitude,
+                              longitude: firstActivity.place.location.longitude
+                            }
+                          };
+                          break;
+                        }
+                      }
+                    }
+                  }
+                  
+                  if (!locationData.location) {
+                     ;
+                  }
+                }
                 
                 return {
                   id: tripId,
@@ -263,14 +349,15 @@ function Trips() {
                   status: userTrip.status, // This comes directly from user_trips
                   destinations: getDestinationsCount(itinerary),
                   image: imageUrl,
-                  markers: extractMarkers(itinerary)
+                  markers: extractMarkers(itinerary),
+                  ...locationData // Add location data to the trip object
                 };
               } else {
-                console.error('Invalid trip response structure:', tripResponse.data);
+                 ;
                 return null;
               }
             } catch (tripError) {
-              console.error(`Error fetching trip ${tripId}:`, tripError);
+               ;
               // Create a placeholder trip with minimal data when details fetch fails
               return {
                 id: tripId,
@@ -285,17 +372,17 @@ function Trips() {
               };
             }
           } catch (error) {
-            console.error(`Error processing trip:`, error);
+             ;
             return null;
           }
         });
 
         const tripDetails = await Promise.all(tripDetailsPromises);
         const validTrips = tripDetails.filter(trip => trip !== null);
-        console.log('Processed trips:', validTrips);
+         ;
         setTrips(validTrips);
       } catch (error) {
-        console.error("Error fetching user trips:", error);
+         ;
         setTrips([]);
         setNotification({
           message: "Failed to load trips. Please try refreshing the page.",
@@ -309,7 +396,7 @@ function Trips() {
 
     // Only fetch trips when we have a user to fetch for
     if (!isUserLoading && (viewingUser || LoggedUser)) {
-      console.log("Triggering trip fetch - dependencies changed");
+       ;
       fetchTrips();
     }
   }, [viewingUser, LoggedUser, isUserLoading]); // Removed isViewingOwnTrips dependency
@@ -336,26 +423,41 @@ function Trips() {
     }
   };
 
-  // Extract markers for the map
+  // Extract markers for the map (legacy function, kept for compatibility)
   const extractMarkers = (itinerary) => {
     try {
       const markers = [];
 
-      if (itinerary.days) {
-        itinerary.days.forEach(day => {
-          ['morning_activities', 'afternoon_activities', 'evening_activities'].forEach(timeSlot => {
-            if (day[timeSlot]) {
-              day[timeSlot].forEach(activity => {
-                if (activity.place && activity.place.location) {
-                  markers.push({
-                    lat: activity.place.location.latitude,
-                    lng: activity.place.location.longitude,
-                    name: activity.place.name
-                  });
-                }
-              });
-            }
-          });
+      if (itinerary.trip_type === 'zone' && itinerary.original_place_data?.center) {
+        markers.push({
+          position: {
+            lat: itinerary.original_place_data.center.latitude,
+            lng: itinerary.original_place_data.center.longitude
+          },
+          title: itinerary.name
+        });
+      } else if (itinerary.trip_type === 'place' && itinerary.original_place_data?.coordinates) {
+        markers.push({
+          position: {
+            lat: itinerary.original_place_data.coordinates.latitude,
+            lng: itinerary.original_place_data.coordinates.longitude
+          },
+          title: itinerary.name
+        });
+      } else if (itinerary.trip_type === 'road' && itinerary.original_place_data?.origin && itinerary.original_place_data?.destination) {
+        markers.push({
+          position: {
+            lat: itinerary.original_place_data.origin.location.latitude,
+            lng: itinerary.original_place_data.origin.location.longitude
+          },
+          title: itinerary.original_place_data.origin.name
+        });
+        markers.push({
+          position: {
+            lat: itinerary.original_place_data.destination.location.latitude,
+            lng: itinerary.original_place_data.destination.location.longitude
+          },
+          title: itinerary.original_place_data.destination.name
         });
       }
 
@@ -387,7 +489,7 @@ function Trips() {
 
       return uniquePlaceIds.size;
     } catch (error) {
-      console.error("Error counting destinations:", error);
+       ;
       return 0;
     }
   };
@@ -416,12 +518,99 @@ function Trips() {
     return true;
   });
 
-  const allMarkers = [];
-  filteredTrips.forEach(trip => {
-    if (trip.markers && trip.markers.length > 0) {
-      allMarkers.push(...trip.markers);
-    }
-  });
+  // Generate city-based markers from trip locations
+  const getCityMarkers = () => {
+    const uniqueLocations = new Map(); // Use Map to avoid duplicate cities
+    
+    // First, assign each trip a unique number
+    const tripNumbers = new Map();
+    filteredTrips.forEach((trip, index) => {
+      tripNumbers.set(trip.id, index + 1);
+    });
+    
+    
+    filteredTrips.forEach(trip => {
+      const tripNumber = tripNumbers.get(trip.id);
+      
+      // Handle all trip types that have a primary location (zone, place, and now road trips)
+      if (trip.location && trip.location.latitude && trip.location.longitude) {
+        const locationKey = `${trip.location.latitude},${trip.location.longitude}`;
+        if (!uniqueLocations.has(locationKey)) {
+          uniqueLocations.set(locationKey, {
+            position: {
+              lat: trip.location.latitude,
+              lng: trip.location.longitude
+            },
+            title: trip.name,
+            tripCount: 1,
+            tripIds: [trip.id],
+            tripNumbers: [tripNumber],
+            displayNumber: tripNumber, // Use the trip number for display
+            image: trip.image
+          });
+        } else {
+          // If location already exists, increment trip count
+          const existing = uniqueLocations.get(locationKey);
+          existing.tripCount += 1;
+          existing.tripIds.push(trip.id);
+          existing.tripNumbers.push(tripNumber);
+          // For multiple trips at same location, show the first trip's number
+          existing.displayNumber = existing.tripNumbers[0];
+          // Update title to show multiple trips
+          existing.title = `${existing.tripCount} trips in this area`;
+        }
+      } else {
+         ;
+      }
+      
+      // For road trips, also add the destination as a separate marker
+      if (trip.type === 'road' && trip.location_destination && trip.location_destination.latitude && trip.location_destination.longitude) {
+        const destKey = `${trip.location_destination.latitude},${trip.location_destination.longitude}`;
+        
+        if (!uniqueLocations.has(destKey)) {
+          uniqueLocations.set(destKey, {
+            position: {
+              lat: trip.location_destination.latitude,
+              lng: trip.location_destination.longitude
+            },
+            title: trip.location_destination.name || `${trip.name} (Destination)`,
+            tripCount: 1,
+            tripIds: [trip.id],
+            tripNumbers: [tripNumber],
+            displayNumber: tripNumber, // Same trip number as origin
+            image: trip.image
+          });
+        } else {
+          const existing = uniqueLocations.get(destKey);
+          existing.tripCount += 1;
+          existing.tripIds.push(trip.id);
+          existing.tripNumbers.push(tripNumber);
+          // For multiple trips at same location, show the first trip's number
+          existing.displayNumber = existing.tripNumbers[0];
+          existing.title = `${existing.tripCount} trips to this area`;
+        }
+      } else if (trip.type === 'road') {
+         ;
+      }
+    });
+    
+    const markers = Array.from(uniqueLocations.values());
+    return markers;
+  };
+
+  // Create a mapping from trip ID to trip number
+  const getTripToMarkerMapping = () => {
+    const tripToMarkerMap = new Map();
+    
+    filteredTrips.forEach((trip, index) => {
+      tripToMarkerMap.set(trip.id, index + 1);
+    });
+    
+    return tripToMarkerMap;
+  };
+
+  const allMarkers = getCityMarkers();
+  const tripToMarkerMap = getTripToMarkerMapping();
 
   const myPolylines = [
     {
@@ -507,6 +696,7 @@ function Trips() {
                       type={trip.type} 
                       name={trip.name}
                       date={trip.date}
+                      markerNumber={tripToMarkerMap.get(trip.id)}
                     />
                   ))}
                 </div>
@@ -517,7 +707,7 @@ function Trips() {
           <div className="w-3/7 h-screen relative">
             {/* Map component */}
             {!showInbox && (
-              <Map
+              <MapComponent
                 polylines={myPolylines}
                 markers={allMarkers}
               />

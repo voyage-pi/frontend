@@ -37,12 +37,12 @@ function SideBar({ onToggle, onMenuItemClick }) {
     // Debug user data structure
     useEffect(() => {
         if (LoggedUser) {
-            console.log("SideBar - User Data:", LoggedUser);
-            console.log("SideBar - User Stats:", LoggedUser.stats);
+             ;
+             ;
             
             // If stats don't exist or trips count is incorrect, fetch fresh data
             if (!LoggedUser.stats || typeof LoggedUser.stats.trips === 'undefined') {
-                console.log("Stats missing or incomplete, refreshing user data");
+                 ;
                 loadUserData();
             }
         }
@@ -181,9 +181,9 @@ function SideBar({ onToggle, onMenuItemClick }) {
             const handleLogout = async () => {
                 try {
                     await axiosUser.post('/user/logout');
-                    console.log('Logout successful');
+                     ;
                 } catch (error) {
-                    console.error('Logout error:', error);
+                     ;
                 } finally {
                     // Update authentication context
                     setIsAuthenticated(false);
@@ -287,10 +287,12 @@ function SideBar({ onToggle, onMenuItemClick }) {
                         <>
                             <div className="avatar avatar-placeholder">
                                 <div
-                                    className={`rounded-full text-primary/90 bg-white border-1 border-white transition-all duration-400 ease-in-out ${isExpanded ? "w-28" : "w-9 mt-20"}`}>
-                                    <span className={`${isExpanded ? "text-4xl" : "text-sm"}`}>
-                                        <img src={LoggedUser?.avatar_url} alt="User Avatar"/>
-                                        </span>
+                                    className={`rounded-full bg-white border-1 border-white overflow-hidden transition-all duration-400 ease-in-out ${isExpanded ? "w-28 h-28" : "w-9 h-9 mt-20"}`}>
+                                    <img
+                                        src={LoggedUser?.avatar_url}
+                                        alt="User Avatar"
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
                             </div>
 
